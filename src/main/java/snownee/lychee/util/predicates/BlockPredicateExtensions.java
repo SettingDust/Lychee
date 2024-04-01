@@ -107,6 +107,9 @@ public class BlockPredicateExtensions {
 		@Override
 		public <T> DataResult<Pair<BlockPredicate, T>> decode(DynamicOps<T> ops, T input) {
 			var stringValue = ops.getStringValue(input);
+			if (ops.get(input, "tag").result().isPresent()) {
+				return DataResult.error(() -> "`tag` isn't support in block predicate now");
+			}
 			if (stringValue.result().isPresent()) {
 				return STRING_DECODER.decode(ops, input);
 			}
