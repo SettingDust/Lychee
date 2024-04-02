@@ -8,6 +8,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import snownee.lychee.LycheeRegistries;
@@ -43,7 +44,7 @@ public record DropXp(PostActionCommonProperties commonProperties, int xp) implem
 		public static final Codec<DropXp> CODEC = RecordCodecBuilder.create(instance ->
 				instance.group(
 						PostActionCommonProperties.MAP_CODEC.forGetter(DropXp::commonProperties),
-						Codec.INT.fieldOf("xp").forGetter(DropXp::xp)
+						ExtraCodecs.POSITIVE_INT.fieldOf("xp").forGetter(DropXp::xp)
 				).apply(instance, DropXp::new));
 
 		@Override

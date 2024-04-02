@@ -8,6 +8,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.ExtraCodecs;
 import snownee.lychee.context.ActionContext;
 import snownee.lychee.util.action.PostAction;
 import snownee.lychee.util.action.PostActionCommonProperties;
@@ -46,7 +47,7 @@ public record Delay(PostActionCommonProperties commonProperties, float seconds) 
 	public static class Type implements PostActionType<Delay> {
 		public static final Codec<Delay> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 				PostActionCommonProperties.MAP_CODEC.forGetter(Delay::commonProperties),
-				Codec.FLOAT.fieldOf("s").forGetter(Delay::seconds)
+				ExtraCodecs.POSITIVE_FLOAT.fieldOf("s").forGetter(Delay::seconds)
 		).apply(instance, Delay::new));
 
 		@Override

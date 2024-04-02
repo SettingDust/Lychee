@@ -176,7 +176,7 @@ public class RandomSelect implements CompoundAction, PostAction {
 	public record Entry(PostAction action, int weight) {
 		public static final Codec<Entry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 				PostAction.MAP_CODEC.forGetter(Entry::action),
-				ExtraCodecs.strictOptionalField(Codec.INT, "weight", 1).forGetter(Entry::weight)
+				ExtraCodecs.strictOptionalField(ExtraCodecs.POSITIVE_INT, "weight", 1).forGetter(Entry::weight)
 		).apply(instance, Entry::new));
 	}
 
@@ -184,7 +184,7 @@ public class RandomSelect implements CompoundAction, PostAction {
 		public static final Codec<RandomSelect> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 				PostActionCommonProperties.MAP_CODEC.forGetter(RandomSelect::commonProperties),
 				ExtraCodecs.nonEmptyList(new CompactListCodec<>(Entry.CODEC, true)).fieldOf("entries").forGetter(it -> it.entries),
-				ExtraCodecs.strictOptionalField(ExtraCodecs.intRange(0, Integer.MAX_VALUE), "empty_weight", 0)
+				ExtraCodecs.strictOptionalField(ExtraCodecs.NON_NEGATIVE_INT, "empty_weight", 0)
 						.forGetter(it -> it.emptyWeight),
 				ExtraCodecs.strictOptionalField(MinMaxBounds.Ints.CODEC, "rolls", BoundsExtensions.ONE).forGetter(it -> it.rolls)
 		).apply(instance, RandomSelect::new));

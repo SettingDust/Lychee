@@ -1,12 +1,17 @@
 package snownee.lychee.action;
 
+import java.util.Optional;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import snownee.lychee.util.action.PostAction;
 import snownee.lychee.util.action.PostActionCommonProperties;
@@ -16,7 +21,7 @@ import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.context.LycheeContextKey;
 import snownee.lychee.util.recipe.ILycheeRecipe;
 
-public record AddItemCooldown(PostActionCommonProperties commonProperties, float seconds) implements PostAction {
+public record AddItemCooldown(PostActionCommonProperties commonProperties, float seconds, Optional<Item> item) implements PostAction {
 
 	@Override
 	public PostActionType<?> type() {
@@ -28,7 +33,7 @@ public record AddItemCooldown(PostActionCommonProperties commonProperties, float
 		var lootParamsContext = context.get(LycheeContextKey.LOOT_PARAMS);
 		var player = (Player) lootParamsContext.get(LootContextParams.THIS_ENTITY);
 		var item = context.getItem(0);
-		player.getCooldowns().addCooldown(item.getItem(), (int) (seconds * 20 * times));
+		player.getCooldowns().addCooldown(this.item.orElse(item.getItem()), (int) (seconds * 20 * times));
 	}
 
 	@Override
@@ -40,7 +45,8 @@ public record AddItemCooldown(PostActionCommonProperties commonProperties, float
 		public static final Codec<AddItemCooldown> CODEC = RecordCodecBuilder.create(instance ->
 				instance.group(
 						PostActionCommonProperties.MAP_CODEC.forGetter(AddItemCooldown::commonProperties),
-						Codec.FLOAT.fieldOf("s").forGetter(AddItemCooldown::seconds)
+						ExtraCodecs.POSITIVE_FLOAT.fieldOf("s").forGetter(AddItemCooldown::seconds),
+						BuiltInRegistries.ITEM.byNameCodec().optionalFieldOf("item").forGetter(AddItemCooldown::item)
 				).apply(instance, AddItemCooldown::new));
 
 		@Override
