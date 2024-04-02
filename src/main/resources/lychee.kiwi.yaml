@@ -1,0 +1,6 @@
+configs:
+- data: {}
+  target: snownee.lychee.LycheeConfig
+packets:
+- data: {}
+  target: snownee.lychee.network.SCustomLevelEventPacket
