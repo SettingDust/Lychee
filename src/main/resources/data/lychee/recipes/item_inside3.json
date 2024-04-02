@@ -4,7 +4,7 @@
     "item": "bucket"
   },
   "block_in": {
-    "tag": "sand"
+    "blocks": "#sand"
   },
   "post": [
     {
