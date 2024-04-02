@@ -157,7 +157,7 @@ public class BlockPredicateExtensions {
 	public static boolean matches(BlockPredicate predicate, LycheeContext context) {
 		final var lootParamsContext = context.get(LycheeContextKey.LOOT_PARAMS);
 		return unsafeMatches(
-				context.get(LycheeContextKey.LEVEL),
+				context.level(),
 				predicate,
 				lootParamsContext.get(LootContextParams.BLOCK_STATE),
 				() -> lootParamsContext.getOrNull(LootContextParams.BLOCK_ENTITY)

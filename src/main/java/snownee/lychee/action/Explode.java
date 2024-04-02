@@ -83,7 +83,7 @@ public record Explode(
 		var lootParamsContext = context.get(LycheeContextKey.LOOT_PARAMS);
 		var pos = lootParamsContext.getOrNull(LootContextParams.ORIGIN).add(Vec3.atLowerCornerOf(offset));
 		var boundedRadius = Math.min(radius + step * (Mth.sqrt(times) - 1), radius * 4);
-		explode(context.get(LycheeContextKey.LEVEL), lootParamsContext.get(LootContextParams.THIS_ENTITY), pos, boundedRadius);
+		explode(context.level(), lootParamsContext.get(LootContextParams.THIS_ENTITY), pos, boundedRadius);
 	}
 
 	@Override

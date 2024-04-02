@@ -91,7 +91,7 @@ public record PlaceBlock(
 			blockPos = BlockPos.containing(lootParamsContext.get(LootContextParams.ORIGIN));
 		}
 		blockPos = blockPos.offset(offset);
-		var level = context.get(LycheeContextKey.LEVEL);
+		var level = context.level();
 		var oldState = level.getBlockState(blockPos);
 		var state = block.map(BlockPredicateExtensions::anyBlockState).orElse(Blocks.AIR.defaultBlockState());
 		if (state.isAir()) {

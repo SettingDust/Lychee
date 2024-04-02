@@ -23,7 +23,7 @@ public final class LycheeContextRequired {
 
 	public static final Function<LycheeContext, RandomSource> RANDOM = register(
 			LycheeContextKey.RANDOM,
-			it -> it.get(LycheeContextKey.LEVEL).random
+			it -> it.level().random
 	);
 
 	public static final Function<LycheeContext, Level> LEVEL = register(
@@ -45,7 +45,7 @@ public final class LycheeContextRequired {
 			register(LycheeContextKey.ITEM, it -> ItemStackHolderCollection.EMPTY);
 
 	public static final Function<LycheeContext, ActionMarker> MARKER = register(LycheeContextKey.MARKER, it -> {
-		var level = it.get(LycheeContextKey.LEVEL);
+		var level = it.level();
 		var marker = EntityType.MARKER.create(level);
 		var lootParamsContext = it.get(LycheeContextKey.LOOT_PARAMS);
 		var pos = lootParamsContext.getOrNull(LootContextParams.ORIGIN);

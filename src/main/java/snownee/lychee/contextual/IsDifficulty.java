@@ -32,7 +32,7 @@ public record IsDifficulty(List<Difficulty> difficulties) implements ContextualC
 
 	@Override
 	public int test(@Nullable ILycheeRecipe<?> recipe, LycheeContext ctx, int times) {
-		return difficulties.contains(ctx.get(LycheeContextKey.LEVEL).getDifficulty()) ? times : 0;
+		return difficulties.contains(ctx.level().getDifficulty()) ? times : 0;
 	}
 
 	@Override

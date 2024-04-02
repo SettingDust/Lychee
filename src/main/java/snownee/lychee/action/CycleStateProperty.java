@@ -81,7 +81,7 @@ public final class CycleStateProperty implements PostAction {
 			blockPos = BlockPos.containing(lootParamsContext.get(LootContextParams.ORIGIN));
 		}
 		blockPos = blockPos.offset(offset);
-		var level = context.get(LycheeContextKey.LEVEL);
+		var level = context.level();
 		var oldState = level.getBlockState(blockPos);
 		var state = oldState.cycle(propertySupplier.get());
 		if (!level.setBlockAndUpdate(blockPos, state)) {

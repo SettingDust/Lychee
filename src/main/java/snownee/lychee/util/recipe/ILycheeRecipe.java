@@ -147,7 +147,7 @@ public interface ILycheeRecipe<C extends Container> extends Recipe<C>, Contextua
 	}
 
 	default void applyPostActions(LycheeContext context, int times) {
-		if (!context.get(LycheeContextKey.LEVEL).isClientSide) {
+		if (!context.level().isClientSide) {
 			final var actionContext = context.get(LycheeContextKey.ACTION);
 			actionContext.reset();
 			actionContext.jobs.addAll(postActions().stream().map(it -> new Job(it, times)).toList());

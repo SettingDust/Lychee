@@ -38,7 +38,7 @@ public record DropItem(PostActionCommonProperties commonProperties, ItemStack st
 	public void apply(@Nullable ILycheeRecipe<?> recipe, LycheeContext context, int times) {
 		var lootParamsContext = context.get(LycheeContextKey.LOOT_PARAMS);
 		var pos = lootParamsContext.get(LootContextParams.ORIGIN);
-		var level = context.get(LycheeContextKey.LEVEL);
+		var level = context.level();
 		if (recipe instanceof BlockCrushingRecipe) {
 			var state = lootParamsContext.get(LootContextParams.BLOCK_STATE);
 			if (state.is(LycheeTags.EXTEND_BOX)) {

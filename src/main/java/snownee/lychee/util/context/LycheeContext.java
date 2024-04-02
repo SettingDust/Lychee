@@ -1,14 +1,17 @@
 package snownee.lychee.util.context;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import snownee.kiwi.recipe.EmptyContainer;
 import snownee.lychee.LycheeRegistries;
 import snownee.lychee.util.codec.KeyDispatchedMapCodec;
@@ -38,6 +41,9 @@ public class LycheeContext extends EmptyContainer {
 				return context;
 			}, LycheeContext::asMap);
 
+	@Nullable
+	private Level level;
+
 	public <T> T get(LycheeContextKey<T> type) {
 		if (LycheeContextRequired.CONSTRUCTORS.containsKey(type)) {
 			return (T) this.context.computeIfAbsent(type, (it) -> LycheeContextRequired.CONSTRUCTORS.get(it).apply(this));
@@ -46,6 +52,9 @@ public class LycheeContext extends EmptyContainer {
 	}
 
 	public <T> T put(LycheeContextKey<T> key, T value) {
+		if (key == LycheeContextKey.LEVEL) {
+			level = (Level) value;
+		}
 		return (T) context.put(key, value);
 	}
 
@@ -55,6 +64,13 @@ public class LycheeContext extends EmptyContainer {
 
 	public Map<LycheeContextKey<?>, Object> asMap() {
 		return Map.copyOf(context);
+	}
+
+	public Level level() {
+		if (level == null) {
+			level = get(LycheeContextKey.LEVEL);
+		}
+		return Objects.requireNonNull(level);
 	}
 
 	@Override

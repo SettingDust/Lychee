@@ -50,7 +50,7 @@ public final class SetItem implements PostAction {
 	@Override
 	public void apply(@Nullable ILycheeRecipe<?> recipe, LycheeContext context, int times) {
 		var indexes = recipe.getItemIndexes(target);
-		var registryAccess = context.get(LycheeContextKey.LEVEL).registryAccess();
+		var registryAccess = context.level().registryAccess();
 		for (var index : indexes) {
 			var tag = (CompoundTag) context.getItem(index).save(registryAccess);
 			ItemStack stack;

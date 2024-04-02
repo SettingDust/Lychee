@@ -57,7 +57,7 @@ public record Execute(PostActionCommonProperties commonProperties, String comman
 			displayName = entity.getDisplayName();
 			name = entity.getName().getString();
 		}
-		var level = (ServerLevel) context.get(LycheeContextKey.LEVEL);
+		var level = (ServerLevel) context.level();
 		var commandSourceStack = new CommandSourceStack(
 				CommandSource.NULL,
 				pos,

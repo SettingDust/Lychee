@@ -58,7 +58,7 @@ public class ItemShapelessRecipeType<R extends ILycheeRecipe<LycheeContext>> ext
 		var matchedAny = false;
 		var loop = 0;
 		final var excluded = Sets.newHashSet();
-		var level = context.get(LycheeContextKey.LEVEL);
+		var level = context.level();
 		var itemShapelessContext = context.get(LycheeContextKey.ITEM_SHAPELESS);
 		final var actionContext = context.get(LycheeContextKey.ACTION);
 		major:

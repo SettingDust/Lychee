@@ -71,7 +71,7 @@ public record Location(LocationCheck check) implements ContextualCondition {
 
 	@Override
 	public int test(@Nullable ILycheeRecipe<?> recipe, LycheeContext ctx, int times) {
-		final var level = ctx.get(LycheeContextKey.LEVEL);
+		final var level = ctx.level();
 		final var lootParamsContext = ctx.get(LycheeContextKey.LOOT_PARAMS);
 		if (level.isClientSide) {
 			return testClient(

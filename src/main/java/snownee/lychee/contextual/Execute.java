@@ -39,7 +39,7 @@ public record Execute(String command, MinMaxBounds.Ints bounds) implements Conte
 
 	@Override
 	public int test(@Nullable ILycheeRecipe<?> recipe, LycheeContext ctx, int times) {
-		final var level = ctx.get(LycheeContextKey.LEVEL);
+		final var level = ctx.level();
 		if (command.isEmpty() || level.isClientSide) {
 			return 0;
 		}

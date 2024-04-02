@@ -115,7 +115,7 @@ public abstract class AnvilMenuMixin extends ItemCombinerMenu {
 		if (context == null) {
 			return;
 		}
-		if (context.get(LycheeContextKey.LEVEL).isClientSide) {
+		if (context.level().isClientSide) {
 			return;
 		}
 		var recipe = context.get(LycheeContextKey.RECIPE);

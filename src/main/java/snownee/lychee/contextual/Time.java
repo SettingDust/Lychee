@@ -31,7 +31,7 @@ public record Time(MinMaxBounds.Ints value, Optional<Long> period) implements Co
 
 	@Override
 	public int test(@Nullable ILycheeRecipe<?> recipe, LycheeContext ctx, int times) {
-		return test(ctx.get(LycheeContextKey.LEVEL)) ? times : 0;
+		return test(ctx.level()) ? times : 0;
 	}
 
 	@Override

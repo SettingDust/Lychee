@@ -43,7 +43,7 @@ public record IsWeather(String id, Predicate<Level> predicate) implements Contex
 
 	@Override
 	public int test(@Nullable ILycheeRecipe<?> recipe, LycheeContext ctx, int times) {
-		return predicate.test(ctx.get(LycheeContextKey.LEVEL)) ? times : 0;
+		return predicate.test(ctx.level()) ? times : 0;
 	}
 
 	@Override
