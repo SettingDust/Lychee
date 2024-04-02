@@ -54,7 +54,7 @@ public class RandomSelect implements CompoundAction, PostAction {
 		this.emptyWeight = emptyWeight;
 		this.rolls = rolls;
 		canRepeat = entries.stream().allMatch(it -> it.action.repeatable());
-		hidden = entries.stream().allMatch(it -> it.action.hidden());
+		hidden = commonProperties.hidden() || entries.stream().allMatch(it -> it.action.hidden());
 		preventSync = entries.stream().allMatch(it -> it.action.preventSync());
 	}
 

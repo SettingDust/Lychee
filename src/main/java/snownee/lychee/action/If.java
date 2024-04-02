@@ -41,7 +41,7 @@ public class If implements CompoundAction, PostAction {
 		this.successEntries = successEntries;
 		this.failureEntries = failureEntries;
 		canRepeat = getChildActions().allMatch(PostAction::repeatable);
-		hidden = getChildActions().allMatch(PostAction::hidden);
+		hidden = commonProperties.hidden() || getChildActions().allMatch(PostAction::hidden);
 		preventSync = getChildActions().allMatch(PostAction::preventSync);
 	}
 

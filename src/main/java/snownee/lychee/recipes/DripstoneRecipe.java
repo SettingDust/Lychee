@@ -104,7 +104,8 @@ public class DripstoneRecipe extends LycheeRecipe<LycheeContext> implements Bloc
 		var check = (LocationCheck) LocationCheck.checkLocation(builder).build();
 		var breakAction = new Break(new PostActionCommonProperties(
 				Optional.empty(),
-				new ContextualHolder(Lists.newArrayList(new Not(new Location(check))))));
+				new ContextualHolder(Lists.newArrayList(new Not(new Location(check)))),
+				true));
 		var actionContext = context.get(LycheeContextKey.ACTION);
 		actionContext.jobs.offer(new Job(breakAction, 1));
 		actionContext.jobs.offer(new Job(new Delay(j / 20F), 1));

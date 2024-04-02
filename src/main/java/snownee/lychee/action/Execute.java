@@ -25,9 +25,9 @@ import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.context.LycheeContextKey;
 import snownee.lychee.util.recipe.ILycheeRecipe;
 
-public record Execute(PostActionCommonProperties commonProperties, String command, boolean hide, boolean repeat) implements PostAction {
+public record Execute(PostActionCommonProperties commonProperties, String command, boolean repeat) implements PostAction {
 
-	public static final Execute DUMMY = new Execute(new PostActionCommonProperties(), "", false, false);
+	public static final Execute DUMMY = new Execute(new PostActionCommonProperties(), "", false);
 	public static final Component DEFAULT_NAME = Component.literal(Lychee.ID);
 
 	@Override
@@ -77,7 +77,7 @@ public record Execute(PostActionCommonProperties commonProperties, String comman
 
 	@Override
 	public boolean preventSync() {
-		return hide;
+		return hidden();
 	}
 
 	public static class Type implements PostActionType<Execute> {
@@ -85,10 +85,8 @@ public record Execute(PostActionCommonProperties commonProperties, String comman
 				instance.group(
 						PostActionCommonProperties.MAP_CODEC.forGetter(Execute::commonProperties),
 						Codec.STRING.fieldOf("command").forGetter(Execute::command),
-						ExtraCodecs.strictOptionalField(Codec.BOOL, "hide", false).forGetter(Execute::hide),
 						ExtraCodecs.strictOptionalField(Codec.BOOL, "repeat", true).forGetter(Execute::repeat)
 				).apply(instance, Execute::new));
-
 
 		@Override
 		public @NotNull Codec<Execute> codec() {
@@ -101,7 +99,7 @@ public record Execute(PostActionCommonProperties commonProperties, String comman
 					(it, value) -> it.writeBoolean(!value.conditions().conditions().isEmpty()),
 					it -> {
 						if (it.readBoolean()) {
-							return new Execute(new PostActionCommonProperties(), "", false, false);
+							return new Execute(new PostActionCommonProperties(), "", false);
 						}
 						return DUMMY;
 					}

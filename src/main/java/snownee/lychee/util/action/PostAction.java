@@ -43,6 +43,11 @@ public interface PostAction extends PostActionDisplay, ContextualPredicate, Cont
 		return commonProperties().conditions();
 	}
 
+	@Override
+	default boolean hidden() {
+		return commonProperties().hidden();
+	}
+
 	PostActionType<?> type();
 
 	void apply(@Nullable ILycheeRecipe<?> recipe, LycheeContext context, int times);
