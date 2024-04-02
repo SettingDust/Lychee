@@ -9,3 +9,4 @@
 - The `lychee:biome_tag` in LocationPredicate is no longer supported. Instead, you should use the vanilla's new feature instead.
 - JSON fragments now work with any recipe types, and you can now replace the recipe type or the conditions provided by
   loaders. The fragment id is now **namespace-sensitive**.
+- The custom data in the `custom` PostAction & ContextualCondition type now should be enclosed in a `data` key.

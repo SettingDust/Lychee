@@ -107,9 +107,9 @@ public record Explode(
 						"block_interaction",
 						BlockInteraction.DESTROY
 				).forGetter(Explode::blockInteraction),
-				LycheeCodecs.OFFSET_CODEC.forGetter(it -> it.offset),
+				LycheeCodecs.OFFSET_CODEC.forGetter(Explode::offset),
 				ExtraCodecs.strictOptionalField(Codec.BOOL, "fire", false).forGetter(Explode::fire),
-				ExtraCodecs.strictOptionalField(Codec.FLOAT, "radius", 4F).forGetter(Explode::radius),
+				ExtraCodecs.strictOptionalField(ExtraCodecs.POSITIVE_FLOAT, "radius", 4F).forGetter(Explode::radius),
 				ExtraCodecs.strictOptionalField(Codec.FLOAT, "radius_step", 4F).forGetter(Explode::step)
 		).apply(instance, Explode::new));
 

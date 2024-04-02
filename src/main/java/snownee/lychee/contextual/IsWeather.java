@@ -8,16 +8,15 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import snownee.lychee.util.TriState;
 import snownee.lychee.util.context.LycheeContext;
-import snownee.lychee.util.context.LycheeContextKey;
 import snownee.lychee.util.contextual.ContextualCondition;
 import snownee.lychee.util.contextual.ContextualConditionType;
 import snownee.lychee.util.recipe.ILycheeRecipe;
@@ -59,10 +58,7 @@ public record IsWeather(String id, Predicate<Level> predicate) implements Contex
 	}
 
 	public static class Type implements ContextualConditionType<IsWeather> {
-		public static final Codec<IsWeather> CODEC =
-				RecordCodecBuilder.create(instance -> instance
-						.group(Codec.STRING.fieldOf("weather").forGetter(IsWeather::id))
-						.apply(instance, REGISTRY::get));
+		public static final Codec<IsWeather> CODEC = ExtraCodecs.stringResolverCodec(IsWeather::id, IsWeather.REGISTRY::get);
 
 		@Override
 		public @NotNull Codec<IsWeather> codec() {

@@ -65,5 +65,10 @@ public final class LycheeCodecs {
 			ExtraCodecs.strictOptionalField(Codec.INT, "offsetX", 0).forGetter(Vec3i::getX),
 			ExtraCodecs.strictOptionalField(Codec.INT, "offsetY", 0).forGetter(Vec3i::getY),
 			ExtraCodecs.strictOptionalField(Codec.INT, "offsetZ", 0).forGetter(Vec3i::getZ)
-	).apply(posInstance, BlockPos::new));
+	).apply(posInstance, (x, y, z) -> {
+		if (x == 0 && y == 0 && z == 0) {
+			return BlockPos.ZERO;
+		}
+		return new BlockPos(x, y, z);
+	}));
 }

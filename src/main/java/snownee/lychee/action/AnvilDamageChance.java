@@ -41,7 +41,7 @@ public record AnvilDamageChance(PostActionCommonProperties commonProperties, flo
 		public static final Codec<AnvilDamageChance> CODEC = RecordCodecBuilder.create(instance ->
 				instance.group(
 						PostActionCommonProperties.MAP_CODEC.forGetter(AnvilDamageChance::commonProperties),
-						Codec.FLOAT.fieldOf("chance").forGetter(AnvilDamageChance::chance)
+						Codec.floatRange(0, 1).fieldOf("chance").forGetter(AnvilDamageChance::chance)
 				).apply(instance, AnvilDamageChance::new));
 
 		@Override
