@@ -2,6 +2,7 @@ package snownee.lychee.util.predicates;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -28,12 +29,10 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.critereon.BlockPredicate;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.JavaOps;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -52,10 +51,10 @@ import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.context.LycheeContextKey;
 
 public class BlockPredicateExtensions {
-	private static final Cache<BlockPredicate, List<BlockState>> CACHE =
-			CacheBuilder.newBuilder()
-					.expireAfterAccess(10, TimeUnit.MINUTES)
-					.build();
+	public static final BlockPredicate ANY = new BlockPredicate(Optional.empty(), Optional.empty(), Optional.empty());
+	private static final Cache<BlockPredicate, List<BlockState>> CACHE = CacheBuilder.newBuilder()
+			.expireAfterAccess(10, TimeUnit.MINUTES)
+			.build();
 	public static final Set<Property<?>> ITERABLE_PROPERTIES = Sets.newConcurrentHashSet(List.of(
 			BlockStateProperties.AGE_1,
 			BlockStateProperties.AGE_2,
@@ -79,45 +78,50 @@ public class BlockPredicateExtensions {
 			BlockStateProperties.DRIPSTONE_THICKNESS
 	));
 
-	public static final Decoder<BlockPredicate> STRING_DECODER = new Decoder<>() {
-		@Override
-		public <T> DataResult<Pair<BlockPredicate, T>> decode(DynamicOps<T> ops, T input) {
-			var stringValue = ops.getStringValue(input);
-			if (stringValue.result().isEmpty()) {
-				return DataResult.error(() -> "Invalid input: " + input);
-			}
-			var it = stringValue.result().get();
-			if (it.equals("*")) {
-				return DataResult.error(() -> "Wildcard needn't anymore in Lychee. Emit the field will act as a wildcard **if it's optional**.");
-			}
-			var parsed = RegistryCodecs.homogeneousList(Registries.BLOCK).parse(ops, JavaOps.INSTANCE.convertTo(ops, it));
-			if (parsed.result().isPresent()) {
-				if (parsed.result().get() instanceof HolderSet.Named<Block> named) {
-					return DataResult.success(Pair.of(BlockPredicate.Builder.block().of(named.key()).build(), ops.empty()));
-				}
-				return DataResult.success(Pair.of(
-						BlockPredicate.Builder.block().of(parsed.result().get().stream().map(Holder::value).toList()).build(),
-						ops.empty()));
-			}
-			return DataResult.error(() -> "Invalid block predicate: " + it);
+	public static <T> DataResult<BlockPredicate> fromString(DynamicOps<T> ops, T input) {
+		String s = ops.getStringValue(input).result().orElseThrow();
+		if ("*".equals(s)) {
+			return DataResult.success(ANY);
 		}
-	};
+		var parsed = RegistryCodecs.homogeneousList(Registries.BLOCK).parse(ops, input);
+		if (parsed.result().isEmpty()) {
+			return DataResult.error(() -> "Invalid block predicate: " + s);
+		}
+		return DataResult.success(new BlockPredicate(Optional.of(parsed.result().get()), Optional.empty(), Optional.empty()));
+	}
 
 	public static final Codec<BlockPredicate> CODEC = Codec.of(BlockPredicate.CODEC, new Decoder<>() {
 		@Override
 		public <T> DataResult<Pair<BlockPredicate, T>> decode(DynamicOps<T> ops, T input) {
 			var stringValue = ops.getStringValue(input);
-			if (ops.get(input, "tag").result().isPresent()) {
-				return DataResult.error(() -> "`tag` isn't support in block predicate now");
-			}
 			if (stringValue.result().isPresent()) {
-				return STRING_DECODER.decode(ops, input);
+				return fromString(ops, input).flatMap(it -> DataResult.success(Pair.of(it, ops.empty())));
 			}
-			return BlockPredicate.CODEC.decode(ops, input);
+			DataResult<Pair<BlockPredicate, T>> result = BlockPredicate.CODEC.decode(ops, input);
+			if (result.result().isPresent()) {
+				BlockPredicate predicate = result.result().get().getFirst();
+				if (isAny(predicate)) {
+					if (ops.getMap(input).result().orElseThrow().entries().findAny().isPresent()) {
+						return DataResult.error(() -> "Wildcard BlockPredicate must be an empty object, but found " + input);
+					}
+					return DataResult.success(Pair.of(ANY, ops.empty()));
+				}
+			}
+			return result;
 		}
 	});
 
+	public static boolean isAny(BlockPredicate predicate) {
+		if (predicate == ANY) {
+			return true;
+		}
+		return predicate.blocks().isEmpty() && predicate.properties().isEmpty() && predicate.nbt().isEmpty();
+	}
+
 	public static Set<Block> matchedBlocks(BlockPredicate predicate) {
+		if (isAny(predicate)) {
+			return Set.of();
+		}
 		final var blocks = Lists.<Holder<Block>>newArrayList();
 		if (predicate.blocks().isPresent()) {
 			Iterables.addAll(
