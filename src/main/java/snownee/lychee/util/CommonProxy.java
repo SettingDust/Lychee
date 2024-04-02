@@ -58,6 +58,7 @@ import snownee.lychee.RecipeTypes;
 import snownee.lychee.action.CustomAction;
 import snownee.lychee.compat.IngredientInfo;
 import snownee.lychee.compat.fabric_recipe_api.AlwaysTrueIngredient;
+import snownee.lychee.compat.fabric_recipe_api.VisualOnlyComponentsIngredient;
 import snownee.lychee.contextual.CustomCondition;
 import snownee.lychee.recipes.BlockClickingRecipe;
 import snownee.lychee.recipes.BlockInteractingRecipe;
@@ -301,7 +302,7 @@ public class CommonProxy implements ModInitializer {
 	}
 
 	public static IngredientInfo.Type getIngredientType(Ingredient ingredient) {
-		if (ingredient.isEmpty()) {
+		if (ingredient.isEmpty()) { //FIXME not compatible with AIR_INGREDIENT!
 			return IngredientInfo.Type.AIR;
 		}
 		var customIngredient = ingredient.getCustomIngredient();
@@ -334,6 +335,7 @@ public class CommonProxy implements ModInitializer {
 		Objects.requireNonNull(LycheeContextKey.ACTION);
 		Objects.requireNonNull(LycheeContextSerializer.ACTION);
 		CustomIngredientSerializer.register(AlwaysTrueIngredient.SERIALIZER);
+		CustomIngredientSerializer.register(VisualOnlyComponentsIngredient.SERIALIZER);
 
 		// Interaction recipes
 		UseBlockCallback.EVENT.register(BlockInteractingRecipe::invoke);

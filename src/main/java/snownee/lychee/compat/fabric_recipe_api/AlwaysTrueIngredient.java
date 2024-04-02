@@ -14,28 +14,7 @@ import snownee.lychee.Lychee;
 
 public class AlwaysTrueIngredient implements CustomIngredient {
 	public static final ResourceLocation ID = Lychee.id("always_true");
-	public static final CustomIngredientSerializer<AlwaysTrueIngredient> SERIALIZER =
-			new CustomIngredientSerializer<>() {
-
-				private static final AlwaysTrueIngredient INSTANCE = new AlwaysTrueIngredient();
-				public static final Codec<AlwaysTrueIngredient> CODEC = Codec.unit(INSTANCE);
-				public static final StreamCodec<RegistryFriendlyByteBuf, AlwaysTrueIngredient> STREAM_CODEC = StreamCodec.unit(INSTANCE);
-
-				@Override
-				public ResourceLocation getIdentifier() {
-					return ID;
-				}
-
-				@Override
-				public Codec<AlwaysTrueIngredient> getCodec(boolean allowEmpty) {
-					return CODEC;
-				}
-
-				@Override
-				public StreamCodec<RegistryFriendlyByteBuf, AlwaysTrueIngredient> getPacketCodec() {
-					return STREAM_CODEC;
-				}
-			};
+	public static final CustomIngredientSerializer<AlwaysTrueIngredient> SERIALIZER = new Serializer();
 
 	@Override
 	public boolean test(ItemStack stack) {
@@ -55,5 +34,26 @@ public class AlwaysTrueIngredient implements CustomIngredient {
 	@Override
 	public CustomIngredientSerializer<?> getSerializer() {
 		return SERIALIZER;
+	}
+
+	private static class Serializer implements CustomIngredientSerializer<AlwaysTrueIngredient> {
+		private static final AlwaysTrueIngredient INSTANCE = new AlwaysTrueIngredient();
+		public static final Codec<AlwaysTrueIngredient> CODEC = Codec.unit(INSTANCE);
+		public static final StreamCodec<RegistryFriendlyByteBuf, AlwaysTrueIngredient> STREAM_CODEC = StreamCodec.unit(INSTANCE);
+
+		@Override
+		public ResourceLocation getIdentifier() {
+			return ID;
+		}
+
+		@Override
+		public Codec<AlwaysTrueIngredient> getCodec(boolean allowEmpty) {
+			return CODEC;
+		}
+
+		@Override
+		public StreamCodec<RegistryFriendlyByteBuf, AlwaysTrueIngredient> getPacketCodec() {
+			return STREAM_CODEC;
+		}
 	}
 }
