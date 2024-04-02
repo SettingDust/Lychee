@@ -49,7 +49,7 @@ public class AlwaysTrueIngredient implements CustomIngredient {
 
 	@Override
 	public boolean requiresTesting() {
-		return false;
+		return true;
 	}
 
 	@Override
