@@ -10,6 +10,7 @@ import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import snownee.lychee.compat.rei.category.LycheeDisplayCategory;
+import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.recipe.ILycheeRecipe;
 import snownee.lychee.util.recipe.LycheeRecipeType;
 
@@ -27,8 +28,8 @@ public interface DisplayRegisters {
 		return (DisplayRegister<R>) ALL.getOrDefault(id, DEFAULT);
 	}
 
-	static <R extends ILycheeRecipe<?>> DisplayRegister<R> register(
-			LycheeRecipeType<?, R> type,
+	static <R extends ILycheeRecipe<LycheeContext>> DisplayRegister<R> register(
+			LycheeRecipeType<R> type,
 			DisplayRegister<R> provider) {
 		ALL.put(type.categoryId, provider);
 		return provider;

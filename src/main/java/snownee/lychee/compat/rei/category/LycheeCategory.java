@@ -119,7 +119,7 @@ public interface LycheeCategory<R extends ILycheeRecipe<LycheeContext>> {
 		}
 	}
 
-	LycheeRecipeType<?, ? extends R> recipeType();
+	LycheeRecipeType<? extends R> recipeType();
 
 	Rect2i infoRect();
 

@@ -80,12 +80,12 @@ public interface WorkstationRegisters {
 			}
 	);
 
-	static <R extends ILycheeRecipe<LycheeContext>> WorkstationRegister<R> get(LycheeRecipeType<LycheeContext, R> type) {
+	static <R extends ILycheeRecipe<LycheeContext>> WorkstationRegister<R> get(LycheeRecipeType<R> type) {
 		return (WorkstationRegister<R>) ALL.get(type.categoryId);
 	}
 
 	static <R extends ILycheeRecipe<LycheeContext>> WorkstationRegister<R> register(
-			LycheeRecipeType<LycheeContext, R> type,
+			LycheeRecipeType<R> type,
 			WorkstationRegister<R> provider) {
 		ALL.put(type.categoryId, provider);
 		return provider;

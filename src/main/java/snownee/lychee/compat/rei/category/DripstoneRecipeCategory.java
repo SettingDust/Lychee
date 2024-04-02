@@ -130,7 +130,7 @@ public class DripstoneRecipeCategory extends AbstractLycheeCategory<DripstoneRec
 	}
 
 	@Override
-	public LycheeRecipeType<?, ? extends DripstoneRecipe> recipeType() {
+	public LycheeRecipeType<? extends DripstoneRecipe> recipeType() {
 		return RecipeTypes.DRIPSTONE_DRIPPING;
 	}
 }

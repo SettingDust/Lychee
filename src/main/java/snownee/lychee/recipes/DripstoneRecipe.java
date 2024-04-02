@@ -144,15 +144,8 @@ public class DripstoneRecipe extends LycheeRecipe<LycheeContext> implements Bloc
 	}
 
 	@Override
-	public @NotNull LycheeRecipeType<LycheeContext, DripstoneRecipe> getType() {
+	public @NotNull LycheeRecipeType<DripstoneRecipe> getType() {
 		return RecipeTypes.DRIPSTONE_DRIPPING;
-	}
-
-	@Override
-	public int compareTo(DripstoneRecipe that) {
-		int i;
-		i = Integer.compare(isSpecial() ? 1 : 0, that.isSpecial() ? 1 : 0);
-		return i;
 	}
 
 	@Override

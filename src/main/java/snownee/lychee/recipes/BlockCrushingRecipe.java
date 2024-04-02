@@ -153,28 +153,6 @@ public class BlockCrushingRecipe extends LycheeRecipe<LycheeContext> implements 
 		return RecipeTypes.BLOCK_CRUSHING;
 	}
 
-	@Override
-	public int compareTo(@NotNull final BlockCrushingRecipe that) {
-		int i;
-		i = Integer.compare(maxRepeats().isAny() ? 1 : 0, that.maxRepeats().isAny() ? 1 : 0);
-		if (i != 0) {
-			return i;
-		}
-		i = Integer.compare(isSpecial() ? 1 : 0, that.isSpecial() ? 1 : 0);
-		if (i != 0) {
-			return i;
-		}
-		i = Integer.compare(
-				landingBlock.isEmpty() ? 1 : 0,
-				that.landingBlock.isEmpty() ? 1 : 0
-		);
-		if (i != 0) {
-			return i;
-		}
-		i = -Integer.compare(ingredients.size(), that.ingredients.size());
-		return i;
-	}
-
 	public static class Serializer implements LycheeRecipeSerializer<BlockCrushingRecipe> {
 		public static final Codec<BlockCrushingRecipe> CODEC =
 				RecordCodecBuilder.create(instance -> instance.group(

@@ -1,10 +1,12 @@
 package snownee.lychee.recipes;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -20,6 +22,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -35,7 +38,7 @@ import snownee.lychee.util.context.LycheeContextKey;
 import snownee.lychee.util.recipe.ItemShapelessRecipeType;
 import snownee.lychee.util.recipe.LycheeRecipeType;
 
-public class ItemInsideRecipeType extends LycheeRecipeType<LycheeContext, ItemInsideRecipe> {
+public class ItemInsideRecipeType extends LycheeRecipeType<ItemInsideRecipe> {
 
 	private final List<RecipeHolder<ItemInsideRecipe>> specialRecipes = Lists.newArrayList();
 	private final Multimap<Item, RecipeHolder<ItemInsideRecipe>> recipesByItem = ArrayListMultimap.create();
@@ -47,6 +50,7 @@ public class ItemInsideRecipeType extends LycheeRecipeType<LycheeContext, ItemIn
 	}
 
 	@Override
+	@MustBeInvokedByOverriders
 	public void refreshCache() {
 		specialRecipes.clear();
 		recipesByItem.clear();
@@ -83,6 +87,17 @@ public class ItemInsideRecipeType extends LycheeRecipeType<LycheeContext, ItemIn
 				return false;
 			});
 		}
+	}
+
+	@Override
+	public Comparator<RecipeHolder<ItemInsideRecipe>> comparator() {
+		return Comparator.comparing(
+				RecipeHolder::value,
+				Comparator.comparingInt((ItemInsideRecipe $) -> $.getIngredients().size())
+						.thenComparingInt($ -> -$.time())
+						.thenComparing($ -> !$.maxRepeats().isAny())
+						.thenComparing(Recipe::isSpecial)
+						.reversed());
 	}
 
 	public void process(final Entity entity, final ItemStack stack, final BlockPos pos, final Vec3 origin) {

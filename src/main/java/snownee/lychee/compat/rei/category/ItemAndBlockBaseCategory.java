@@ -38,14 +38,14 @@ import snownee.lychee.util.recipe.LycheeRecipeType;
 
 public class ItemAndBlockBaseCategory<T extends ILycheeRecipe<LycheeContext>> extends AbstractLycheeCategory<T> {
 
-	private final LycheeRecipeType<LycheeContext, T> recipeType;
+	private final LycheeRecipeType<T> recipeType;
 	public Rect2i inputBlockRect = new Rect2i(30, 35, 20, 20);
 	public Rect2i methodRect = new Rect2i(30, 12, 20, 20);
 
 	public ItemAndBlockBaseCategory(
 			CategoryIdentifier<? extends LycheeDisplay<T>> id,
 			Renderer icon,
-			LycheeRecipeType<LycheeContext, T> recipeType) {
+			LycheeRecipeType<T> recipeType) {
 		super(id, icon);
 		this.recipeType = recipeType;
 		infoRect.setPosition(8, 32);
@@ -152,7 +152,7 @@ public class ItemAndBlockBaseCategory<T extends ILycheeRecipe<LycheeContext>> ex
 	}
 
 	@Override
-	public LycheeRecipeType<?, ? extends T> recipeType() {
+	public LycheeRecipeType<? extends T> recipeType() {
 		return recipeType;
 	}
 }

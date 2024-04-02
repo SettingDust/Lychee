@@ -42,13 +42,6 @@ public class RandomBlockTickingRecipe extends LycheeRecipe<LycheeContext> implem
 	}
 
 	@Override
-	public int compareTo(RandomBlockTickingRecipe that) {
-		int i;
-		i = Integer.compare(isSpecial() ? 1 : 0, that.isSpecial() ? 1 : 0);
-		return i;
-	}
-
-	@Override
 	public void setChance(float chance) {
 		this.chance = chance;
 	}

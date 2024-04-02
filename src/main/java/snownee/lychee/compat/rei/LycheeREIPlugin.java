@@ -60,7 +60,7 @@ public class LycheeREIPlugin implements REIClientPlugin {
 	}
 
 	private static ImmutableMultimap<CategoryIdentifier<? extends LycheeDisplay<?>>, RecipeHolder<? extends ILycheeRecipe<LycheeContext>>> generateCategories(
-			LycheeRecipeType<LycheeContext, ? extends ILycheeRecipe<LycheeContext>> recipeType) {
+			LycheeRecipeType<? extends ILycheeRecipe<LycheeContext>> recipeType) {
 		return recipeType
 				.inViewerRecipes()
 				.stream()

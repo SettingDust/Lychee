@@ -5,9 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -18,6 +19,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -34,7 +36,7 @@ import snownee.lychee.util.context.LycheeContextKey;
 import snownee.lychee.util.input.ItemStackHolderCollection;
 import snownee.lychee.util.predicates.BlockPredicateExtensions;
 
-public class BlockKeyableRecipeType<R extends BlockKeyableRecipe<?>> extends LycheeRecipeType<LycheeContext, R> {
+public class BlockKeyableRecipeType<R extends BlockKeyableRecipe<?>> extends LycheeRecipeType<R> {
 
 	protected final Map<Block, List<RecipeHolder<R>>> recipesByBlock = Maps.newHashMap();
 	protected final List<RecipeHolder<R>> anyBlockRecipes = Lists.newLinkedList();
@@ -45,11 +47,12 @@ public class BlockKeyableRecipeType<R extends BlockKeyableRecipe<?>> extends Lyc
 	}
 
 	@Override
+	@MustBeInvokedByOverriders
 	public void refreshCache() {
 		recipesByBlock.clear();
 		anyBlockRecipes.clear();
 		super.refreshCache();
-		final var multimap = HashMultimap.<Block, RecipeHolder<R>>create();
+		final var multimap = ArrayListMultimap.<Block, RecipeHolder<R>>create();
 		for (final var recipe : recipes) {
 			var iterator = recipe.value().conditions().iterator();
 			if (iterator.hasNext()) {
@@ -68,10 +71,19 @@ public class BlockKeyableRecipeType<R extends BlockKeyableRecipe<?>> extends Lyc
 			}
 		}
 		for (final var e : multimap.asMap().entrySet()) {
-			final var list = Lists.newArrayList(e.getValue());
-			list.sort(Comparator.comparing(it -> (Comparable) it.value()));
-			recipesByBlock.put(e.getKey(), list);
+			recipesByBlock.put(e.getKey(), List.copyOf(e.getValue()));
 		}
+	}
+
+	@Override
+	public Comparator<RecipeHolder<R>> comparator() {
+		return Comparator.comparing(
+				RecipeHolder::value,
+				Comparator.comparing((BlockKeyableRecipe<?> $) -> $.blockPredicate().isPresent())
+						.thenComparingInt($ -> $.getIngredients().size())
+						.thenComparing($ -> !$.maxRepeats().isAny())
+						.thenComparing(Recipe::isSpecial)
+						.reversed());
 	}
 
 	public List<ItemStack> blockKeysToItems() {

@@ -18,19 +18,19 @@ import snownee.lychee.util.recipe.ILycheeRecipe;
 import snownee.lychee.util.recipe.LycheeRecipeType;
 
 public class ItemShapelessRecipeCategory<T extends ILycheeRecipe<LycheeContext>> extends AbstractLycheeCategory<T> {
-	private final LycheeRecipeType<LycheeContext, T> recipeType;
+	private final LycheeRecipeType<T> recipeType;
 
 	public ItemShapelessRecipeCategory(
 			CategoryIdentifier<? extends LycheeDisplay<T>> id,
 			Renderer icon,
-			LycheeRecipeType<LycheeContext, T> recipeType) {
+			LycheeRecipeType<T> recipeType) {
 		super(id, icon);
 		this.recipeType = recipeType;
 		this.infoRect = new Rect2i(3, 25, 8, 8);
 	}
 
 	@Override
-	public LycheeRecipeType<?, ? extends T> recipeType() {
+	public LycheeRecipeType<? extends T> recipeType() {
 		return recipeType;
 	}
 

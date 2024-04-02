@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Sets;
@@ -18,7 +19,7 @@ import snownee.lychee.context.RecipeContext;
 import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.context.LycheeContextKey;
 
-public class ItemShapelessRecipeType<R extends ILycheeRecipe<LycheeContext>> extends LycheeRecipeType<LycheeContext, R> {
+public class ItemShapelessRecipeType<R extends ILycheeRecipe<LycheeContext>> extends LycheeRecipeType<R> {
 	private final ValidItemCache validItems = new ValidItemCache();
 
 	public ItemShapelessRecipeType(
@@ -31,6 +32,7 @@ public class ItemShapelessRecipeType<R extends ILycheeRecipe<LycheeContext>> ext
 	}
 
 	@Override
+	@MustBeInvokedByOverriders
 	public void refreshCache() {
 		super.refreshCache();
 		validItems.refreshCache(recipes);
@@ -50,7 +52,7 @@ public class ItemShapelessRecipeType<R extends ILycheeRecipe<LycheeContext>> ext
 	}
 
 	public static <T extends ILycheeRecipe<LycheeContext>> void process(
-			final LycheeRecipeType<LycheeContext, T> recipeType,
+			final LycheeRecipeType<T> recipeType,
 			final Iterable<RecipeHolder<T>> recipes,
 			final LycheeContext context,
 			final Predicate<RecipeHolder<T>> predicate

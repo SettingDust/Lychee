@@ -1,7 +1,9 @@
 package snownee.lychee.recipes;
 
 import java.util.Collections;
+import java.util.Comparator;
 
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Sets;
@@ -9,6 +11,8 @@ import com.google.common.collect.Sets;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -146,8 +150,20 @@ public class BlockCrushingRecipeType extends BlockKeyableRecipeType<BlockCrushin
 	}
 
 	@Override
+	@MustBeInvokedByOverriders
 	public void refreshCache() {
 		super.refreshCache();
 		validItems.refreshCache(recipes);
+	}
+
+	@Override
+	public Comparator<RecipeHolder<BlockCrushingRecipe>> comparator() {
+		return Comparator.comparing(
+				RecipeHolder::value,
+				Comparator.comparingInt((BlockCrushingRecipe $) -> $.getIngredients().size())
+						.thenComparing($ -> $.landingBlock().isPresent())
+						.thenComparing($ -> !$.maxRepeats().isAny())
+						.thenComparing(Recipe::isSpecial)
+						.reversed());
 	}
 }

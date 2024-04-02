@@ -1,6 +1,7 @@
 package snownee.lychee.recipes;
 
 import org.apache.commons.lang3.stream.Streams;
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -21,6 +22,7 @@ public class RandomBlockTickingRecipeType extends BlockKeyableRecipeType<RandomB
 	}
 
 	@Override
+	@MustBeInvokedByOverriders
 	public void refreshCache() {
 		var prevEmpty = isEmpty();
 		super.refreshCache();

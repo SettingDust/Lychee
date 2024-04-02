@@ -97,12 +97,12 @@ public interface CategoryProviders {
 			(id, icon, recipes) -> new ItemBurningRecipeCategory(id, icon)
 	);
 
-	static <R extends ILycheeRecipe<LycheeContext>> CategoryProvider<R> get(LycheeRecipeType<LycheeContext, R> type) {
+	static <R extends ILycheeRecipe<LycheeContext>> CategoryProvider<R> get(LycheeRecipeType<R> type) {
 		return (CategoryProvider<R>) ALL.get(type.categoryId);
 	}
 
 	static <R extends ILycheeRecipe<LycheeContext>> CategoryProvider<R> register(
-			LycheeRecipeType<LycheeContext, R> type,
+			LycheeRecipeType<R> type,
 			CategoryProvider<R> provider) {
 		ALL.put(type.categoryId, provider);
 		return provider;

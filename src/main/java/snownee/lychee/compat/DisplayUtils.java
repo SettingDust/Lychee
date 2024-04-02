@@ -64,7 +64,7 @@ public final class DisplayUtils {
 				.map(IngredientInfo::new)
 				.collect(Collectors.toCollection(ArrayList::new));
 		recipe.postActions().forEach(action -> PostActionRenderer.of(action).loadCatalystsInfo(action, recipe, ingredients));
-		var type = (LycheeRecipeType<LycheeContext, ?>) recipe.getType();
+		var type = (LycheeRecipeType<?>) recipe.getType();
 		if (!type.compactInputs) {
 			addIngredientTips(recipe, ingredients);
 			return ingredients;

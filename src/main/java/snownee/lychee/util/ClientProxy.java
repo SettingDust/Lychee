@@ -128,7 +128,7 @@ public class ClientProxy implements ClientModInitializer {
 					final ILycheeRecipe<?> recipe,
 					final List<IngredientInfo> ingredients) {
 				if (recipe == null ||
-						!(recipe.getType() instanceof LycheeRecipeType<?, ?> lycheeRecipeType) ||
+						!(recipe.getType() instanceof LycheeRecipeType<?> lycheeRecipeType) ||
 						!lycheeRecipeType.canPreventConsumeInputs) {
 					return;
 				}

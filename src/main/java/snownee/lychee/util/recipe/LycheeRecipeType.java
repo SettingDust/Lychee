@@ -1,15 +1,17 @@
 package snownee.lychee.util.recipe;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Container;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
@@ -19,7 +21,7 @@ import snownee.lychee.Lychee;
 import snownee.lychee.mixin.LootContextParamSetsAccess;
 import snownee.lychee.util.context.LycheeContext;
 
-public class LycheeRecipeType<C extends Container, T extends ILycheeRecipe<C>> implements RecipeType<T> {
+public class LycheeRecipeType<T extends ILycheeRecipe<LycheeContext>> implements RecipeType<T> {
 	public final ResourceLocation id;
 	public ResourceLocation categoryId;
 	public final Class<? extends T> clazz;
@@ -52,13 +54,9 @@ public class LycheeRecipeType<C extends Container, T extends ILycheeRecipe<C>> i
 		return "LycheeRecipeType[" + id + "]";
 	}
 
-	public Optional<RecipeHolder<T>> tryMatch(RecipeHolder<T> recipeHolder, Level level, C container) {
-		if (!(container instanceof LycheeContext context)) {
-			// Always return empty if the container is not a LycheeContext
-			return Optional.empty();
-		}
+	public Optional<RecipeHolder<T>> tryMatch(RecipeHolder<T> recipeHolder, Level level, LycheeContext context) {
 		final var lycheeRecipe = recipeHolder.value();
-		return lycheeRecipe.matches(container, level) &&
+		return lycheeRecipe.matches(context, level) &&
 				lycheeRecipe.test(recipeHolder.value(), context, 1) > 0
 				? Optional.of(recipeHolder)
 				: Optional.empty();
@@ -80,16 +78,17 @@ public class LycheeRecipeType<C extends Container, T extends ILycheeRecipe<C>> i
 		return empty;
 	}
 
+	@MustBeInvokedByOverriders
 	public void refreshCache() {
-		var stream = Util.getRecipes(this).stream().filter(it -> !it.value().ghost());
-		if (clazz.isAssignableFrom(Comparable.class)) {
-			stream = stream.sorted();
-		}
-		recipes = stream.toList();
+		recipes = Util.getRecipes(this).stream().filter(it -> !it.value().ghost()).sorted(comparator()).toList();
 	}
 
-	public Optional<RecipeHolder<T>> findFirst(C container, Level level) {
-		return recipes.stream().flatMap(it -> tryMatch(it, level, container).stream()).findFirst();
+	public Comparator<RecipeHolder<T>> comparator() {
+		return Comparator.comparing(RecipeHolder::value, Comparator.comparing(Recipe::isSpecial));
+	}
+
+	public Optional<RecipeHolder<T>> findFirst(LycheeContext context, Level level) {
+		return recipes.stream().flatMap(it -> tryMatch(it, level, context).stream()).findFirst();
 	}
 
 	public Component getPreventDefaultDescription(T recipe) {

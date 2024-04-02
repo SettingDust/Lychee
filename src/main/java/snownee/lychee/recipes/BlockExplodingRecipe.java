@@ -54,17 +54,6 @@ public class BlockExplodingRecipe extends LycheeRecipe<LycheeContext> implements
 		return RecipeTypes.BLOCK_EXPLODING;
 	}
 
-	@Override
-	public int compareTo(@NotNull final BlockExplodingRecipe that) {
-		int i;
-		i = Integer.compare(isSpecial() ? 1 : 0, that.isSpecial() ? 1 : 0);
-		if (i != 0) {
-			return i;
-		}
-		i = Integer.compare(blockPredicate().isEmpty() ? 1 : 0, that.blockPredicate().isEmpty() ? 1 : 0);
-		return i;
-	}
-
 	public static class Serializer implements LycheeRecipeSerializer<BlockExplodingRecipe> {
 		public static final Codec<BlockExplodingRecipe> CODEC =
 				RecordCodecBuilder.create(instance -> instance.group(

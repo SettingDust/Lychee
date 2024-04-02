@@ -2,6 +2,7 @@ package snownee.lychee.recipes;
 
 import java.util.Set;
 
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Sets;
@@ -20,6 +21,7 @@ public class DripstoneRecipeType extends BlockKeyableRecipeType<DripstoneRecipe>
 	}
 
 	@Override
+	@MustBeInvokedByOverriders
 	public void refreshCache() {
 		super.refreshCache();
 		allSources.clear();

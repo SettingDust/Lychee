@@ -75,7 +75,7 @@ public class ItemBurningRecipe extends LycheeRecipe<LycheeContext> {
 	}
 
 	@Override
-	public @NotNull LycheeRecipeType<LycheeContext, ItemBurningRecipe> getType() {
+	public @NotNull LycheeRecipeType<ItemBurningRecipe> getType() {
 		return RecipeTypes.ITEM_BURNING;
 	}
 

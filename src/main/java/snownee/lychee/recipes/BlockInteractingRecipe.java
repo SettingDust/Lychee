@@ -25,7 +25,6 @@ import snownee.lychee.LycheeLootContextParams;
 import snownee.lychee.RecipeSerializers;
 import snownee.lychee.RecipeTypes;
 import snownee.lychee.util.BoundsExtensions;
-import snownee.lychee.util.CommonProxy;
 import snownee.lychee.util.codec.LycheeCodecs;
 import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.context.LycheeContextKey;
@@ -119,35 +118,6 @@ public class BlockInteractingRecipe extends LycheeRecipe<LycheeContext> implemen
 	@Override
 	public @NotNull BlockKeyableRecipeType<? extends BlockInteractingRecipe> getType() {
 		return RecipeTypes.BLOCK_INTERACTING;
-	}
-
-	@Override
-	public int compareTo(BlockInteractingRecipe that) {
-		int i;
-		i = Integer.compare(maxRepeats().isAny() ? 1 : 0, that.maxRepeats().isAny() ? 1 : 0);
-		if (i != 0) {
-			return i;
-		}
-		i = Integer.compare(isSpecial() ? 1 : 0, that.isSpecial() ? 1 : 0);
-		if (i != 0) {
-			return i;
-		}
-		i = Integer.compare(blockPredicate.isEmpty() ? 1 : 0, that.blockPredicate.isEmpty() ? 1 : 0);
-		if (i != 0) {
-			return i;
-		}
-		i = Integer.compare(
-				CommonProxy.isSimpleIngredient(input.getFirst()) ? 1 : 0,
-				CommonProxy.isSimpleIngredient(that.input.getSecond()) ? 1 : 0
-		);
-		if (i != 0) {
-			return i;
-		}
-		i = Integer.compare(
-				CommonProxy.isSimpleIngredient(input.getSecond()) ? 1 : 0,
-				CommonProxy.isSimpleIngredient(that.input.getSecond()) ? 1 : 0
-		);
-		return i;
 	}
 
 	public static class Serializer implements LycheeRecipeSerializer<BlockInteractingRecipe> {

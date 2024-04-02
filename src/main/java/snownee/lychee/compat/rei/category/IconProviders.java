@@ -53,13 +53,13 @@ public interface IconProviders {
 			Suppliers.memoize(() -> ItemAndBlockBaseCategory.getIconBlock((Collection) recipes)))));
 
 	static <R extends ILycheeRecipe<LycheeContext>> IconProvider register(
-			LycheeRecipeType<LycheeContext, R> recipeType,
+			LycheeRecipeType<R> recipeType,
 			IconProvider renderer) {
 		ALL.put(recipeType.categoryId, renderer);
 		return renderer;
 	}
 
-	static <R extends ILycheeRecipe<LycheeContext>> IconProvider get(LycheeRecipeType<LycheeContext, R> recipeType) {
+	static <R extends ILycheeRecipe<LycheeContext>> IconProvider get(LycheeRecipeType<R> recipeType) {
 		return ALL.get(recipeType.categoryId);
 	}
 

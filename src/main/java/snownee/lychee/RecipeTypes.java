@@ -13,6 +13,7 @@ import snownee.lychee.recipes.BlockCrushingRecipe;
 import snownee.lychee.recipes.BlockCrushingRecipeType;
 import snownee.lychee.recipes.BlockExplodingRecipe;
 import snownee.lychee.recipes.BlockInteractingRecipe;
+import snownee.lychee.recipes.BlockInteractingRecipeType;
 import snownee.lychee.recipes.DripstoneRecipe;
 import snownee.lychee.recipes.DripstoneRecipeType;
 import snownee.lychee.recipes.ItemBurningRecipe;
@@ -51,28 +52,25 @@ public final class RecipeTypes {
 		ANVIL_CRAFTING.hasStandaloneCategory = false;
 	}
 
-	public static final Set<LycheeRecipeType<LycheeContext, ? extends ILycheeRecipe<LycheeContext>>> ALL = Sets.newLinkedHashSet();
-	public static final LycheeRecipeType<LycheeContext, ItemBurningRecipe> ITEM_BURNING =
+	public static final Set<LycheeRecipeType<? extends ILycheeRecipe<LycheeContext>>> ALL = Sets.newLinkedHashSet();
+	public static final LycheeRecipeType<ItemBurningRecipe> ITEM_BURNING =
 			register(new LycheeRecipeType<>("item_burning", ItemBurningRecipe.class, null));
 	public static final ItemInsideRecipeType ITEM_INSIDE = register(new ItemInsideRecipeType(
 			"item_inside",
 			ItemInsideRecipe.class,
 			null
 	));
-	public static final BlockKeyableRecipeType<BlockInteractingRecipe>
-			BLOCK_INTERACTING =
-			register(new BlockKeyableRecipeType<>(
-					"block_interacting",
-					BlockInteractingRecipe.class,
-					LycheeLootContextParamSets.BLOCK_INTERACTION
-			));
-	public static final BlockKeyableRecipeType<BlockClickingRecipe> BLOCK_CLICKING =
-			register(new BlockKeyableRecipeType<>(
-					"block_clicking",
-					BlockClickingRecipe.class,
-					LycheeLootContextParamSets.BLOCK_INTERACTION
-			));
-	public static final LycheeRecipeType<LycheeContext, AnvilCraftingRecipe> ANVIL_CRAFTING =
+	public static final BlockInteractingRecipeType<BlockInteractingRecipe> BLOCK_INTERACTING = register(new BlockInteractingRecipeType<>(
+			"block_interacting",
+			BlockInteractingRecipe.class,
+			LycheeLootContextParamSets.BLOCK_INTERACTION
+	));
+	public static final BlockInteractingRecipeType<BlockClickingRecipe> BLOCK_CLICKING = register(new BlockInteractingRecipeType<>(
+			"block_clicking",
+			BlockClickingRecipe.class,
+			LycheeLootContextParamSets.BLOCK_INTERACTION
+	));
+	public static final LycheeRecipeType<AnvilCraftingRecipe> ANVIL_CRAFTING =
 			register(new LycheeRecipeType<>("anvil_crafting", AnvilCraftingRecipe.class, null));
 	public static final BlockCrushingRecipeType BLOCK_CRUSHING = register(new BlockCrushingRecipeType(
 			"block_crushing",
@@ -100,7 +98,7 @@ public final class RecipeTypes {
 			LycheeLootContextParamSets.BLOCK_ONLY
 	));
 
-	public static <T extends LycheeRecipeType<LycheeContext, ? extends ILycheeRecipe<LycheeContext>>> T register(T recipeType) {
+	public static <T extends LycheeRecipeType<? extends ILycheeRecipe<LycheeContext>>> T register(T recipeType) {
 		ALL.add(recipeType);
 		return Registry.register(BuiltInRegistries.RECIPE_TYPE, recipeType.id, recipeType);
 	}

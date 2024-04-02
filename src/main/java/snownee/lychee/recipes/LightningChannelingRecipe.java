@@ -68,7 +68,7 @@ public class LightningChannelingRecipe extends LycheeRecipe<LycheeContext> {
 	}
 
 	@Override
-	public @NotNull LycheeRecipeType<LycheeContext, LightningChannelingRecipe> getType() {
+	public @NotNull LycheeRecipeType<LightningChannelingRecipe> getType() {
 		return RecipeTypes.LIGHTNING_CHANNELING;
 	}
 

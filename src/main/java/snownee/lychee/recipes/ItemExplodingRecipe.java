@@ -70,7 +70,7 @@ public class ItemExplodingRecipe extends LycheeRecipe<LycheeContext> implements 
 	}
 
 	@Override
-	public @NotNull LycheeRecipeType<LycheeContext, ItemExplodingRecipe> getType() {
+	public @NotNull LycheeRecipeType<ItemExplodingRecipe> getType() {
 		return RecipeTypes.ITEM_EXPLODING;
 	}
 

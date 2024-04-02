@@ -58,7 +58,8 @@ public record IsWeather(String id, Predicate<Level> predicate) implements Contex
 	}
 
 	public static class Type implements ContextualConditionType<IsWeather> {
-		public static final Codec<IsWeather> CODEC = ExtraCodecs.stringResolverCodec(IsWeather::id, IsWeather.REGISTRY::get);
+		public static final Codec<IsWeather> CODEC = ExtraCodecs.stringResolverCodec(IsWeather::id, IsWeather.REGISTRY::get).fieldOf(
+				"weather").codec();
 
 		@Override
 		public @NotNull Codec<IsWeather> codec() {

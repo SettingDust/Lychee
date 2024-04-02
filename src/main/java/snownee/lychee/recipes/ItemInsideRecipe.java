@@ -130,29 +130,6 @@ public class ItemInsideRecipe extends LycheeRecipe<LycheeContext> implements Blo
 		return ingredients;
 	}
 
-	@Override
-	public int compareTo(@NotNull ItemInsideRecipe that) {
-		int i;
-		i = Integer.compare(maxRepeats().isAny() ? 1 : 0, that.maxRepeats().isAny() ? 1 : 0);
-		if (i != 0) {
-			return i;
-		}
-		i = Integer.compare(isSpecial() ? 1 : 0, that.isSpecial() ? 1 : 0);
-		if (i != 0) {
-			return i;
-		}
-		i = -Integer.compare(ingredients.size(), that.ingredients.size());
-		if (i != 0) {
-			return i;
-		}
-		i = -Integer.compare(time(), that.time());
-		if (i != 0) {
-			return i;
-		}
-		i = Boolean.compare(isSpecial(), that.isSpecial());
-		return i;
-	}
-
 	public static class Serializer implements LycheeRecipeSerializer<ItemInsideRecipe> {
 		public static final Codec<ItemInsideRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 				LycheeRecipeCommonProperties.MAP_CODEC.forGetter(LycheeRecipe::commonProperties),

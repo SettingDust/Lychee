@@ -9,8 +9,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
@@ -90,14 +88,9 @@ public class DirectionCheck implements ContextualCondition {
 	}
 
 	public static class Type implements ContextualConditionType<DirectionCheck> {
-		public static final Codec<DirectionCheck> CODEC = RecordCodecBuilder.create(instance -> instance
-				.group(ExtraCodecs.validate(Codec.STRING, s -> {
-					if (!LOOKUPS.containsKey(s)) {
-						return DataResult.error(() -> "Unknown direction: " + s);
-					}
-					return DataResult.success(s);
-				}).fieldOf("direction").forGetter(it -> it.name))
-				.apply(instance, LOOKUPS::get));
+		public static final Codec<DirectionCheck> CODEC = ExtraCodecs.stringResolverCodec($ -> $.name, LOOKUPS::get)
+				.fieldOf("direction")
+				.codec();
 
 		@Override
 		public @NotNull Codec<DirectionCheck> codec() {
