@@ -21,9 +21,11 @@ import snownee.lychee.util.recipe.ILycheeRecipe;
 public interface PostActionRenderer<T extends PostAction> {
 
 	Map<PostActionType<?>, PostActionRenderer<?>> RENDERERS = Maps.newHashMap();
+	PostActionRenderer<PostAction> DEFAULT = new PostActionRenderer<>() {
+	};
 
 	static <T extends PostAction> PostActionRenderer<T> of(PostAction action) {
-		return (PostActionRenderer<T>) Objects.requireNonNull(RENDERERS.get(action.type()));
+		return (PostActionRenderer<T>) Objects.requireNonNull(RENDERERS.getOrDefault(action.type(), DEFAULT));
 	}
 
 	static <T extends PostAction> void register(PostActionType<T> type, PostActionRenderer<T> renderer) {

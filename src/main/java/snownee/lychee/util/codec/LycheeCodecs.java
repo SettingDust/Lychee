@@ -5,7 +5,6 @@ import java.util.Optional;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -17,22 +16,11 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import snownee.lychee.mixin.IngredientAccess;
 
 public final class LycheeCodecs {
 	public static final Codec<Ingredient> OPTIONAL_INGREDIENT_CODEC =
 			ExtraCodecs.optionalEmptyMap(Ingredient.CODEC)
 					.xmap(it -> it.orElse(Ingredient.EMPTY), Optional::of);
-
-	public static final Codec<Ingredient> SINGLE_INGREDIENT_CODEC = Ingredient.Value.CODEC.flatComapMap(
-			IngredientAccess::construct,
-			it -> {
-				if (it.isEmpty()) {
-					return DataResult.error(() -> "No ingredient found");
-				}
-				var values = ((IngredientAccess) (Object) it).getValues();
-				return DataResult.success(values[0]);
-			});
 
 	public static final Codec<Pair<Ingredient, Ingredient>> PAIR_INGREDIENT_CODEC =
 			ExtraCodecs.withAlternative(
