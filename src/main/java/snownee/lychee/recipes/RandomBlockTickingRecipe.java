@@ -50,7 +50,7 @@ public class RandomBlockTickingRecipe extends LycheeRecipe<LycheeContext> implem
 
 	@Override
 	public boolean matches(LycheeContext context, Level level) {
-		return false;
+		return BlockPredicateExtensions.matches(blockPredicate, context);
 	}
 
 	@Override

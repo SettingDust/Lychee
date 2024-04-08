@@ -29,9 +29,17 @@ public class RandomBlockTickingRecipeType extends BlockKeyableRecipeType<RandomB
 		if (prevEmpty && isEmpty()) {
 			return;
 		}
-		for (var block : BuiltInRegistries.BLOCK) {
-			((RandomlyTickable) block).lychee$setTickable(has(block));
+
+		for (var block : recipesByBlock.keySet()) {
+			((RandomlyTickable) block).lychee$setTickable(true);
 		}
+
+		if (!anyBlockRecipes.isEmpty()) {
+			for (var block : BuiltInRegistries.BLOCK) {
+				((RandomlyTickable) block).lychee$setTickable(true);
+			}
+		}
+
 		var server = Platform.getServer();
 		if (server == null) {
 			return;
