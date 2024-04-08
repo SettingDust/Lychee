@@ -1,9 +1,7 @@
 package snownee.lychee.compat.rei.category;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -59,13 +57,13 @@ public class ItemAndBlockBaseCategory<T extends ILycheeRecipe<LycheeContext>> ex
 		return DisplayUtils.getMostUsedBlock(recipes).getFirst();
 	}
 
-	public Optional<BlockPredicate> getInputBlock(T recipe) {
+	public BlockPredicate getInputBlock(T recipe) {
 		return ((BlockKeyableRecipe<?>) recipe).blockPredicate();
 	}
 
 	public BlockState getRenderingBlock(T recipe) {
 		return CommonProxy.getCycledItem(
-				getInputBlock(recipe).map(BlockPredicateExtensions::getShowcaseBlockStates).orElse(Collections.emptyList()),
+				BlockPredicateExtensions.getShowcaseBlockStates(getInputBlock(recipe)),
 				Blocks.AIR.defaultBlockState(),
 				1000);
 	}
@@ -132,8 +130,7 @@ public class ItemAndBlockBaseCategory<T extends ILycheeRecipe<LycheeContext>> ex
 		if (needRenderInputBlock(recipe)) {
 			reactive = new InteractiveWidget(LycheeREIPlugin.offsetRect(startPoint, inputBlockRect));
 			reactive.setTooltipFunction($ -> {
-				var list = getInputBlock(recipe).map(it -> BlockPredicateExtensions.getTooltips(getRenderingBlock(recipe), it))
-						.orElse(Collections.emptyList());
+				var list = BlockPredicateExtensions.getTooltips(getRenderingBlock(recipe), getInputBlock(recipe));
 				return list.toArray(new Component[0]);
 			});
 			reactive.setOnClick(($, button) -> clickBlock(getRenderingBlock(recipe), button));
@@ -144,7 +141,7 @@ public class ItemAndBlockBaseCategory<T extends ILycheeRecipe<LycheeContext>> ex
 	}
 
 	protected boolean needRenderInputBlock(T recipe) {
-		return getInputBlock(recipe).isPresent();
+		return getInputBlock(recipe) != BlockPredicateExtensions.ANY;
 	}
 
 	protected void renderIngredientGroup(List<Widget> widgets, Point startPoint, T recipe, int y) {

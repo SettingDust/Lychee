@@ -150,8 +150,8 @@ public class DripstoneRecipe extends LycheeRecipe<LycheeContext> implements Bloc
 	}
 
 	@Override
-	public Optional<BlockPredicate> blockPredicate() {
-		return Optional.of(targetBlock);
+	public BlockPredicate blockPredicate() {
+		return targetBlock;
 	}
 
 	public BlockPredicate sourceBlock() {

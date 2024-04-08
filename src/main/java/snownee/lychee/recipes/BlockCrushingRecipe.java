@@ -1,7 +1,6 @@
 package snownee.lychee.recipes;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -37,12 +36,11 @@ import snownee.lychee.util.recipe.LycheeRecipe;
 import snownee.lychee.util.recipe.LycheeRecipeCommonProperties;
 import snownee.lychee.util.recipe.LycheeRecipeSerializer;
 
-@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class BlockCrushingRecipe extends LycheeRecipe<LycheeContext> implements BlockKeyableRecipe<BlockCrushingRecipe> {
 	public static final BlockPredicate ANVIL = BlockPredicate.Builder.block().of(BlockTags.ANVIL).build();
 
 	protected @NotNull BlockPredicate fallingBlock = ANVIL;
-	protected Optional<BlockPredicate> landingBlock = Optional.empty();
+	protected BlockPredicate landingBlock = BlockPredicateExtensions.ANY;
 	protected NonNullList<Ingredient> ingredients = NonNullList.create();
 
 	public BlockCrushingRecipe(final LycheeRecipeCommonProperties commonProperties) {
@@ -53,7 +51,7 @@ public class BlockCrushingRecipe extends LycheeRecipe<LycheeContext> implements 
 	public BlockCrushingRecipe(
 			final LycheeRecipeCommonProperties commonProperties,
 			@NotNull BlockPredicate fallingBlock,
-			Optional<BlockPredicate> landingBlock,
+			BlockPredicate landingBlock,
 			final NonNullList<Ingredient> ingredients
 	) {
 		super(commonProperties);
@@ -66,7 +64,7 @@ public class BlockCrushingRecipe extends LycheeRecipe<LycheeContext> implements 
 	public BlockCrushingRecipe(
 			final LycheeRecipeCommonProperties commonProperties,
 			BlockPredicate fallingBlock,
-			Optional<BlockPredicate> landingBlock,
+			BlockPredicate landingBlock,
 			final List<Ingredient> ingredients
 	) {
 		super(commonProperties);
@@ -77,11 +75,11 @@ public class BlockCrushingRecipe extends LycheeRecipe<LycheeContext> implements 
 	}
 
 	@Override
-	public Optional<BlockPredicate> blockPredicate() {
-		return Optional.of(fallingBlock);
+	public BlockPredicate blockPredicate() {
+		return fallingBlock;
 	}
 
-	public Optional<BlockPredicate> landingBlock() {
+	public BlockPredicate landingBlock() {
 		return landingBlock;
 	}
 
@@ -91,7 +89,7 @@ public class BlockCrushingRecipe extends LycheeRecipe<LycheeContext> implements 
 		if (itemShapelessContext.totalItems < ingredients.size()) {
 			return false;
 		}
-		if (landingBlock.isPresent() && !BlockPredicateExtensions.matches(landingBlock.get(), context)) {
+		if (landingBlock != BlockPredicateExtensions.ANY && !BlockPredicateExtensions.matches(landingBlock, context)) {
 			return false;
 		}
 		final var fallingBlockEntityContext = context.get(LycheeContextKey.FALLING_BLOCK_ENTITY);
@@ -117,18 +115,17 @@ public class BlockCrushingRecipe extends LycheeRecipe<LycheeContext> implements 
 	}
 
 	public boolean matchesFallingBlock(BlockState blockstate, CompoundTag nbt) {
-		if (blockPredicate().isEmpty()) {
+		if (blockPredicate() == BlockPredicateExtensions.ANY) {
 			return true;
 		}
-		final var blockPredicate = blockPredicate().get();
-		if (blockPredicate.blocks().isPresent() && !blockstate.is(blockPredicate.blocks().get())) {
+		if (blockPredicate().blocks().isPresent() && !blockstate.is(blockPredicate().blocks().get())) {
 			return false;
-		} else if (blockPredicate.properties().isPresent() && !blockPredicate.properties().get().matches(blockstate)) {
+		} else if (blockPredicate().properties().isPresent() && !blockPredicate().properties().get().matches(blockstate)) {
 			return false;
-		} else if (blockPredicate.nbt().isEmpty()) {
+		} else if (blockPredicate().nbt().isEmpty()) {
 			return true;
 		}
-		return nbt != null && blockPredicate.nbt().get().matches(nbt);
+		return nbt != null && blockPredicate().nbt().get().matches(nbt);
 	}
 
 	@Override
@@ -139,7 +136,9 @@ public class BlockCrushingRecipe extends LycheeRecipe<LycheeContext> implements 
 	@Override
 	public List<BlockPredicate> getBlockInputs() {
 		return Util.make(Lists.newArrayList(fallingBlock), it -> {
-			landingBlock.ifPresent(it::add);
+			if (landingBlock != BlockPredicateExtensions.ANY) {
+				it.add(landingBlock);
+			}
 		});
 	}
 
@@ -159,7 +158,7 @@ public class BlockCrushingRecipe extends LycheeRecipe<LycheeContext> implements 
 						LycheeRecipeCommonProperties.MAP_CODEC.forGetter(BlockCrushingRecipe::commonProperties),
 						ExtraCodecs.strictOptionalField(BlockPredicateExtensions.CODEC, "falling_block", ANVIL)
 								.forGetter(it -> it.fallingBlock),
-						ExtraCodecs.strictOptionalField(BlockPredicateExtensions.CODEC, "landing_block")
+						ExtraCodecs.strictOptionalField(BlockPredicateExtensions.CODEC, "landing_block", BlockPredicateExtensions.ANY)
 								.forGetter(BlockCrushingRecipe::landingBlock),
 						ExtraCodecs.strictOptionalField(new CompactListCodec<>(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC), ITEM_IN, List.of())
 								.forGetter(it -> it.ingredients)

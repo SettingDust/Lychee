@@ -1,7 +1,5 @@
 package snownee.lychee.recipes;
 
-import java.util.Optional;
-
 import org.jetbrains.annotations.NotNull;
 
 import com.mojang.serialization.Codec;
@@ -22,14 +20,13 @@ import snownee.lychee.util.recipe.LycheeRecipe;
 import snownee.lychee.util.recipe.LycheeRecipeCommonProperties;
 import snownee.lychee.util.recipe.LycheeRecipeSerializer;
 
-@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class RandomBlockTickingRecipe extends LycheeRecipe<LycheeContext> implements BlockKeyableRecipe<RandomBlockTickingRecipe>, ChanceRecipe {
 	protected float chance = 1;
-	protected final Optional<BlockPredicate> blockPredicate;
+	protected final BlockPredicate blockPredicate;
 
 	protected RandomBlockTickingRecipe(
 			LycheeRecipeCommonProperties commonProperties,
-			Optional<BlockPredicate> blockPredicate
+			BlockPredicate blockPredicate
 	) {
 		super(commonProperties);
 		this.blockPredicate = blockPredicate;
@@ -37,7 +34,7 @@ public class RandomBlockTickingRecipe extends LycheeRecipe<LycheeContext> implem
 	}
 
 	@Override
-	public Optional<BlockPredicate> blockPredicate() {
+	public BlockPredicate blockPredicate() {
 		return blockPredicate;
 	}
 
@@ -70,7 +67,7 @@ public class RandomBlockTickingRecipe extends LycheeRecipe<LycheeContext> implem
 		public static final Codec<RandomBlockTickingRecipe> CODEC =
 				RecordCodecBuilder.create(instance -> instance.group(
 						LycheeRecipeCommonProperties.MAP_CODEC.forGetter(RandomBlockTickingRecipe::commonProperties),
-						ExtraCodecs.strictOptionalField(BlockPredicateExtensions.CODEC, BLOCK_IN)
+						ExtraCodecs.strictOptionalField(BlockPredicateExtensions.CODEC, BLOCK_IN, BlockPredicateExtensions.ANY)
 								.forGetter(RandomBlockTickingRecipe::blockPredicate)
 				).apply(instance, RandomBlockTickingRecipe::new));
 

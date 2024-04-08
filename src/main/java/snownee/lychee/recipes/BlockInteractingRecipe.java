@@ -1,7 +1,5 @@
 package snownee.lychee.recipes;
 
-import java.util.Optional;
-
 import org.jetbrains.annotations.NotNull;
 
 import com.mojang.datafixers.util.Pair;
@@ -35,7 +33,6 @@ import snownee.lychee.util.recipe.LycheeRecipe;
 import snownee.lychee.util.recipe.LycheeRecipeCommonProperties;
 import snownee.lychee.util.recipe.LycheeRecipeSerializer;
 
-@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class BlockInteractingRecipe extends LycheeRecipe<LycheeContext> implements BlockKeyableRecipe<BlockInteractingRecipe> {
 
 	public static InteractionResult invoke(
@@ -71,12 +68,12 @@ public class BlockInteractingRecipe extends LycheeRecipe<LycheeContext> implemen
 	}
 
 	protected final Pair<Ingredient, Ingredient> input;
-	protected final Optional<BlockPredicate> blockPredicate;
+	protected final BlockPredicate blockPredicate;
 
 	protected BlockInteractingRecipe(
 			LycheeRecipeCommonProperties commonProperties,
 			Pair<Ingredient, Ingredient> input,
-			Optional<BlockPredicate> blockPredicate
+			BlockPredicate blockPredicate
 	) {
 		super(commonProperties);
 		this.input = input;
@@ -89,7 +86,7 @@ public class BlockInteractingRecipe extends LycheeRecipe<LycheeContext> implemen
 	}
 
 	@Override
-	public Optional<BlockPredicate> blockPredicate() {
+	public BlockPredicate blockPredicate() {
 		return blockPredicate;
 	}
 
@@ -98,7 +95,7 @@ public class BlockInteractingRecipe extends LycheeRecipe<LycheeContext> implemen
 		final var thisEntity = context.get(LycheeContextKey.LOOT_PARAMS).get(LootContextParams.THIS_ENTITY);
 		final var stack = thisEntity instanceof ItemEntity itemEntity ? itemEntity.getItem() : context.getItem(0);
 		return input.getFirst().test(stack) &&
-				(blockPredicate.isEmpty() || BlockPredicateExtensions.matches(blockPredicate.get(), context)) &&
+				(blockPredicate == BlockPredicateExtensions.ANY || BlockPredicateExtensions.matches(blockPredicate, context)) &&
 				(input.getSecond().isEmpty() || input.getSecond().test(context.getItem(1)));
 	}
 
@@ -135,7 +132,8 @@ public class BlockInteractingRecipe extends LycheeRecipe<LycheeContext> implemen
 								).apply(commonPropertiesInstance, LycheeRecipeCommonProperties::new))
 						.forGetter(BlockInteractingRecipe::commonProperties),
 				LycheeCodecs.PAIR_INGREDIENT_CODEC.fieldOf(ITEM_IN).forGetter(BlockInteractingRecipe::input),
-				ExtraCodecs.strictOptionalField(BlockPredicateExtensions.CODEC, BLOCK_IN).forGetter(BlockInteractingRecipe::blockPredicate)
+				ExtraCodecs.strictOptionalField(BlockPredicateExtensions.CODEC, BLOCK_IN, BlockPredicateExtensions.ANY)
+						.forGetter(BlockInteractingRecipe::blockPredicate)
 		).apply(instance, BlockInteractingRecipe::new));
 
 		@Override

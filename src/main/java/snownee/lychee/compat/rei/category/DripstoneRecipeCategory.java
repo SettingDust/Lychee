@@ -1,6 +1,5 @@
 package snownee.lychee.compat.rei.category;
 
-import java.util.Collections;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -104,9 +103,7 @@ public class DripstoneRecipeCategory extends AbstractLycheeCategory<DripstoneRec
 
 		reactive = new InteractiveWidget(LycheeREIPlugin.offsetRect(startPoint, targetBlockRect));
 		reactive.setTooltipFunction($ -> {
-			var components = recipe.blockPredicate()
-					.map(it -> BlockPredicateExtensions.getTooltips(getTargetBlock(recipe), it))
-					.orElse(Collections.emptyList());
+			var components = BlockPredicateExtensions.getTooltips(getTargetBlock(recipe), recipe.blockPredicate());
 			return components.toArray(new Component[0]);
 		});
 		reactive.setOnClick(($, button) -> clickBlock(getTargetBlock(recipe), button));
@@ -124,7 +121,7 @@ public class DripstoneRecipeCategory extends AbstractLycheeCategory<DripstoneRec
 
 	private BlockState getTargetBlock(DripstoneRecipe recipe) {
 		return CommonProxy.getCycledItem(
-				recipe.blockPredicate().map(BlockPredicateExtensions::getShowcaseBlockStates).orElse(Collections.emptyList()),
+				BlockPredicateExtensions.getShowcaseBlockStates(recipe.blockPredicate()),
 				Blocks.AIR.defaultBlockState(),
 				2000);
 	}

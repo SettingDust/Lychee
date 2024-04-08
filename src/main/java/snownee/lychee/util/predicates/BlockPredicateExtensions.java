@@ -143,6 +143,9 @@ public class BlockPredicateExtensions {
 	}
 
 	public static List<ItemStack> matchedItemStacks(BlockPredicate predicate) {
+		if (predicate == ANY) {
+			return List.of();
+		}
 		return matchedBlocks(predicate).stream()
 				.map(Block::asItem)
 				.filter(Predicate.not(Items.AIR::equals))
@@ -190,6 +193,9 @@ public class BlockPredicateExtensions {
 	}
 
 	public static List<BlockState> getShowcaseBlockStates(BlockPredicate predicate) {
+		if (predicate == ANY) {
+			return List.of();
+		}
 		try {
 			return CACHE.get(predicate, () -> getShowcaseBlockStates(predicate, ITERABLE_PROPERTIES));
 		} catch (ExecutionException e) {
@@ -243,6 +249,9 @@ public class BlockPredicateExtensions {
 
 	@SuppressWarnings("rawtypes")
 	public static List<Component> getTooltips(BlockState state, BlockPredicate predicate) {
+		if (predicate == ANY) {
+			return List.of();
+		}
 		final var list = Lists.<Component>newArrayList(state.getBlock().getName());
 		final var matchers = predicate.properties().map(StatePropertiesPredicate::properties);
 		if (matchers.isPresent()) {

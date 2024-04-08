@@ -28,6 +28,7 @@ import snownee.lychee.util.LycheeFallingBlockEntity;
 import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.context.LycheeContextKey;
 import snownee.lychee.util.input.ItemStackHolder;
+import snownee.lychee.util.predicates.BlockPredicateExtensions;
 import snownee.lychee.util.recipe.BlockKeyableRecipeType;
 import snownee.lychee.util.recipe.ValidItemCache;
 
@@ -161,7 +162,7 @@ public class BlockCrushingRecipeType extends BlockKeyableRecipeType<BlockCrushin
 		return Comparator.comparing(
 				RecipeHolder::value,
 				Comparator.comparingInt((BlockCrushingRecipe $) -> $.getIngredients().size())
-						.thenComparing($ -> $.landingBlock().isPresent())
+						.thenComparing($ -> $.landingBlock() != BlockPredicateExtensions.ANY)
 						.thenComparing($ -> !$.maxRepeats().isAny())
 						.thenComparing(Recipe::isSpecial)
 						.reversed());

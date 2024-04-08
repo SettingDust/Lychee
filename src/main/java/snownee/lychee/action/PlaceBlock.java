@@ -2,7 +2,6 @@ package snownee.lychee.action;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
@@ -43,7 +42,7 @@ import snownee.lychee.util.recipe.ILycheeRecipe;
 
 public record PlaceBlock(
 		PostActionCommonProperties commonProperties,
-		Optional<BlockPredicate> block,
+		BlockPredicate block,
 		BlockPos offset) implements PostAction {
 	private static boolean destroyBlock(Level level, BlockPos pos, boolean drop) {
 		var blockstate = level.getBlockState(pos);
@@ -93,7 +92,7 @@ public record PlaceBlock(
 		blockPos = blockPos.offset(offset);
 		var level = context.level();
 		var oldState = level.getBlockState(blockPos);
-		var state = block.map(BlockPredicateExtensions::anyBlockState).orElse(Blocks.AIR.defaultBlockState());
+		var state = BlockPredicateExtensions.anyBlockState(block);
 		if (state.isAir()) {
 			destroyBlock(level, blockPos, false);
 			return;
@@ -102,7 +101,7 @@ public record PlaceBlock(
 			level.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, blockPos, Block.getId(oldState));
 		}
 
-		var properties = block.get().properties()
+		var properties = block.properties()
 				.map(StatePropertiesPredicate::properties)
 				.stream()
 				.flatMap(Collection::stream)
@@ -123,7 +122,7 @@ public record PlaceBlock(
 			return;
 		}
 
-		if (block.get().nbt().isPresent()) {
+		if (block.nbt().isPresent()) {
 			var blockEntity = level.getBlockEntity(blockPos);
 			if (blockEntity != null) {
 				if (blockEntity.onlyOpCanSetNbt()) {
@@ -132,7 +131,7 @@ public record PlaceBlock(
 
 				var prevTag = blockEntity.saveWithoutMetadata(level.registryAccess());
 				var originalTag = prevTag.copy();
-				prevTag.merge(block.get().nbt().get().tag());
+				prevTag.merge(block.nbt().get().tag());
 				if (!prevTag.equals(originalTag)) {
 					blockEntity.load(prevTag, level.registryAccess());
 					blockEntity.setChanged();
@@ -144,7 +143,7 @@ public record PlaceBlock(
 
 	@Override
 	public Component getDisplayName() {
-		var state = block.map(BlockPredicateExtensions::anyBlockState).orElse(Blocks.AIR.defaultBlockState());
+		var state = BlockPredicateExtensions.anyBlockState(block);
 		var key = CommonProxy.makeDescriptionId("postAction", LycheeRegistries.POST_ACTION.getKey(PostActionTypes.PLACE));
 		if (state.isAir()) {
 			return Component.translatable(key + ".consume");
@@ -154,12 +153,12 @@ public record PlaceBlock(
 
 	@Override
 	public List<ItemStack> getOutputItems() {
-		return block.map(BlockPredicateExtensions::matchedItemStacks).orElse(List.of());
+		return BlockPredicateExtensions.matchedItemStacks(block);
 	}
 
 	@Override
 	public List<BlockPredicate> getOutputBlocks() {
-		return block.map(List::of).orElse(List.of());
+		return block == null ? List.of() : List.of(block);
 	}
 
 	@Override
@@ -170,7 +169,8 @@ public record PlaceBlock(
 	public static class Type implements PostActionType<PlaceBlock> {
 		public static final Codec<PlaceBlock> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 				PostActionCommonProperties.MAP_CODEC.forGetter(PlaceBlock::commonProperties),
-				ExtraCodecs.strictOptionalField(BlockPredicateExtensions.CODEC, "block").forGetter(it -> it.block),
+				ExtraCodecs.strictOptionalField(BlockPredicateExtensions.CODEC, "block", BlockPredicateExtensions.ANY)
+						.forGetter(it -> it.block),
 				LycheeCodecs.OFFSET_CODEC.forGetter(it -> it.offset)
 		).apply(instance, PlaceBlock::new));
 

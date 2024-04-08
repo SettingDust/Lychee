@@ -2,7 +2,6 @@ package snownee.lychee.compat;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -128,12 +127,12 @@ public final class DisplayUtils {
 		var blockPredicateMap = Maps.<Block, BlockPredicate>newHashMap();
 		for (var object : recipes) {
 			var recipe = object.value();
-			for (Block block : recipe.blockPredicate().map(BlockPredicateExtensions::matchedBlocks).orElse(Collections.emptySet())) {
+			for (var block : BlockPredicateExtensions.matchedBlocks(recipe.blockPredicate())) {
 				if (block.defaultBlockState().isAir()) {
 					continue;
 				}
 				blockStateCount.mergeInt(block, 1, Integer::sum);
-				blockPredicateMap.putIfAbsent(block, recipe.blockPredicate().orElseThrow());
+				blockPredicateMap.putIfAbsent(block, recipe.blockPredicate());
 			}
 		}
 		if (blockStateCount.isEmpty()) {

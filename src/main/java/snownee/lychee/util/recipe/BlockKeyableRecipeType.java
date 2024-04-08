@@ -61,12 +61,12 @@ public class BlockKeyableRecipeType<R extends BlockKeyableRecipe<?>> extends Lyc
 					chanceRecipe.setChance(chance.chance());
 				}
 			}
-			if (recipe.value().blockPredicate().isEmpty()) {
+			if (recipe.value().blockPredicate() == BlockPredicateExtensions.ANY) {
 				anyBlockRecipes.add(recipe);
 				continue;
 			}
 			for (final var block :
-					BlockPredicateExtensions.matchedBlocks(recipe.value().blockPredicate().orElseThrow())) {
+					BlockPredicateExtensions.matchedBlocks(recipe.value().blockPredicate())) {
 				multimap.put(block, recipe);
 			}
 		}
@@ -79,7 +79,7 @@ public class BlockKeyableRecipeType<R extends BlockKeyableRecipe<?>> extends Lyc
 	public Comparator<RecipeHolder<R>> comparator() {
 		return Comparator.comparing(
 				RecipeHolder::value,
-				Comparator.comparing((BlockKeyableRecipe<?> $) -> $.blockPredicate().isPresent())
+				Comparator.comparing((BlockKeyableRecipe<?> $) -> $.blockPredicate() != BlockPredicateExtensions.ANY)
 						.thenComparingInt($ -> $.getIngredients().size())
 						.thenComparing($ -> !$.maxRepeats().isAny())
 						.thenComparing(Recipe::isSpecial)

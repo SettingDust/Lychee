@@ -1,7 +1,5 @@
 package snownee.lychee.compat.rei.category;
 
-import java.util.Optional;
-
 import me.shedaniel.rei.api.client.gui.Renderer;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import net.minecraft.advancements.critereon.BlockPredicate;
@@ -10,6 +8,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import snownee.lychee.RecipeTypes;
 import snownee.lychee.compat.rei.display.LycheeDisplay;
 import snownee.lychee.recipes.ItemBurningRecipe;
+import snownee.lychee.util.predicates.BlockPredicateExtensions;
 
 public class ItemBurningRecipeCategory extends ItemAndBlockBaseCategory<ItemBurningRecipe> {
 
@@ -23,8 +22,8 @@ public class ItemBurningRecipeCategory extends ItemAndBlockBaseCategory<ItemBurn
 	}
 
 	@Override
-	public Optional<BlockPredicate> getInputBlock(ItemBurningRecipe recipe) {
-		return Optional.empty();
+	public BlockPredicate getInputBlock(ItemBurningRecipe recipe) {
+		return BlockPredicateExtensions.ANY;
 	}
 
 	@Override

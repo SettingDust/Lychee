@@ -1,6 +1,5 @@
 package snownee.lychee.compat.rei.category;
 
-import java.util.Collections;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -71,7 +70,7 @@ public final class BlockCrushingRecipeCategory extends AbstractLycheeCategory<Bl
 		drawInfoBadgeIfNeeded(widgets, display, startPoint);
 		widgets.add(Widgets.createDrawableWidget((GuiGraphics graphics, int mouseX, int mouseY, float delta) -> {
 			var x = recipe.getIngredients().isEmpty() ? 41 : 77;
-			var anyLandingBlock = recipe.landingBlock().isEmpty();
+			var anyLandingBlock = recipe.landingBlock() == BlockPredicateExtensions.ANY;
 			var y = anyLandingBlock ? 45 : 33;
 
 			var ticks = (System.currentTimeMillis() % 2000) / 1000F;
@@ -123,23 +122,22 @@ public final class BlockCrushingRecipeCategory extends AbstractLycheeCategory<Bl
 		actionGroup(widgets, startPoint, recipe, xCenter + 50 - startPoint.x, y);
 
 		var x = recipe.getIngredients().isEmpty() ? 41 : 77;
-		y = recipe.landingBlock().isEmpty() ? 45 : 33;
+		y = recipe.landingBlock() == BlockPredicateExtensions.ANY ? 45 : 33;
 		fallingBlockRect.setPosition(x, y - 35);
 		landingBlockRect.setPosition(x, y);
 
 		var reactive = new InteractiveWidget(LycheeREIPlugin.offsetRect(startPoint, fallingBlockRect));
 		reactive.setTooltipFunction($ -> {
-			var components = recipe.blockPredicate().map(it -> BlockPredicateExtensions.getTooltips(getFallingBlock(recipe), it)).orElse(
-					Collections.emptyList());
+			var components = BlockPredicateExtensions.getTooltips(getFallingBlock(recipe), recipe.blockPredicate());
 			return components.toArray(new Component[0]);
 		});
 		reactive.setOnClick(($, button) -> clickBlock(getFallingBlock(recipe), button));
 		widgets.add(reactive);
 
-		if (recipe.landingBlock().isPresent()) {
+		if (recipe.landingBlock() != BlockPredicateExtensions.ANY) {
 			reactive = new InteractiveWidget(LycheeREIPlugin.offsetRect(startPoint, landingBlockRect));
 			reactive.setTooltipFunction($ -> {
-				List<Component> list = BlockPredicateExtensions.getTooltips(getLandingBlock(recipe), recipe.landingBlock().orElseThrow());
+				List<Component> list = BlockPredicateExtensions.getTooltips(getLandingBlock(recipe), recipe.landingBlock());
 				return list.toArray(new Component[0]);
 			});
 			reactive.setOnClick(($, button) -> clickBlock(getLandingBlock(recipe), button));
@@ -150,21 +148,17 @@ public final class BlockCrushingRecipeCategory extends AbstractLycheeCategory<Bl
 	}
 
 	private BlockState getFallingBlock(BlockCrushingRecipe recipe) {
-		return recipe.blockPredicate()
-				.map(it -> CommonProxy.getCycledItem(
-						BlockPredicateExtensions.getShowcaseBlockStates(it),
-						Blocks.AIR.defaultBlockState(),
-						2000))
-				.orElse(Blocks.AIR.defaultBlockState());
+		return CommonProxy.getCycledItem(
+				BlockPredicateExtensions.getShowcaseBlockStates(recipe.blockPredicate()),
+				Blocks.AIR.defaultBlockState(),
+				2000);
 	}
 
 	private BlockState getLandingBlock(BlockCrushingRecipe recipe) {
-		return recipe.landingBlock()
-				.map(it -> CommonProxy.getCycledItem(
-						BlockPredicateExtensions.getShowcaseBlockStates(it),
-						Blocks.AIR.defaultBlockState(),
-						2000))
-				.orElse(Blocks.AIR.defaultBlockState());
+		return CommonProxy.getCycledItem(
+				BlockPredicateExtensions.getShowcaseBlockStates(recipe.landingBlock()),
+				Blocks.AIR.defaultBlockState(),
+				2000);
 	}
 
 	@Override

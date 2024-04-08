@@ -1,7 +1,5 @@
 package snownee.lychee.recipes;
 
-import java.util.Optional;
-
 import org.jetbrains.annotations.NotNull;
 
 import com.mojang.serialization.Codec;
@@ -23,11 +21,11 @@ import snownee.lychee.util.recipe.LycheeRecipeSerializer;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class BlockExplodingRecipe extends LycheeRecipe<LycheeContext> implements BlockKeyableRecipe<BlockExplodingRecipe> {
-	protected final Optional<BlockPredicate> blockPredicate;
+	protected final BlockPredicate blockPredicate;
 
 	public BlockExplodingRecipe(
 			LycheeRecipeCommonProperties commonProperties,
-			Optional<BlockPredicate> blockPredicate
+			BlockPredicate blockPredicate
 	) {
 		super(commonProperties);
 		this.blockPredicate = blockPredicate;
@@ -36,11 +34,11 @@ public class BlockExplodingRecipe extends LycheeRecipe<LycheeContext> implements
 
 	@Override
 	public boolean matches(final LycheeContext context, final Level level) {
-		return blockPredicate().isEmpty() || BlockPredicateExtensions.matches(blockPredicate().get(), context);
+		return blockPredicate() == BlockPredicateExtensions.ANY || BlockPredicateExtensions.matches(blockPredicate(), context);
 	}
 
 	@Override
-	public Optional<BlockPredicate> blockPredicate() {
+	public BlockPredicate blockPredicate() {
 		return blockPredicate;
 	}
 
@@ -58,7 +56,7 @@ public class BlockExplodingRecipe extends LycheeRecipe<LycheeContext> implements
 		public static final Codec<BlockExplodingRecipe> CODEC =
 				RecordCodecBuilder.create(instance -> instance.group(
 						LycheeRecipeCommonProperties.MAP_CODEC.forGetter(BlockExplodingRecipe::commonProperties),
-						ExtraCodecs.strictOptionalField(BlockPredicateExtensions.CODEC, BLOCK_IN)
+						ExtraCodecs.strictOptionalField(BlockPredicateExtensions.CODEC, BLOCK_IN, BlockPredicateExtensions.ANY)
 								.forGetter(BlockExplodingRecipe::blockPredicate)
 				).apply(instance, BlockExplodingRecipe::new));
 
