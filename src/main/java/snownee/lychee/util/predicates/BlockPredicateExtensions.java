@@ -143,7 +143,7 @@ public class BlockPredicateExtensions {
 	}
 
 	public static List<ItemStack> matchedItemStacks(BlockPredicate predicate) {
-		if (predicate == ANY) {
+		if (isAny(predicate)) {
 			return List.of();
 		}
 		return matchedBlocks(predicate).stream()
@@ -193,7 +193,7 @@ public class BlockPredicateExtensions {
 	}
 
 	public static List<BlockState> getShowcaseBlockStates(BlockPredicate predicate) {
-		if (predicate == ANY) {
+		if (isAny(predicate)) {
 			return List.of();
 		}
 		try {
@@ -249,7 +249,7 @@ public class BlockPredicateExtensions {
 
 	@SuppressWarnings("rawtypes")
 	public static List<Component> getTooltips(BlockState state, BlockPredicate predicate) {
-		if (predicate == ANY) {
+		if (isAny(predicate)) {
 			return List.of();
 		}
 		final var list = Lists.<Component>newArrayList(state.getBlock().getName());

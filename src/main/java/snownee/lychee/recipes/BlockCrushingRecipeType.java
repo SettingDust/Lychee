@@ -162,7 +162,7 @@ public class BlockCrushingRecipeType extends BlockKeyableRecipeType<BlockCrushin
 		return Comparator.comparing(
 				RecipeHolder::value,
 				Comparator.comparingInt((BlockCrushingRecipe $) -> $.getIngredients().size())
-						.thenComparing($ -> $.landingBlock() != BlockPredicateExtensions.ANY)
+						.thenComparing($ -> !BlockPredicateExtensions.isAny($.landingBlock()))
 						.thenComparing($ -> !$.maxRepeats().isAny())
 						.thenComparing(Recipe::isSpecial)
 						.reversed());

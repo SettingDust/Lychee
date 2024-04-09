@@ -70,7 +70,7 @@ public final class BlockCrushingRecipeCategory extends AbstractLycheeCategory<Bl
 		drawInfoBadgeIfNeeded(widgets, display, startPoint);
 		widgets.add(Widgets.createDrawableWidget((GuiGraphics graphics, int mouseX, int mouseY, float delta) -> {
 			var x = recipe.getIngredients().isEmpty() ? 41 : 77;
-			var anyLandingBlock = recipe.landingBlock() == BlockPredicateExtensions.ANY;
+			var anyLandingBlock = BlockPredicateExtensions.isAny(recipe.landingBlock());
 			var y = anyLandingBlock ? 45 : 33;
 
 			var ticks = (System.currentTimeMillis() % 2000) / 1000F;
@@ -122,7 +122,7 @@ public final class BlockCrushingRecipeCategory extends AbstractLycheeCategory<Bl
 		actionGroup(widgets, startPoint, recipe, xCenter + 50 - startPoint.x, y);
 
 		var x = recipe.getIngredients().isEmpty() ? 41 : 77;
-		y = recipe.landingBlock() == BlockPredicateExtensions.ANY ? 45 : 33;
+		y = BlockPredicateExtensions.isAny(recipe.landingBlock()) ? 45 : 33;
 		fallingBlockRect.setPosition(x, y - 35);
 		landingBlockRect.setPosition(x, y);
 
@@ -134,7 +134,7 @@ public final class BlockCrushingRecipeCategory extends AbstractLycheeCategory<Bl
 		reactive.setOnClick(($, button) -> clickBlock(getFallingBlock(recipe), button));
 		widgets.add(reactive);
 
-		if (recipe.landingBlock() != BlockPredicateExtensions.ANY) {
+		if (!BlockPredicateExtensions.isAny(recipe.landingBlock())) {
 			reactive = new InteractiveWidget(LycheeREIPlugin.offsetRect(startPoint, landingBlockRect));
 			reactive.setTooltipFunction($ -> {
 				List<Component> list = BlockPredicateExtensions.getTooltips(getLandingBlock(recipe), recipe.landingBlock());

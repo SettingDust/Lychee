@@ -23,7 +23,7 @@ public class BlockInteractingRecipeType<T extends BlockInteractingRecipe> extend
 	public Comparator<RecipeHolder<T>> comparator() {
 		return Comparator.comparing(
 				RecipeHolder::value,
-				Comparator.comparing((BlockInteractingRecipe $) -> $.blockPredicate() != BlockPredicateExtensions.ANY)
+				Comparator.comparing((BlockInteractingRecipe $) -> !BlockPredicateExtensions.isAny($.blockPredicate()))
 						.thenComparingInt($ -> $.getIngredients().size())
 						.thenComparing($ -> !$.maxRepeats().isAny())
 						.thenComparing(Recipe::isSpecial)

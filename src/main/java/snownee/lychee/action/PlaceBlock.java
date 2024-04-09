@@ -158,7 +158,7 @@ public record PlaceBlock(
 
 	@Override
 	public List<BlockPredicate> getOutputBlocks() {
-		return block == null ? List.of() : List.of(block);
+		return BlockPredicateExtensions.isAny(block) ? List.of() : List.of(block);
 	}
 
 	@Override

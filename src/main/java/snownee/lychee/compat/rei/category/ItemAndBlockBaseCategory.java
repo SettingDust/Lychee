@@ -141,7 +141,7 @@ public class ItemAndBlockBaseCategory<T extends ILycheeRecipe<LycheeContext>> ex
 	}
 
 	protected boolean needRenderInputBlock(T recipe) {
-		return getInputBlock(recipe) != BlockPredicateExtensions.ANY;
+		return !BlockPredicateExtensions.isAny(getInputBlock(recipe));
 	}
 
 	protected void renderIngredientGroup(List<Widget> widgets, Point startPoint, T recipe, int y) {

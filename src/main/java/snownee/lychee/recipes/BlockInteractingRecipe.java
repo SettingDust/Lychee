@@ -95,7 +95,7 @@ public class BlockInteractingRecipe extends LycheeRecipe<LycheeContext> implemen
 		final var thisEntity = context.get(LycheeContextKey.LOOT_PARAMS).get(LootContextParams.THIS_ENTITY);
 		final var stack = thisEntity instanceof ItemEntity itemEntity ? itemEntity.getItem() : context.getItem(0);
 		return input.getFirst().test(stack) &&
-				(blockPredicate == BlockPredicateExtensions.ANY || BlockPredicateExtensions.matches(blockPredicate, context)) &&
+				(BlockPredicateExtensions.isAny(blockPredicate) || BlockPredicateExtensions.matches(blockPredicate, context)) &&
 				(input.getSecond().isEmpty() || input.getSecond().test(context.getItem(1)));
 	}
 

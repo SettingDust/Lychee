@@ -36,7 +36,7 @@ public interface WorkstationRegisters {
 				recipes.stream()
 						.<BlockPredicate>mapMulti((recipe, consumer) -> {
 							var blockPredicate = recipe.value().blockPredicate();
-							if (blockPredicate != BlockPredicateExtensions.ANY) {
+							if (!BlockPredicateExtensions.isAny(blockPredicate)) {
 								consumer.accept(blockPredicate);
 							}
 						}).distinct()

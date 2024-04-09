@@ -89,7 +89,7 @@ public class BlockCrushingRecipe extends LycheeRecipe<LycheeContext> implements 
 		if (itemShapelessContext.totalItems < ingredients.size()) {
 			return false;
 		}
-		if (landingBlock != BlockPredicateExtensions.ANY && !BlockPredicateExtensions.matches(landingBlock, context)) {
+		if (!BlockPredicateExtensions.isAny(landingBlock) && !BlockPredicateExtensions.matches(landingBlock, context)) {
 			return false;
 		}
 		final var fallingBlockEntityContext = context.get(LycheeContextKey.FALLING_BLOCK_ENTITY);
@@ -115,7 +115,7 @@ public class BlockCrushingRecipe extends LycheeRecipe<LycheeContext> implements 
 	}
 
 	public boolean matchesFallingBlock(BlockState blockstate, CompoundTag nbt) {
-		if (blockPredicate() == BlockPredicateExtensions.ANY) {
+		if (BlockPredicateExtensions.isAny(blockPredicate())) {
 			return true;
 		}
 		if (blockPredicate().blocks().isPresent() && !blockstate.is(blockPredicate().blocks().get())) {
@@ -136,7 +136,7 @@ public class BlockCrushingRecipe extends LycheeRecipe<LycheeContext> implements 
 	@Override
 	public List<BlockPredicate> getBlockInputs() {
 		return Util.make(Lists.newArrayList(fallingBlock), it -> {
-			if (landingBlock != BlockPredicateExtensions.ANY) {
+			if (!BlockPredicateExtensions.isAny(landingBlock)) {
 				it.add(landingBlock);
 			}
 		});
