@@ -19,8 +19,6 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
 
-import snownee.lychee.Lychee;
-
 public final class KeyDispatchedMapCodec<K, V> extends MapCodec<Map<K, V>> {
 	private final Codec<K> keyCodec;
 	private final Function<? super V, ? extends DataResult<? extends K>> type;
@@ -70,11 +68,9 @@ public final class KeyDispatchedMapCodec<K, V> extends MapCodec<Map<K, V>> {
 					final var k = keyCodec.parse(ops, pair.getFirst());
 					final var v =
 							decoder.apply(k.getOrThrow(
-									false,
-									(err) -> Lychee.LOGGER.error("Failed get key from {}", pair.getFirst())
+									(err) -> new IllegalStateException(String.format("Failed get key from %s", pair.getFirst()))
 							)).getOrThrow(
-									false,
-									(err) -> Lychee.LOGGER.error("Failed get codec for {}", k.result().orElseThrow())
+									(err) -> new IllegalStateException(String.format("Failed get codec for %s", pair.getFirst()))
 							).parse(ops, pair.getSecond());
 
 					final DataResult<Pair<K, V>> entry = k.apply2stable(Pair::of, v);
@@ -100,7 +96,7 @@ public final class KeyDispatchedMapCodec<K, V> extends MapCodec<Map<K, V>> {
 			prefix.add(
 					keyCodec.encodeStart(ops, entry.getKey()),
 					encoder.apply(entry.getValue())
-							.getOrThrow(false, (err) -> Lychee.LOGGER.error("Failed get codec for {}", entry.getKey()))
+							.getOrThrow((err) -> new IllegalStateException(String.format("Failed get codec for %s", entry.getKey())))
 							.encodeStart(ops, entry.getValue())
 			);
 		}

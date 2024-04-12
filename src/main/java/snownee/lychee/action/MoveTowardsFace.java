@@ -4,12 +4,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import snownee.lychee.LycheeLootContextParams;
@@ -46,9 +46,9 @@ public record MoveTowardsFace(PostActionCommonProperties commonProperties, float
 	}
 
 	public static class Type implements PostActionType<MoveTowardsFace> {
-		public static final Codec<MoveTowardsFace> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+		public static final MapCodec<MoveTowardsFace> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
 				PostActionCommonProperties.MAP_CODEC.forGetter(MoveTowardsFace::commonProperties),
-				ExtraCodecs.strictOptionalField(Codec.FLOAT, "factor", 1F).forGetter(MoveTowardsFace::factor)
+				Codec.FLOAT.optionalFieldOf("factor", 1F).forGetter(MoveTowardsFace::factor)
 		).apply(inst, MoveTowardsFace::new));
 
 		@Override
@@ -57,7 +57,7 @@ public record MoveTowardsFace(PostActionCommonProperties commonProperties, float
 		}
 
 		@Override
-		public @NotNull Codec<MoveTowardsFace> codec() {
+		public @NotNull MapCodec<MoveTowardsFace> codec() {
 			return CODEC;
 		}
 	}

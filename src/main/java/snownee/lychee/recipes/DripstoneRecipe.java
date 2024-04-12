@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.advancements.critereon.BlockPredicate;
@@ -195,15 +195,15 @@ public class DripstoneRecipe extends LycheeRecipe<LycheeContext> implements Bloc
 	}
 
 	public static class Serializer implements LycheeRecipeSerializer<DripstoneRecipe> {
-		public static final Codec<DripstoneRecipe> CODEC =
-				RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<DripstoneRecipe> CODEC =
+				RecordCodecBuilder.mapCodec(instance -> instance.group(
 						LycheeRecipeCommonProperties.MAP_CODEC.forGetter(DripstoneRecipe::commonProperties),
 						BlockPredicateExtensions.CODEC.fieldOf("source_block").forGetter(DripstoneRecipe::sourceBlock),
 						BlockPredicateExtensions.CODEC.fieldOf("target_block").forGetter(it -> it.targetBlock)
 				).apply(instance, DripstoneRecipe::new));
 
 		@Override
-		public @NotNull Codec<DripstoneRecipe> codec() {
+		public @NotNull MapCodec<DripstoneRecipe> codec() {
 			return CODEC;
 		}
 	}

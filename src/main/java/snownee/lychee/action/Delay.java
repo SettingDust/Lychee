@@ -3,7 +3,7 @@ package snownee.lychee.action;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import io.netty.buffer.ByteBuf;
@@ -45,13 +45,13 @@ public record Delay(PostActionCommonProperties commonProperties, float seconds) 
 	}
 
 	public static class Type implements PostActionType<Delay> {
-		public static final Codec<Delay> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<Delay> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				PostActionCommonProperties.MAP_CODEC.forGetter(Delay::commonProperties),
 				ExtraCodecs.POSITIVE_FLOAT.fieldOf("s").forGetter(Delay::seconds)
 		).apply(instance, Delay::new));
 
 		@Override
-		public @NotNull Codec<Delay> codec() {
+		public @NotNull MapCodec<Delay> codec() {
 			return CODEC;
 		}
 

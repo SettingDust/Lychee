@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -23,7 +22,6 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -345,16 +343,16 @@ public record Location(LocationCheck check) implements ContextualCondition {
 
 	public static class Type implements ContextualConditionType<Location> {
 		private static final MapCodec<LocationCheck> LOCATION_CHECK_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-				ExtraCodecs.strictOptionalField(LocationPredicate.CODEC, "predicate").forGetter(LocationCheck::predicate),
+				LocationPredicate.CODEC.optionalFieldOf("predicate").forGetter(LocationCheck::predicate),
 				LocationCheckAccess.getOffsetCodec().forGetter(LocationCheck::offset)
 		).apply(instance, LocationCheck::new));
 
-		public static final Codec<Location> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<Location> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				LOCATION_CHECK_CODEC.forGetter(Location::check)
 		).apply(instance, Location::new));
 
 		@Override
-		public @NotNull Codec<Location> codec() {
+		public @NotNull MapCodec<Location> codec() {
 			return CODEC;
 		}
 	}

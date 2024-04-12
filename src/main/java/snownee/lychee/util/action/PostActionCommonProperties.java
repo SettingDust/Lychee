@@ -10,14 +10,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.util.ExtraCodecs;
 import snownee.lychee.util.contextual.ContextualHolder;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class PostActionCommonProperties {
 	public static final MapCodec<PostActionCommonProperties> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-			ExtraCodecs.strictOptionalField(Codec.STRING, "@path").forGetter(PostActionCommonProperties::getPath),
-			ExtraCodecs.strictOptionalField(ContextualHolder.CODEC, "contextual", ContextualHolder.EMPTY)
+			Codec.STRING.optionalFieldOf("@path").forGetter(PostActionCommonProperties::getPath),
+			ContextualHolder.CODEC.optionalFieldOf("contextual", ContextualHolder.EMPTY)
 					.forGetter(PostActionCommonProperties::conditions),
 			Codec.BOOL.optionalFieldOf("hide", false).forGetter(PostActionCommonProperties::hidden)
 	).apply(instance, PostActionCommonProperties::new));

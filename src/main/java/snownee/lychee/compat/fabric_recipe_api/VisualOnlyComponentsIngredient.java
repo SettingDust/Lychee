@@ -6,6 +6,7 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
@@ -73,16 +74,16 @@ public class VisualOnlyComponentsIngredient implements CustomIngredient {
 	}
 
 	private static class Serializer implements CustomIngredientSerializer<VisualOnlyComponentsIngredient> {
-		private static final Codec<VisualOnlyComponentsIngredient> ALLOW_EMPTY_CODEC = createCodec(Ingredient.CODEC);
-		private static final Codec<VisualOnlyComponentsIngredient> DISALLOW_EMPTY_CODEC = createCodec(Ingredient.CODEC_NONEMPTY);
+		private static final MapCodec<VisualOnlyComponentsIngredient> ALLOW_EMPTY_CODEC = createCodec(Ingredient.CODEC);
+		private static final MapCodec<VisualOnlyComponentsIngredient> DISALLOW_EMPTY_CODEC = createCodec(Ingredient.CODEC_NONEMPTY);
 		private static final StreamCodec<RegistryFriendlyByteBuf, VisualOnlyComponentsIngredient> PACKET_CODEC = StreamCodec.composite(
 				Ingredient.CONTENTS_STREAM_CODEC, VisualOnlyComponentsIngredient::getBase,
 				DataComponentPatch.STREAM_CODEC, VisualOnlyComponentsIngredient::getComponents,
 				VisualOnlyComponentsIngredient::new
 		);
 
-		private static Codec<VisualOnlyComponentsIngredient> createCodec(Codec<Ingredient> ingredientCodec) {
-			return RecordCodecBuilder.create(instance ->
+		private static MapCodec<VisualOnlyComponentsIngredient> createCodec(Codec<Ingredient> ingredientCodec) {
+			return RecordCodecBuilder.mapCodec(instance ->
 					instance.group(
 							ingredientCodec.fieldOf("base").forGetter(VisualOnlyComponentsIngredient::getBase),
 							DataComponentPatch.CODEC.fieldOf("components").forGetter(VisualOnlyComponentsIngredient::getComponents)
@@ -96,7 +97,7 @@ public class VisualOnlyComponentsIngredient implements CustomIngredient {
 		}
 
 		@Override
-		public Codec<VisualOnlyComponentsIngredient> getCodec(boolean allowEmpty) {
+		public MapCodec<VisualOnlyComponentsIngredient> getCodec(boolean allowEmpty) {
 			return allowEmpty ? ALLOW_EMPTY_CODEC : DISALLOW_EMPTY_CODEC;
 		}
 

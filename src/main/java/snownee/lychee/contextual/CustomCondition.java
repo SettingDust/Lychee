@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.network.chat.Component;
@@ -58,7 +59,7 @@ public class CustomCondition implements ContextualCondition {
 	@Override
 	public TriState testForTooltips(Level level, @Nullable Player player) {
 		return switch (testInTooltipsFunc.apply(level, player)) {
-			case SUCCESS -> TriState.TRUE;
+			case SUCCESS, SUCCESS_NO_ITEM_USED -> TriState.TRUE;
 			case FAIL -> TriState.FALSE;
 			case PASS, CONSUME_PARTIAL, CONSUME -> TriState.DEFAULT;
 		};
@@ -79,19 +80,19 @@ public class CustomCondition implements ContextualCondition {
 
 	public static class Type implements ContextualConditionType<CustomCondition> {
 		// TODO 需要测试能不能用
-		public static final Codec<CustomCondition> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<CustomCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				Codec.STRING.fieldOf("id").forGetter(CustomCondition::id),
-				ExtraCodecs.strictOptionalField(ExtraCodecs.JSON.comapFlatMap(it -> {
+				ExtraCodecs.JSON.comapFlatMap(it -> {
 					try {
 						return DataResult.success(it.getAsJsonObject());
 					} catch (Exception e) {
 						return DataResult.error(e::getMessage);
 					}
-				}, Function.identity()), "data", new JsonObject()).forGetter(CustomCondition::data)
+				}, Function.identity()).optionalFieldOf("data", new JsonObject()).forGetter(CustomCondition::data)
 		).apply(instance, CustomCondition::new));
 
 		@Override
-		public @NotNull Codec<CustomCondition> codec() {
+		public @NotNull MapCodec<CustomCondition> codec() {
 			return CODEC;
 		}
 	}

@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -42,7 +42,7 @@ public record AddItemCooldown(PostActionCommonProperties commonProperties, float
 	}
 
 	public static class Type implements PostActionType<AddItemCooldown> {
-		public static final Codec<AddItemCooldown> CODEC = RecordCodecBuilder.create(instance ->
+		public static final MapCodec<AddItemCooldown> CODEC = RecordCodecBuilder.mapCodec(instance ->
 				instance.group(
 						PostActionCommonProperties.MAP_CODEC.forGetter(AddItemCooldown::commonProperties),
 						ExtraCodecs.POSITIVE_FLOAT.fieldOf("s").forGetter(AddItemCooldown::seconds),
@@ -50,7 +50,7 @@ public record AddItemCooldown(PostActionCommonProperties commonProperties, float
 				).apply(instance, AddItemCooldown::new));
 
 		@Override
-		public @NotNull Codec<AddItemCooldown> codec() {
+		public @NotNull MapCodec<AddItemCooldown> codec() {
 			return CODEC;
 		}
 	}

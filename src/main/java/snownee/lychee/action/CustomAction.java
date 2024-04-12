@@ -135,21 +135,21 @@ public record CustomAction(
 	}
 
 	public static class Type implements PostActionType<CustomAction> {
-		public static final Codec<CustomAction> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<CustomAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				PostActionCommonProperties.MAP_CODEC.forGetter(CustomAction::commonProperties),
 				Codec.STRING.fieldOf("id").forGetter(CustomAction::id),
-				ExtraCodecs.strictOptionalField(ExtraCodecs.JSON.comapFlatMap(it -> {
+				ExtraCodecs.JSON.comapFlatMap(it -> {
 					try {
 						return DataResult.success(it.getAsJsonObject());
 					} catch (Exception e) {
 						return DataResult.error(e::getMessage);
 					}
-				}, Function.identity()), "data", new JsonObject()).forGetter(CustomAction::data),
-				ExtraCodecs.strictOptionalField(Codec.BOOL, "repeatable", true).forGetter(CustomAction::repeatable)
+				}, Function.identity()).optionalFieldOf("data", new JsonObject()).forGetter(CustomAction::data),
+				Codec.BOOL.optionalFieldOf("repeatable", true).forGetter(CustomAction::repeatable)
 		).apply(instance, CustomAction::new));
 
 		@Override
-		public @NotNull Codec<CustomAction> codec() {
+		public @NotNull MapCodec<CustomAction> codec() {
 			return CODEC;
 		}
 

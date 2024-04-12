@@ -2,7 +2,7 @@ package snownee.lychee.context;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.resources.ResourceLocation;
 import snownee.lychee.util.SerializableType;
@@ -18,10 +18,11 @@ public record RecipeContext(ResourceLocation id) implements KeyedContextValue<Re
 	}
 
 	public static final class Serializer implements LycheeContextSerializer<RecipeContext>, SerializableType<RecipeContext> {
-		public static final Codec<RecipeContext> CODEC = ResourceLocation.CODEC.xmap(RecipeContext::new, RecipeContext::id);
+		public static final MapCodec<RecipeContext> CODEC = ResourceLocation.CODEC.xmap(RecipeContext::new, RecipeContext::id)
+				.fieldOf("id");
 
 		@Override
-		public @NotNull Codec<RecipeContext> codec() {
+		public @NotNull MapCodec<RecipeContext> codec() {
 			return CODEC;
 		}
 	}

@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.network.chat.Component;
@@ -71,15 +71,15 @@ public record Or(ContextualHolder conditions) implements ContextualCondition, Co
 	}
 
 	public static class Type implements ContextualConditionType<Or> {
-		public static final Codec<Or> CODEC =
-				RecordCodecBuilder.create(instance -> instance
+		public static final MapCodec<Or> CODEC =
+				RecordCodecBuilder.mapCodec(instance -> instance
 						.group(ContextualHolder.CODEC
 								.fieldOf("contextual")
 								.forGetter(Or::conditions)
 						).apply(instance, Or::new));
 
 		@Override
-		public @NotNull Codec<Or> codec() {
+		public @NotNull MapCodec<Or> codec() {
 			return CODEC;
 		}
 	}

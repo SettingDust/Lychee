@@ -10,14 +10,13 @@ import com.google.common.base.Objects;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.util.ExtraCodecs;
 import snownee.lychee.util.context.LycheeContext;
 
 public final class ActionData {
 	public static final Codec<ActionData> CODEC =
 			RecordCodecBuilder.create(inst ->
 					inst.group(
-							ExtraCodecs.strictOptionalField(LycheeContext.CODEC, "context").forGetter(ActionData::getContext),
+							LycheeContext.CODEC.optionalFieldOf("context").forGetter(ActionData::getContext),
 							Codec.INT.fieldOf("delayedTicks").forGetter(ActionData::getDelayedTicks)
 					).apply(inst, ActionData::of));
 	@Nullable

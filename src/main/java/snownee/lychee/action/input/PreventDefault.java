@@ -5,7 +5,7 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import io.netty.buffer.ByteBuf;
@@ -72,12 +72,12 @@ public final class PreventDefault implements PostAction {
 
 
 	public static class Type implements PostActionType<PreventDefault> {
-		public static final Codec<PreventDefault> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<PreventDefault> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				PostActionCommonProperties.MAP_CODEC.forGetter(PreventDefault::commonProperties)
 		).apply(instance, PreventDefault::new));
 
 		@Override
-		public @NotNull Codec<PreventDefault> codec() {
+		public @NotNull MapCodec<PreventDefault> codec() {
 			return CODEC;
 		}
 

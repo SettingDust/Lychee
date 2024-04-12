@@ -3,7 +3,7 @@ package snownee.lychee.contextual;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -30,10 +30,10 @@ public final class IsSneaking implements ContextualCondition {
 	}
 
 	public static class Type implements ContextualConditionType<IsSneaking> {
-		public static final Codec<IsSneaking> CODEC = Codec.unit(INSTANCE);
+		public static final MapCodec<IsSneaking> CODEC = MapCodec.unit(INSTANCE);
 
 		@Override
-		public @NotNull Codec<IsSneaking> codec() {
+		public @NotNull MapCodec<IsSneaking> codec() {
 			return CODEC;
 		}
 

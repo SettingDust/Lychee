@@ -3,7 +3,7 @@ package snownee.lychee.contextual;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.advancements.critereon.MinMaxBounds.Doubles;
@@ -42,12 +42,12 @@ public record EntityHealth(Doubles range) implements ContextualCondition {
 	}
 
 	public static class Type implements ContextualConditionType<EntityHealth> {
-		public static final Codec<EntityHealth> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<EntityHealth> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				Doubles.CODEC.fieldOf("range").forGetter(EntityHealth::range)
 		).apply(instance, EntityHealth::new));
 
 		@Override
-		public @NotNull Codec<EntityHealth> codec() {
+		public @NotNull MapCodec<EntityHealth> codec() {
 			return CODEC;
 		}
 	}

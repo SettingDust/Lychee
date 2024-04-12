@@ -8,11 +8,11 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import snownee.lychee.util.TriState;
@@ -58,11 +58,10 @@ public record IsWeather(String id, Predicate<Level> predicate) implements Contex
 	}
 
 	public static class Type implements ContextualConditionType<IsWeather> {
-		public static final Codec<IsWeather> CODEC = ExtraCodecs.stringResolverCodec(IsWeather::id, IsWeather.REGISTRY::get).fieldOf(
-				"weather").codec();
+		public static final MapCodec<IsWeather> CODEC = Codec.stringResolver(IsWeather::id, IsWeather.REGISTRY::get).fieldOf("weather");
 
 		@Override
-		public @NotNull Codec<IsWeather> codec() {
+		public @NotNull MapCodec<IsWeather> codec() {
 			return CODEC;
 		}
 	}

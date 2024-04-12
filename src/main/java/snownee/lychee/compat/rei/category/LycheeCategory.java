@@ -16,6 +16,7 @@ import me.shedaniel.rei.api.client.view.ViewSearchBuilder;
 import me.shedaniel.rei.api.common.entry.EntryStack;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
 import me.shedaniel.rei.api.common.util.EntryStacks;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -90,10 +91,11 @@ public interface LycheeCategory<R extends ILycheeRecipe<LycheeContext>> {
 			tooltip.entries().clear();
 			raw = itemMap.get(raw);
 			List<Component> list;
+			var player = Minecraft.getInstance().player;
 			if (action instanceof RandomSelect randomSelect) {
-				list = PostActionRenderer.getTooltipsFromRandom(randomSelect, (PostAction) raw);
+				list = PostActionRenderer.getTooltipsFromRandom(randomSelect, (PostAction) raw, player);
 			} else {
-				list = PostActionRenderer.of(action).getTooltips(action);
+				list = PostActionRenderer.of(action).getTooltips(action, player);
 			}
 			tooltip.entries().addAll(list.stream().map(Tooltip::entry).toList());
 			return tooltip;

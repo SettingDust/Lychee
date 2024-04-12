@@ -77,9 +77,7 @@ public interface PostAction extends PostActionDisplay, ContextualPredicate, Cont
 	default String toJsonString() {
 		return GsonHelper.toStableString(((Codec<PostAction>) type().codec())
 				.encodeStart(JsonOps.INSTANCE, this)
-				.get()
-				.left()
-				.orElseThrow());
+				.getOrThrow());
 	}
 
 	default void validate(ILycheeRecipe<?> recipe) {}

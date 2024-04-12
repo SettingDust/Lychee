@@ -30,7 +30,7 @@ public class LycheeContext extends EmptyContainer {
 						final var key = LycheeRegistries.CONTEXT.getKey(it);
 						final var serializer = LycheeRegistries.CONTEXT_SERIALIZER.get(key);
 						if (serializer != null) {
-							return DataResult.success(serializer.codec());
+							return DataResult.success(serializer.codec().codec());
 						}
 						return DataResult.error(() -> it + " isn't serializable");
 					},

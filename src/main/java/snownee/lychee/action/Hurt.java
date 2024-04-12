@@ -3,14 +3,13 @@ package snownee.lychee.action;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -60,15 +59,15 @@ public record Hurt(
 	}
 
 	public static class Type implements PostActionType<Hurt> {
-		public static final Codec<Hurt> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<Hurt> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				PostActionCommonProperties.MAP_CODEC.forGetter(Hurt::commonProperties),
 				MinMaxBounds.Doubles.CODEC.fieldOf("damage").forGetter(Hurt::damage),
-				ExtraCodecs.strictOptionalField(ResourceKey.codec(Registries.DAMAGE_TYPE), "source", DamageTypes.GENERIC)
+				ResourceKey.codec(Registries.DAMAGE_TYPE).optionalFieldOf("source", DamageTypes.GENERIC)
 						.forGetter(Hurt::source)
 		).apply(instance, Hurt::new));
 
 		@Override
-		public @NotNull Codec<Hurt> codec() {
+		public @NotNull MapCodec<Hurt> codec() {
 			return CODEC;
 		}
 	}

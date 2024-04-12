@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.advancements.critereon.BlockPredicate;
@@ -176,21 +177,21 @@ public class RandomSelect implements CompoundAction, PostAction {
 	public record Entry(PostAction action, int weight) {
 		public static final Codec<Entry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 				PostAction.MAP_CODEC.forGetter(Entry::action),
-				ExtraCodecs.strictOptionalField(ExtraCodecs.POSITIVE_INT, "weight", 1).forGetter(Entry::weight)
+				ExtraCodecs.POSITIVE_INT.optionalFieldOf("weight", 1).forGetter(Entry::weight)
 		).apply(instance, Entry::new));
 	}
 
 	public static class Type implements PostActionType<RandomSelect> {
-		public static final Codec<RandomSelect> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<RandomSelect> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				PostActionCommonProperties.MAP_CODEC.forGetter(RandomSelect::commonProperties),
 				ExtraCodecs.nonEmptyList(new CompactListCodec<>(Entry.CODEC, true)).fieldOf("entries").forGetter(it -> it.entries),
-				ExtraCodecs.strictOptionalField(ExtraCodecs.NON_NEGATIVE_INT, "empty_weight", 0)
+				ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("empty_weight", 0)
 						.forGetter(it -> it.emptyWeight),
-				ExtraCodecs.strictOptionalField(MinMaxBounds.Ints.CODEC, "rolls", BoundsExtensions.ONE).forGetter(it -> it.rolls)
+				MinMaxBounds.Ints.CODEC.optionalFieldOf("rolls", BoundsExtensions.ONE).forGetter(it -> it.rolls)
 		).apply(instance, RandomSelect::new));
 
 		@Override
-		public @NotNull Codec<RandomSelect> codec() {
+		public @NotNull MapCodec<RandomSelect> codec() {
 			return CODEC;
 		}
 	}

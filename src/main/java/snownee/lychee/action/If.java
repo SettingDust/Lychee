@@ -7,14 +7,13 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.critereon.BlockPredicate;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import snownee.lychee.util.action.CompoundAction;
 import snownee.lychee.util.action.Job;
@@ -122,22 +121,23 @@ public class If implements CompoundAction, PostAction {
 	}
 
 	public static class Type implements PostActionType<If> {
-		public static final Codec<If> CODEC = ExtraCodecs.validate(
-				RecordCodecBuilder.create(instance -> instance.group(
-						PostActionCommonProperties.MAP_CODEC.forGetter(If::commonProperties),
-						new CompactListCodec<>(PostAction.CODEC).fieldOf("then").forGetter(it -> it.successEntries),
-						new CompactListCodec<>(PostAction.CODEC).fieldOf("else").forGetter(it -> it.failureEntries)
-				).apply(instance, If::new)),
-				it -> {
-					if (it.successEntries.isEmpty() && it.failureEntries.isEmpty()) {
-						return DataResult.error(() -> "Both 'then' and 'else' entries are empty");
-					}
-					return DataResult.success(it);
-				}
-		);
+		public static final MapCodec<If> CODEC =
+				RecordCodecBuilder.<If>mapCodec(instance -> instance.group(
+								PostActionCommonProperties.MAP_CODEC.forGetter(If::commonProperties),
+								new CompactListCodec<>(PostAction.CODEC).fieldOf("then").forGetter(it -> it.successEntries),
+								new CompactListCodec<>(PostAction.CODEC).fieldOf("else").forGetter(it -> it.failureEntries)
+						).apply(instance, If::new)
+				).validate(
+						it -> {
+							if (it.successEntries.isEmpty() && it.failureEntries.isEmpty()) {
+								return DataResult.error(() -> "Both 'then' and 'else' entries are empty");
+							}
+							return DataResult.success(it);
+						}
+				);
 
 		@Override
-		public @NotNull Codec<If> codec() {
+		public @NotNull MapCodec<If> codec() {
 			return CODEC;
 		}
 	}

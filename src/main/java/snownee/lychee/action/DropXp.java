@@ -3,7 +3,7 @@ package snownee.lychee.action;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.network.chat.Component;
@@ -41,14 +41,14 @@ public record DropXp(PostActionCommonProperties commonProperties, int xp) implem
 	}
 
 	public static class Type implements PostActionType<DropXp> {
-		public static final Codec<DropXp> CODEC = RecordCodecBuilder.create(instance ->
+		public static final MapCodec<DropXp> CODEC = RecordCodecBuilder.mapCodec(instance ->
 				instance.group(
 						PostActionCommonProperties.MAP_CODEC.forGetter(DropXp::commonProperties),
 						ExtraCodecs.POSITIVE_INT.fieldOf("xp").forGetter(DropXp::xp)
 				).apply(instance, DropXp::new));
 
 		@Override
-		public @NotNull Codec<DropXp> codec() {
+		public @NotNull MapCodec<DropXp> codec() {
 			return CODEC;
 		}
 	}

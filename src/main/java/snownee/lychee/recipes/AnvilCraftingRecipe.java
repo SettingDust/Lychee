@@ -8,12 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Streams;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -94,11 +94,11 @@ public class AnvilCraftingRecipe extends LycheeRecipe<LycheeContext> {
 	}
 
 	@Override
-	public @NotNull ItemStack assemble(final LycheeContext context, final RegistryAccess registryAccess) {
+	public @NotNull ItemStack assemble(final LycheeContext context, final HolderLookup.Provider provider) {
 		final var anvilContext = context.get(LycheeContextKey.ANVIL);
 		anvilContext.setLevelCost(levelCost);
 		anvilContext.setMaterialCost(materialCost);
-		context.get(LycheeContextKey.ITEM).replace(2, getResultItem(registryAccess));
+		context.get(LycheeContextKey.ITEM).replace(2, getResultItem(provider));
 		final var actionContext = context.get(LycheeContextKey.ACTION);
 		actionContext.reset();
 		actionContext.jobs.addAll(assemblingActions.stream().map(it -> new Job(it, 1)).toList());
@@ -107,7 +107,7 @@ public class AnvilCraftingRecipe extends LycheeRecipe<LycheeContext> {
 	}
 
 	@Override
-	public @NotNull ItemStack getResultItem(final RegistryAccess registryAccess) {
+	public @NotNull ItemStack getResultItem(final HolderLookup.Provider provider) {
 		return output.copy();
 	}
 
@@ -167,21 +167,21 @@ public class AnvilCraftingRecipe extends LycheeRecipe<LycheeContext> {
 	}
 
 	public static class Serializer implements LycheeRecipeSerializer<AnvilCraftingRecipe> {
-		public static final Codec<AnvilCraftingRecipe> CODEC =
-				RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<AnvilCraftingRecipe> CODEC =
+				RecordCodecBuilder.mapCodec(instance -> instance.group(
 						LycheeRecipeCommonProperties.MAP_CODEC.forGetter(ILycheeRecipe::commonProperties),
 						LycheeCodecs.PAIR_INGREDIENT_CODEC.fieldOf(ITEM_IN).forGetter(AnvilCraftingRecipe::input),
 						LycheeCodecs.PLAIN_ITEM_STACK_CODEC.fieldOf(ITEM_OUT).forGetter(AnvilCraftingRecipe::output),
-						ExtraCodecs.strictOptionalField(PostActionType.LIST_CODEC, "assembling", List.of())
+						PostActionType.LIST_CODEC.optionalFieldOf("assembling", List.of())
 								.forGetter(AnvilCraftingRecipe::assemblingActions),
-						ExtraCodecs.strictOptionalField(ExtraCodecs.POSITIVE_INT, "level_cost", 1)
+						ExtraCodecs.POSITIVE_INT.optionalFieldOf("level_cost", 1)
 								.forGetter(AnvilCraftingRecipe::levelCost),
-						ExtraCodecs.strictOptionalField(ExtraCodecs.NON_NEGATIVE_INT, "material_cost", 1)
+						ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("material_cost", 1)
 								.forGetter(AnvilCraftingRecipe::materialCost)
 				).apply(instance, AnvilCraftingRecipe::new));
 
 		@Override
-		public @NotNull Codec<AnvilCraftingRecipe> codec() {
+		public @NotNull MapCodec<AnvilCraftingRecipe> codec() {
 			return CODEC;
 		}
 	}

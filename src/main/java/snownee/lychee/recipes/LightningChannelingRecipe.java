@@ -4,11 +4,10 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.NonNullList;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -78,15 +77,15 @@ public class LightningChannelingRecipe extends LycheeRecipe<LycheeContext> {
 	}
 
 	public static class Serializer implements LycheeRecipeSerializer<LightningChannelingRecipe> {
-		public static final Codec<LightningChannelingRecipe> CODEC =
-				RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<LightningChannelingRecipe> CODEC =
+				RecordCodecBuilder.mapCodec(instance -> instance.group(
 						LycheeRecipeCommonProperties.MAP_CODEC.forGetter(LycheeRecipe::commonProperties),
-						ExtraCodecs.strictOptionalField(new CompactListCodec<>(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC), ITEM_IN, List.of())
+						new CompactListCodec<>(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC).optionalFieldOf(ITEM_IN, List.of())
 								.forGetter(it -> it.ingredients)
 				).apply(instance, LightningChannelingRecipe::new));
 
 		@Override
-		public @NotNull Codec<LightningChannelingRecipe> codec() {
+		public @NotNull MapCodec<LightningChannelingRecipe> codec() {
 			return CODEC;
 		}
 	}

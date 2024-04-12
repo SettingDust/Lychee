@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.advancements.critereon.BlockPredicate;
@@ -93,14 +94,14 @@ public final class CycleStateProperty implements PostAction {
 	public Property<?> property() {return propertySupplier.get();}
 
 	public static class Type implements PostActionType<CycleStateProperty> {
-		public static final Codec<CycleStateProperty> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<CycleStateProperty> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				PostActionCommonProperties.MAP_CODEC.forGetter(CycleStateProperty::commonProperties),
 				BlockPredicateExtensions.CODEC.fieldOf("block").forGetter(it -> it.block),
 				LycheeCodecs.OFFSET_CODEC.forGetter(it -> it.offset),
 				Codec.STRING.fieldOf("property").forGetter(it -> it.property)
 		).apply(instance, CycleStateProperty::new));
 		@Override
-		public @NotNull Codec<CycleStateProperty> codec() {
+		public @NotNull MapCodec<CycleStateProperty> codec() {
 			return CODEC;
 		}
 	}

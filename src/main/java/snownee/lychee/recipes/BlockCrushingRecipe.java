@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 import com.google.common.collect.Lists;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.Util;
@@ -13,7 +13,6 @@ import net.minecraft.advancements.critereon.BlockPredicate;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -153,19 +152,19 @@ public class BlockCrushingRecipe extends LycheeRecipe<LycheeContext> implements 
 	}
 
 	public static class Serializer implements LycheeRecipeSerializer<BlockCrushingRecipe> {
-		public static final Codec<BlockCrushingRecipe> CODEC =
-				RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<BlockCrushingRecipe> CODEC =
+				RecordCodecBuilder.mapCodec(instance -> instance.group(
 						LycheeRecipeCommonProperties.MAP_CODEC.forGetter(BlockCrushingRecipe::commonProperties),
-						ExtraCodecs.strictOptionalField(BlockPredicateExtensions.CODEC, "falling_block", ANVIL)
+						BlockPredicateExtensions.CODEC.optionalFieldOf("falling_block", ANVIL)
 								.forGetter(it -> it.fallingBlock),
-						ExtraCodecs.strictOptionalField(BlockPredicateExtensions.CODEC, "landing_block", BlockPredicateExtensions.ANY)
+						BlockPredicateExtensions.CODEC.optionalFieldOf("landing_block", BlockPredicateExtensions.ANY)
 								.forGetter(BlockCrushingRecipe::landingBlock),
-						ExtraCodecs.strictOptionalField(new CompactListCodec<>(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC), ITEM_IN, List.of())
+						new CompactListCodec<>(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC).optionalFieldOf(ITEM_IN, List.of())
 								.forGetter(it -> it.ingredients)
 				).apply(instance, BlockCrushingRecipe::new));
 
 		@Override
-		public @NotNull Codec<BlockCrushingRecipe> codec() {
+		public @NotNull MapCodec<BlockCrushingRecipe> codec() {
 			return CODEC;
 		}
 	}

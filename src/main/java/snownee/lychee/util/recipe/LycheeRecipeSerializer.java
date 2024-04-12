@@ -2,7 +2,7 @@ package snownee.lychee.util.recipe;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -13,11 +13,11 @@ import snownee.lychee.util.SerializableType;
 public interface LycheeRecipeSerializer<T extends ILycheeRecipe<?>> extends RecipeSerializer<T>, SerializableType<T> {
 	@Override
 	@NotNull
-	Codec<T> codec();
+	MapCodec<T> codec();
 
 	@Override
 	@NotNull
 	default StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
-		return ByteBufCodecs.fromCodecWithRegistries(codec());
+		return ByteBufCodecs.fromCodecWithRegistries(codec().codec());
 	}
 }

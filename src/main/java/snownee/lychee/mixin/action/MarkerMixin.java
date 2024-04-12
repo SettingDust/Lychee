@@ -52,10 +52,10 @@ public class MarkerMixin implements ActionMarker {
 			final var tag = compoundTag.getCompound("lychee:action");
 			lychee$data = ActionData.CODEC
 					.parse(NbtOps.INSTANCE, tag)
-					.getOrThrow(false, (err) -> {
-						Lychee.LOGGER.error("Load Lychee action data from marker failed with error:" + err);
-						Lychee.LOGGER.debug("Load Lychee action data from marker failed from tag:" + tag);
+					.getOrThrow((err) -> {
+						Lychee.LOGGER.debug("Load Lychee action data from marker failed from tag: " + tag);
 						self().discard();
+						return new IllegalStateException("Load Lychee action data from marker failed with error: " + err);
 					});
 		}
 		if (lychee$data.getContext().isEmpty()
@@ -73,9 +73,9 @@ public class MarkerMixin implements ActionMarker {
 
 		compoundTag.put(
 				"lychee:action",
-				ActionData.CODEC.encodeStart(NbtOps.INSTANCE, lychee$data).getOrThrow(false, (err) -> {
-					Lychee.LOGGER.error("Save Lychee action data to marker failed with error:" + err);
-					Lychee.LOGGER.debug("Save Lychee action data to marker failed from data:" + lychee$data);
+				ActionData.CODEC.encodeStart(NbtOps.INSTANCE, lychee$data).getOrThrow((err) -> {
+					Lychee.LOGGER.debug("Save Lychee action data to marker failed from data: " + lychee$data);
+					return new IllegalStateException("Save Lychee action data to marker failed with error: " + err);
 				})
 		);
 	}

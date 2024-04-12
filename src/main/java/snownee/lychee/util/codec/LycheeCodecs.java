@@ -23,8 +23,8 @@ public final class LycheeCodecs {
 					.xmap(it -> it.orElse(Ingredient.EMPTY), Optional::of);
 
 	public static final Codec<Pair<Ingredient, Ingredient>> PAIR_INGREDIENT_CODEC =
-			ExtraCodecs.withAlternative(
-					ExtraCodecs.sizeLimitedList(ExtraCodecs.nonEmptyList(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC.listOf()), 2)
+			Codec.withAlternative(
+					ExtraCodecs.nonEmptyList(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC.sizeLimitedListOf(2))
 							.xmap(
 									it -> Pair.of(it.get(0), it.size() > 1 ? it.get(1) : Ingredient.EMPTY),
 									it -> Util.make(Lists.newArrayList(it.getFirst()), (list) -> {
@@ -35,7 +35,7 @@ public final class LycheeCodecs {
 					LycheeCodecs.OPTIONAL_INGREDIENT_CODEC.xmap(it -> Pair.of(it, Ingredient.EMPTY), Pair::getFirst)
 			);
 
-	public static final Codec<ItemStack> PLAIN_ITEM_STACK_CODEC = ExtraCodecs.withAlternative(
+	public static final Codec<ItemStack> PLAIN_ITEM_STACK_CODEC = Codec.withAlternative(
 			ItemStack.OPTIONAL_CODEC,
 			BuiltInRegistries.ITEM.holderByNameCodec().xmap(ItemStack::new, ItemStack::getItemHolder));
 
@@ -43,16 +43,16 @@ public final class LycheeCodecs {
 			instance -> instance.group(
 							BuiltInRegistries.ITEM.holderByNameCodec().fieldOf("id").forGetter(ItemStack::getItemHolder),
 							ExtraCodecs.NON_NEGATIVE_INT.fieldOf("count").orElse(1).forGetter(ItemStack::getCount),
-							ExtraCodecs.strictOptionalField(DataComponentPatch.CODEC, "components", DataComponentPatch.EMPTY)
+							DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY)
 									.forGetter(ItemStack::getComponentsPatch)
 					)
 					.apply(instance, ItemStack::new)
 	);
 
 	public static final MapCodec<BlockPos> OFFSET_CODEC = RecordCodecBuilder.<BlockPos>mapCodec(posInstance -> posInstance.group(
-			ExtraCodecs.strictOptionalField(Codec.INT, "offsetX", 0).forGetter(Vec3i::getX),
-			ExtraCodecs.strictOptionalField(Codec.INT, "offsetY", 0).forGetter(Vec3i::getY),
-			ExtraCodecs.strictOptionalField(Codec.INT, "offsetZ", 0).forGetter(Vec3i::getZ)
+			Codec.INT.optionalFieldOf("offsetX", 0).forGetter(Vec3i::getX),
+			Codec.INT.optionalFieldOf("offsetY", 0).forGetter(Vec3i::getY),
+			Codec.INT.optionalFieldOf("offsetZ", 0).forGetter(Vec3i::getZ)
 	).apply(posInstance, (x, y, z) -> {
 		if (x == 0 && y == 0 && z == 0) {
 			return BlockPos.ZERO;

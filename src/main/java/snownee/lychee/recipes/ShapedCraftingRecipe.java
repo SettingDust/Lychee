@@ -9,15 +9,13 @@ import org.jetbrains.annotations.NotNull;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
@@ -178,8 +176,9 @@ public class ShapedCraftingRecipe extends LycheeRecipe<CraftingContainer> implem
 		return passed;
 	}
 
+
 	@Override
-	public @NotNull ItemStack assemble(CraftingContainer container, RegistryAccess registryAccess) {
+	public @NotNull ItemStack assemble(CraftingContainer container, HolderLookup.Provider provider) {
 		var context = CONTEXT_CACHE.getIfPresent(container);
 		if (context == null) {
 			return ItemStack.EMPTY;
@@ -238,7 +237,7 @@ public class ShapedCraftingRecipe extends LycheeRecipe<CraftingContainer> implem
 
 	@NotNull
 	@Override
-	public ItemStack getResultItem(final RegistryAccess registryAccess) {return shaped.getResultItem(registryAccess);}
+	public ItemStack getResultItem(final HolderLookup.Provider provider) {return shaped.getResultItem(provider);}
 
 	@Override
 	public @NotNull NonNullList<Ingredient> getIngredients() {return shaped.getIngredients();}
@@ -273,17 +272,17 @@ public class ShapedCraftingRecipe extends LycheeRecipe<CraftingContainer> implem
 	}
 
 	public static class Serializer implements LycheeRecipeSerializer<ShapedCraftingRecipe> {
-		public static final Codec<ShapedCraftingRecipe> CODEC = RecordCodecBuilder.create(instance ->
+		public static final MapCodec<ShapedCraftingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance ->
 				instance.group(
 						LycheeRecipeCommonProperties.MAP_CODEC.forGetter(ILycheeRecipe::commonProperties),
-						((MapCodec.MapCodecCodec<ShapedRecipe>) RecipeSerializer.SHAPED_RECIPE.codec()).codec()
+						RecipeSerializer.SHAPED_RECIPE.codec()
 								.forGetter(ShapedCraftingRecipe::shaped),
-						ExtraCodecs.strictOptionalField(PostActionType.LIST_CODEC, "assembling", List.of())
+						PostActionType.LIST_CODEC.optionalFieldOf("assembling", List.of())
 								.forGetter(ShapedCraftingRecipe::assemblingActions)
 				).apply(instance, ShapedCraftingRecipe::new));
 
 		@Override
-		public @NotNull Codec<ShapedCraftingRecipe> codec() {
+		public @NotNull MapCodec<ShapedCraftingRecipe> codec() {
 			return CODEC;
 		}
 	}

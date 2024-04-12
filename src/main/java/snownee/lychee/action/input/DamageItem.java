@@ -5,11 +5,11 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -90,15 +90,15 @@ public record DamageItem(PostActionCommonProperties commonProperties, int damage
 	}
 
 	public static class Type implements PostActionType<DamageItem> {
-		public static final Codec<DamageItem> CODEC = RecordCodecBuilder.create(instance ->
+		public static final MapCodec<DamageItem> CODEC = RecordCodecBuilder.mapCodec(instance ->
 				instance.group(
 						PostActionCommonProperties.MAP_CODEC.forGetter(DamageItem::commonProperties),
-						ExtraCodecs.strictOptionalField(Codec.INT, "damage", 1).forGetter(DamageItem::damage),
-						ExtraCodecs.strictOptionalField(Reference.CODEC, "target", Reference.DEFAULT).forGetter(DamageItem::target)
+						Codec.INT.optionalFieldOf("damage", 1).forGetter(DamageItem::damage),
+						Reference.CODEC.optionalFieldOf("target", Reference.DEFAULT).forGetter(DamageItem::target)
 				).apply(instance, DamageItem::new));
 
 		@Override
-		public @NotNull Codec<DamageItem> codec() {
+		public @NotNull MapCodec<DamageItem> codec() {
 			return CODEC;
 		}
 	}

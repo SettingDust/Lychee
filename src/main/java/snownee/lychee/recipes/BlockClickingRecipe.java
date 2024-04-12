@@ -3,14 +3,13 @@ package snownee.lychee.recipes;
 import org.jetbrains.annotations.NotNull;
 
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.advancements.critereon.BlockPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -75,7 +74,7 @@ public class BlockClickingRecipe extends BlockInteractingRecipe {
 	}
 
 	public static class Serializer implements LycheeRecipeSerializer<BlockClickingRecipe> {
-		public static Codec<BlockClickingRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static MapCodec<BlockClickingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				RecordCodecBuilder.<LycheeRecipeCommonProperties>mapCodec(commonPropertiesInstance ->
 								commonPropertiesInstance.group(
 										LycheeRecipeCommonProperties.HIDE_IN_VIEWER_CODEC.forGetter(LycheeRecipeCommonProperties::hideInRecipeViewer),
@@ -84,17 +83,17 @@ public class BlockClickingRecipe extends BlockInteractingRecipe {
 										LycheeRecipeCommonProperties.GROUP_CODEC.forGetter(LycheeRecipeCommonProperties::group),
 										LycheeRecipeCommonProperties.CONTEXTUAL_CODEC.forGetter(LycheeRecipeCommonProperties::conditions),
 										LycheeRecipeCommonProperties.POST_ACTION_CODEC.forGetter(LycheeRecipeCommonProperties::postActions),
-										ExtraCodecs.strictOptionalField(MinMaxBounds.Ints.CODEC, "max_repeats", BoundsExtensions.ONE)
+										MinMaxBounds.Ints.CODEC.optionalFieldOf("max_repeats", BoundsExtensions.ONE)
 												.forGetter(LycheeRecipeCommonProperties::maxRepeats)
 								).apply(commonPropertiesInstance, LycheeRecipeCommonProperties::new))
 						.forGetter(BlockInteractingRecipe::commonProperties),
 				LycheeCodecs.PAIR_INGREDIENT_CODEC.fieldOf(ITEM_IN).forGetter(BlockInteractingRecipe::input),
-				ExtraCodecs.strictOptionalField(BlockPredicateExtensions.CODEC, BLOCK_IN, BlockPredicateExtensions.ANY)
+				BlockPredicateExtensions.CODEC.optionalFieldOf(BLOCK_IN, BlockPredicateExtensions.ANY)
 						.forGetter(BlockInteractingRecipe::blockPredicate)
 		).apply(instance, BlockClickingRecipe::new));
 
 		@Override
-		public @NotNull Codec<BlockClickingRecipe> codec() {
+		public @NotNull MapCodec<BlockClickingRecipe> codec() {
 			return CODEC;
 		}
 	}

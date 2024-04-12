@@ -3,7 +3,7 @@ package snownee.lychee.contextual;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.network.chat.MutableComponent;
@@ -42,12 +42,12 @@ public record Not(ContextualCondition condition) implements ContextualCondition 
 	}
 
 	public static class Type implements ContextualConditionType<Not> {
-		public static final Codec<Not> CODEC = RecordCodecBuilder.create(instance -> instance
+		public static final MapCodec<Not> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
 				.group(ContextualCondition.CODEC.fieldOf("contextual").forGetter(Not::condition))
 				.apply(instance, Not::new));
 
 		@Override
-		public @NotNull Codec<Not> codec() {
+		public @NotNull MapCodec<Not> codec() {
 			return CODEC;
 		}
 	}

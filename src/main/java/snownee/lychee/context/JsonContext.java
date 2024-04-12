@@ -3,8 +3,8 @@ package snownee.lychee.context;
 import org.jetbrains.annotations.NotNull;
 
 import com.google.gson.JsonObject;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.util.ExtraCodecs;
 import snownee.lychee.util.SerializableType;
@@ -21,7 +21,7 @@ public record JsonContext(JsonObject json) implements KeyedContextValue<JsonCont
 
 	public static final class Serializer implements LycheeContextSerializer<JsonContext>,
 			SerializableType<JsonContext> {
-		public static final Codec<JsonContext> CODEC = ExtraCodecs.JSON.comapFlatMap(
+		public static final MapCodec<JsonContext> CODEC = ExtraCodecs.JSON.comapFlatMap(
 				it -> {
 					try {
 						return DataResult.success(new JsonContext(it.getAsJsonObject()));
@@ -30,10 +30,10 @@ public record JsonContext(JsonObject json) implements KeyedContextValue<JsonCont
 					}
 				},
 				JsonContext::json
-		);
+		).fieldOf("json");
 
 		@Override
-		public @NotNull Codec<JsonContext> codec() {
+		public @NotNull MapCodec<JsonContext> codec() {
 			return CODEC;
 		}
 	}

@@ -2,7 +2,7 @@ package snownee.lychee.compat.fabric_recipe_api;
 
 import java.util.List;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
@@ -38,7 +38,7 @@ public class AlwaysTrueIngredient implements CustomIngredient {
 
 	private static class Serializer implements CustomIngredientSerializer<AlwaysTrueIngredient> {
 		private static final AlwaysTrueIngredient INSTANCE = new AlwaysTrueIngredient();
-		public static final Codec<AlwaysTrueIngredient> CODEC = Codec.unit(INSTANCE);
+		public static final MapCodec<AlwaysTrueIngredient> CODEC = MapCodec.unit(INSTANCE);
 		public static final StreamCodec<RegistryFriendlyByteBuf, AlwaysTrueIngredient> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
 		@Override
@@ -47,7 +47,7 @@ public class AlwaysTrueIngredient implements CustomIngredient {
 		}
 
 		@Override
-		public Codec<AlwaysTrueIngredient> getCodec(boolean allowEmpty) {
+		public MapCodec<AlwaysTrueIngredient> getCodec(boolean allowEmpty) {
 			return CODEC;
 		}
 

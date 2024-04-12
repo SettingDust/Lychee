@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.advancements.critereon.BlockPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
@@ -72,7 +72,7 @@ public interface ILycheeRecipe<C extends Container> extends Recipe<C>, Contextua
 	}
 
 	@Override
-	default @NotNull ItemStack assemble(C inv, RegistryAccess registryAccess) {
+	default @NotNull ItemStack assemble(C inv, HolderLookup.Provider provider) {
 		return ItemStack.EMPTY;
 	}
 
@@ -93,7 +93,7 @@ public interface ILycheeRecipe<C extends Container> extends Recipe<C>, Contextua
 	}
 
 	@Override
-	default @NotNull ItemStack getResultItem(RegistryAccess registryAccess) {
+	default @NotNull ItemStack getResultItem(HolderLookup.Provider provider) {
 		return ItemStack.EMPTY;
 	}
 

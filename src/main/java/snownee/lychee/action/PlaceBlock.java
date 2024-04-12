@@ -7,14 +7,13 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.advancements.critereon.BlockPredicate;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseFireBlock;
@@ -133,7 +132,7 @@ public record PlaceBlock(
 				var originalTag = prevTag.copy();
 				prevTag.merge(block.nbt().get().tag());
 				if (!prevTag.equals(originalTag)) {
-					blockEntity.load(prevTag, level.registryAccess());
+					blockEntity.loadWithComponents(prevTag, level.registryAccess());
 					blockEntity.setChanged();
 				}
 			}
@@ -167,15 +166,15 @@ public record PlaceBlock(
 	}
 
 	public static class Type implements PostActionType<PlaceBlock> {
-		public static final Codec<PlaceBlock> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<PlaceBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				PostActionCommonProperties.MAP_CODEC.forGetter(PlaceBlock::commonProperties),
-				ExtraCodecs.strictOptionalField(BlockPredicateExtensions.CODEC, "block", BlockPredicateExtensions.ANY)
+				BlockPredicateExtensions.CODEC.optionalFieldOf("block", BlockPredicateExtensions.ANY)
 						.forGetter(it -> it.block),
 				LycheeCodecs.OFFSET_CODEC.forGetter(it -> it.offset)
 		).apply(instance, PlaceBlock::new));
 
 		@Override
-		public @NotNull Codec<PlaceBlock> codec() {
+		public @NotNull MapCodec<PlaceBlock> codec() {
 			return CODEC;
 		}
 	}

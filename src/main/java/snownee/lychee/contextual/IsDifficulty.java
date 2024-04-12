@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.ChatFormatting;
@@ -69,16 +70,16 @@ public record IsDifficulty(List<Difficulty> difficulties) implements ContextualC
 	}
 
 	public static class Type implements ContextualConditionType<IsDifficulty> {
-		public static final Codec<Difficulty> DIFFICULTY_CODEC = ExtraCodecs.withAlternative(
+		public static final Codec<Difficulty> DIFFICULTY_CODEC = Codec.withAlternative(
 				Difficulty.CODEC,
 				ExtraCodecs.NON_NEGATIVE_INT.xmap(Difficulty::byId, Difficulty::getId));
 
-		public static final Codec<IsDifficulty> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<IsDifficulty> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				new CompactListCodec<>(DIFFICULTY_CODEC, true).fieldOf("difficulty").forGetter(IsDifficulty::difficulties)
 		).apply(instance, IsDifficulty::new));
 
 		@Override
-		public @NotNull Codec<IsDifficulty> codec() {
+		public @NotNull MapCodec<IsDifficulty> codec() {
 			return CODEC;
 		}
 	}

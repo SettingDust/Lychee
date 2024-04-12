@@ -2,11 +2,10 @@ package snownee.lychee.recipes;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.advancements.critereon.BlockPredicate;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
@@ -64,15 +63,15 @@ public class RandomBlockTickingRecipe extends LycheeRecipe<LycheeContext> implem
 	}
 
 	public static class Serializer implements LycheeRecipeSerializer<RandomBlockTickingRecipe> {
-		public static final Codec<RandomBlockTickingRecipe> CODEC =
-				RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<RandomBlockTickingRecipe> CODEC =
+				RecordCodecBuilder.mapCodec(instance -> instance.group(
 						LycheeRecipeCommonProperties.MAP_CODEC.forGetter(RandomBlockTickingRecipe::commonProperties),
-						ExtraCodecs.strictOptionalField(BlockPredicateExtensions.CODEC, BLOCK_IN, BlockPredicateExtensions.ANY)
+						BlockPredicateExtensions.CODEC.optionalFieldOf(BLOCK_IN, BlockPredicateExtensions.ANY)
 								.forGetter(RandomBlockTickingRecipe::blockPredicate)
 				).apply(instance, RandomBlockTickingRecipe::new));
 
 		@Override
-		public @NotNull Codec<RandomBlockTickingRecipe> codec() {
+		public @NotNull MapCodec<RandomBlockTickingRecipe> codec() {
 			return CODEC;
 		}
 	}

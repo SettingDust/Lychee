@@ -3,7 +3,7 @@ package snownee.lychee.contextual;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.advancements.critereon.MinMaxBounds.Doubles;
@@ -41,12 +41,12 @@ public record FallDistance(Doubles range) implements ContextualCondition {
 	}
 
 	public static class Type implements ContextualConditionType<FallDistance> {
-		public static final Codec<FallDistance> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<FallDistance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				Doubles.CODEC.fieldOf("range").forGetter(FallDistance::range)
 		).apply(instance, FallDistance::new));
 
 		@Override
-		public @NotNull Codec<FallDistance> codec() {
+		public @NotNull MapCodec<FallDistance> codec() {
 			return CODEC;
 		}
 	}

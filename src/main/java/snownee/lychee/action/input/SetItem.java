@@ -8,12 +8,11 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import snownee.lychee.util.CommonProxy;
 import snownee.lychee.util.Reference;
@@ -135,14 +134,14 @@ public final class SetItem implements PostAction {
 	//	}
 
 	public static class Type implements PostActionType<SetItem> {
-		public static final Codec<SetItem> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<SetItem> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				PostActionCommonProperties.MAP_CODEC.forGetter(SetItem::commonProperties),
 				LycheeCodecs.FLAT_ITEM_STACK_CODEC.forGetter(SetItem::stack),
-				ExtraCodecs.strictOptionalField(Reference.CODEC, "target", Reference.DEFAULT).forGetter(SetItem::target)
+				Reference.CODEC.optionalFieldOf("target", Reference.DEFAULT).forGetter(SetItem::target)
 		).apply(instance, SetItem::new));
 
 		@Override
-		public @NotNull Codec<SetItem> codec() {
+		public @NotNull MapCodec<SetItem> codec() {
 			return CODEC;
 		}
 	}

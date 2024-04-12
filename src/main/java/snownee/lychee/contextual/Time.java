@@ -5,8 +5,8 @@ import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.world.entity.player.Player;
@@ -47,7 +47,7 @@ public record Time(MinMaxBounds.Ints value, Optional<Long> period) implements Co
 	}
 
 	public static class Type implements ContextualConditionType<Time> {
-		public static final Codec<Time> CODEC = TimeCheck.CODEC.comapFlatMap(
+		public static final MapCodec<Time> CODEC = TimeCheck.CODEC.flatXmap(
 				it -> {
 					if (it.value().min == null || it.value().min.getType() != NumberProviders.CONSTANT) {
 						return DataResult.error(() -> "`min` not exists or not a constant");
@@ -70,12 +70,21 @@ public record Time(MinMaxBounds.Ints value, Optional<Long> period) implements Co
 							it.value().max().orElseThrow()
 					));
 					it.period.ifPresent(builder::setPeriod);
-					return builder.build();
+					return DataResult.success(builder.build());
 				}
 		);
+		private static final MapCodec<TimeCheck> VALIDATED_CODEC = TimeCheck.CODEC.validate(it -> {
+			if (it.value().min == null || it.value().min.getType() != NumberProviders.CONSTANT) {
+				return DataResult.error(() -> "`min` not exists or not a constant");
+			}
+			if (it.value().max == null || it.value().max.getType() != NumberProviders.CONSTANT) {
+				return DataResult.error(() -> "`max` not exists or not a constant");
+			}
+			return DataResult.success(it);
+		});
 
 		@Override
-		public @NotNull Codec<Time> codec() {
+		public @NotNull MapCodec<Time> codec() {
 			return CODEC;
 		}
 	}

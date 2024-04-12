@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.network.chat.Component;
@@ -41,13 +42,13 @@ public record CheckParam(String key) implements ContextualCondition {
 	}
 
 	public static class Type implements ContextualConditionType<CheckParam> {
-		public static final Codec<CheckParam> CODEC =
-				RecordCodecBuilder.create(instance -> instance
+		public static final MapCodec<CheckParam> CODEC =
+				RecordCodecBuilder.mapCodec(instance -> instance
 						.group(Codec.STRING.fieldOf("key").forGetter(CheckParam::key))
 						.apply(instance, CheckParam::new));
 
 		@Override
-		public @NotNull Codec<CheckParam> codec() {
+		public @NotNull MapCodec<CheckParam> codec() {
 			return CODEC;
 		}
 	}

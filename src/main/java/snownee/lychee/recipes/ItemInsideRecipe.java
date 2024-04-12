@@ -5,11 +5,11 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.advancements.critereon.BlockPredicate;
 import net.minecraft.core.NonNullList;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -129,17 +129,17 @@ public class ItemInsideRecipe extends LycheeRecipe<LycheeContext> implements Blo
 	}
 
 	public static class Serializer implements LycheeRecipeSerializer<ItemInsideRecipe> {
-		public static final Codec<ItemInsideRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<ItemInsideRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				LycheeRecipeCommonProperties.MAP_CODEC.forGetter(LycheeRecipe::commonProperties),
-				ExtraCodecs.strictOptionalField(BlockPredicateExtensions.CODEC, BLOCK_IN, BlockPredicateExtensions.ANY)
+				BlockPredicateExtensions.CODEC.optionalFieldOf(BLOCK_IN, BlockPredicateExtensions.ANY)
 						.forGetter(ItemInsideRecipe::blockPredicate),
-				ExtraCodecs.strictOptionalField(Codec.INT, "time", 0).forGetter(ItemInsideRecipe::time),
-				ExtraCodecs.strictOptionalField(new CompactListCodec<>(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC, true), ITEM_IN, List.of())
+				Codec.INT.optionalFieldOf("time", 0).forGetter(ItemInsideRecipe::time),
+				new CompactListCodec<>(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC, true).optionalFieldOf(ITEM_IN, List.of())
 						.forGetter(it -> it.ingredients)
 		).apply(instance, ItemInsideRecipe::new));
 
 		@Override
-		public @NotNull Codec<ItemInsideRecipe> codec() {
+		public @NotNull MapCodec<ItemInsideRecipe> codec() {
 			return CODEC;
 		}
 	}

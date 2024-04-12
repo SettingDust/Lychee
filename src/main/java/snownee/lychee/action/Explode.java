@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.BlockPos;
@@ -93,28 +94,25 @@ public record Explode(
 	}
 
 	public static class Type implements PostActionType<Explode> {
-		public static final Codec<Explode> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<Explode> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				PostActionCommonProperties.MAP_CODEC.forGetter(Explode::commonProperties),
-				ExtraCodecs.strictOptionalField(
-						Codec.STRING.comapFlatMap(
-								it -> switch (it) {
-									case "none", "keep" -> DataResult.success(BlockInteraction.KEEP);
-									case "break", "destroy_with_decay" -> DataResult.success(BlockInteraction.DESTROY_WITH_DECAY);
-									case "destroy" -> DataResult.success(BlockInteraction.DESTROY);
-									default -> DataResult.error(() -> "Unexpected value: " + it);
-								},
-								it -> it.name().toLowerCase(Locale.ENGLISH)),
-						"block_interaction",
-						BlockInteraction.DESTROY
-				).forGetter(Explode::blockInteraction),
+				Codec.STRING.comapFlatMap(
+						it -> switch (it) {
+							case "none", "keep" -> DataResult.success(BlockInteraction.KEEP);
+							case "break", "destroy_with_decay" -> DataResult.success(BlockInteraction.DESTROY_WITH_DECAY);
+							case "destroy" -> DataResult.success(BlockInteraction.DESTROY);
+							default -> DataResult.error(() -> "Unexpected value: " + it);
+						},
+						it -> it.name().toLowerCase(Locale.ENGLISH)
+				).optionalFieldOf("block_interaction", BlockInteraction.DESTROY).forGetter(Explode::blockInteraction),
 				LycheeCodecs.OFFSET_CODEC.forGetter(Explode::offset),
-				ExtraCodecs.strictOptionalField(Codec.BOOL, "fire", false).forGetter(Explode::fire),
-				ExtraCodecs.strictOptionalField(ExtraCodecs.POSITIVE_FLOAT, "radius", 4F).forGetter(Explode::radius),
-				ExtraCodecs.strictOptionalField(Codec.FLOAT, "radius_step", 4F).forGetter(Explode::step)
+				Codec.BOOL.optionalFieldOf("fire", false).forGetter(Explode::fire),
+				ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("radius", 4F).forGetter(Explode::radius),
+				Codec.FLOAT.optionalFieldOf("radius_step", 4F).forGetter(Explode::step)
 		).apply(instance, Explode::new));
 
 		@Override
-		public @NotNull Codec<Explode> codec() {
+		public @NotNull MapCodec<Explode> codec() {
 			return CODEC;
 		}
 	}

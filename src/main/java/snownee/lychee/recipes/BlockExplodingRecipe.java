@@ -2,11 +2,10 @@ package snownee.lychee.recipes;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.advancements.critereon.BlockPredicate;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
@@ -53,15 +52,15 @@ public class BlockExplodingRecipe extends LycheeRecipe<LycheeContext> implements
 	}
 
 	public static class Serializer implements LycheeRecipeSerializer<BlockExplodingRecipe> {
-		public static final Codec<BlockExplodingRecipe> CODEC =
-				RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<BlockExplodingRecipe> CODEC =
+				RecordCodecBuilder.mapCodec(instance -> instance.group(
 						LycheeRecipeCommonProperties.MAP_CODEC.forGetter(BlockExplodingRecipe::commonProperties),
-						ExtraCodecs.strictOptionalField(BlockPredicateExtensions.CODEC, BLOCK_IN, BlockPredicateExtensions.ANY)
+						BlockPredicateExtensions.CODEC.optionalFieldOf(BLOCK_IN, BlockPredicateExtensions.ANY)
 								.forGetter(BlockExplodingRecipe::blockPredicate)
 				).apply(instance, BlockExplodingRecipe::new));
 
 		@Override
-		public @NotNull Codec<BlockExplodingRecipe> codec() {
+		public @NotNull MapCodec<BlockExplodingRecipe> codec() {
 			return CODEC;
 		}
 	}

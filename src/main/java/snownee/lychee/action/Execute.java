@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import io.netty.buffer.ByteBuf;
@@ -12,7 +13,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -81,15 +81,15 @@ public record Execute(PostActionCommonProperties commonProperties, String comman
 	}
 
 	public static class Type implements PostActionType<Execute> {
-		public static final Codec<Execute> CODEC = RecordCodecBuilder.create(instance ->
+		public static final MapCodec<Execute> CODEC = RecordCodecBuilder.mapCodec(instance ->
 				instance.group(
 						PostActionCommonProperties.MAP_CODEC.forGetter(Execute::commonProperties),
 						Codec.STRING.fieldOf("command").forGetter(Execute::command),
-						ExtraCodecs.strictOptionalField(Codec.BOOL, "repeat", true).forGetter(Execute::repeat)
+						Codec.BOOL.optionalFieldOf("repeat", true).forGetter(Execute::repeat)
 				).apply(instance, Execute::new));
 
 		@Override
-		public @NotNull Codec<Execute> codec() {
+		public @NotNull MapCodec<Execute> codec() {
 			return CODEC;
 		}
 

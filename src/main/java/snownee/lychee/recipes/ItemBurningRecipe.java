@@ -2,11 +2,10 @@ package snownee.lychee.recipes;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.NonNullList;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -80,15 +79,15 @@ public class ItemBurningRecipe extends LycheeRecipe<LycheeContext> {
 	}
 
 	public static class Serializer implements LycheeRecipeSerializer<ItemBurningRecipe> {
-		public static final Codec<ItemBurningRecipe> CODEC =
-				RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<ItemBurningRecipe> CODEC =
+				RecordCodecBuilder.mapCodec(instance -> instance.group(
 						LycheeRecipeCommonProperties.MAP_CODEC.forGetter(LycheeRecipe::commonProperties),
-						ExtraCodecs.strictOptionalField(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC, ITEM_IN, Ingredient.EMPTY)
+						LycheeCodecs.OPTIONAL_INGREDIENT_CODEC.optionalFieldOf(ITEM_IN, Ingredient.EMPTY)
 								.forGetter(ItemBurningRecipe::input)
 				).apply(instance, ItemBurningRecipe::new));
 
 		@Override
-		public @NotNull Codec<ItemBurningRecipe> codec() {
+		public @NotNull MapCodec<ItemBurningRecipe> codec() {
 			return CODEC;
 		}
 	}

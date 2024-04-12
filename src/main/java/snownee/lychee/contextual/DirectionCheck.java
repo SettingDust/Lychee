@@ -9,12 +9,12 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import snownee.lychee.LycheeLootContextParams;
@@ -88,12 +88,11 @@ public class DirectionCheck implements ContextualCondition {
 	}
 
 	public static class Type implements ContextualConditionType<DirectionCheck> {
-		public static final Codec<DirectionCheck> CODEC = ExtraCodecs.stringResolverCodec($ -> $.name, LOOKUPS::get)
-				.fieldOf("direction")
-				.codec();
+		// TODO 需要测试
+		public static final MapCodec<DirectionCheck> CODEC = Codec.stringResolver($ -> $.name, LOOKUPS::get).fieldOf("direction");
 
 		@Override
-		public @NotNull Codec<DirectionCheck> codec() {
+		public @NotNull MapCodec<DirectionCheck> codec() {
 			return CODEC;
 		}
 	}

@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -38,14 +39,14 @@ public record AnvilDamageChance(PostActionCommonProperties commonProperties, flo
 	}
 
 	public static class Type implements PostActionType<AnvilDamageChance> {
-		public static final Codec<AnvilDamageChance> CODEC = RecordCodecBuilder.create(instance ->
+		public static final MapCodec<AnvilDamageChance> CODEC = RecordCodecBuilder.mapCodec(instance ->
 				instance.group(
 						PostActionCommonProperties.MAP_CODEC.forGetter(AnvilDamageChance::commonProperties),
 						Codec.floatRange(0, 1).fieldOf("chance").forGetter(AnvilDamageChance::chance)
 				).apply(instance, AnvilDamageChance::new));
 
 		@Override
-		public @NotNull Codec<AnvilDamageChance> codec() {
+		public @NotNull MapCodec<AnvilDamageChance> codec() {
 			return CODEC;
 		}
 	}

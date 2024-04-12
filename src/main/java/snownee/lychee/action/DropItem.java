@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.network.chat.Component;
@@ -67,14 +67,14 @@ public record DropItem(PostActionCommonProperties commonProperties, ItemStack st
 	}
 
 	public static class Type implements PostActionType<DropItem> {
-		public static final Codec<DropItem> CODEC = RecordCodecBuilder.create(instance ->
+		public static final MapCodec<DropItem> CODEC = RecordCodecBuilder.mapCodec(instance ->
 				instance.group(
 						PostActionCommonProperties.MAP_CODEC.forGetter(DropItem::commonProperties),
 						LycheeCodecs.FLAT_ITEM_STACK_CODEC.forGetter(it -> it.stack)
 				).apply(instance, DropItem::new));
 
 		@Override
-		public @NotNull Codec<DropItem> codec() {
+		public @NotNull MapCodec<DropItem> codec() {
 			return CODEC;
 		}
 	}

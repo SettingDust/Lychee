@@ -3,7 +3,7 @@ package snownee.lychee.action;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import io.netty.buffer.ByteBuf;
@@ -41,12 +41,12 @@ public record Break(PostActionCommonProperties commonProperties) implements Post
 	}
 
 	public static class Type implements PostActionType<Break> {
-		public static final Codec<Break> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<Break> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				PostActionCommonProperties.MAP_CODEC.forGetter(Break::commonProperties)
 		).apply(instance, Break::new));
 
 		@Override
-		public @NotNull Codec<Break> codec() {
+		public @NotNull MapCodec<Break> codec() {
 			return CODEC;
 		}
 
