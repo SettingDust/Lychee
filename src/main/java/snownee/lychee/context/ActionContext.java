@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import com.google.common.collect.Queues;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import snownee.lychee.Lychee;

@@ -25,15 +25,12 @@ public class DripstoneParticleService {
 	public static final Cache<Block, DripParticleHandler> particleHandlers = CacheBuilder.newBuilder().build();
 
 	public static final ParticleType<BlockParticleOption> DRIPSTONE_DRIPPING = FabricParticleTypes.complex(
-			BlockParticleOption.DESERIALIZER,
 			BlockParticleOption::codec,
 			BlockParticleOption::streamCodec);
 	public static final ParticleType<BlockParticleOption> DRIPSTONE_FALLING = FabricParticleTypes.complex(
-			BlockParticleOption.DESERIALIZER,
 			BlockParticleOption::codec,
 			BlockParticleOption::streamCodec);
 	public static final ParticleType<BlockParticleOption> DRIPSTONE_SPLASH = FabricParticleTypes.complex(
-			BlockParticleOption.DESERIALIZER,
 			BlockParticleOption::codec,
 			BlockParticleOption::streamCodec);
 
