@@ -9,6 +9,7 @@ import org.joml.Quaternionf;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import snownee.lychee.client.gui.ILightingSettings;
@@ -45,7 +46,10 @@ public class CachedRenderingEntity<T extends Entity> {
 
 	public T getEntity() {
 		ensureEntity();
-		entity.tickCount = Minecraft.getInstance().player.tickCount;
+		LocalPlayer player = Minecraft.getInstance().player;
+		if (player != null) {
+			entity.tickCount = player.tickCount;
+		}
 		return entity;
 	}
 
@@ -96,7 +100,6 @@ public class CachedRenderingEntity<T extends Entity> {
 		renderDispatcher.setRenderShadow(true);
 
 		matrixStack.popPose();
-		//noinspection DataFlowIssue
 		((EntityAccess) entity).callSetLevel(null);
 		ILightingSettings.DEFAULT_3D.applyLighting();
 	}

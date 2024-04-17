@@ -75,7 +75,7 @@ public record IsDifficulty(List<Difficulty> difficulties) implements ContextualC
 				ExtraCodecs.NON_NEGATIVE_INT.xmap(Difficulty::byId, Difficulty::getId));
 
 		public static final MapCodec<IsDifficulty> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-				new CompactListCodec<>(DIFFICULTY_CODEC, true).fieldOf("difficulty").forGetter(IsDifficulty::difficulties)
+				new CompactListCodec<>(DIFFICULTY_CODEC).nonEmpty().fieldOf("difficulty").forGetter(IsDifficulty::difficulties)
 		).apply(instance, IsDifficulty::new));
 
 		@Override

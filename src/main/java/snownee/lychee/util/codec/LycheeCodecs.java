@@ -24,7 +24,7 @@ public final class LycheeCodecs {
 
 	public static final Codec<Pair<Ingredient, Ingredient>> PAIR_INGREDIENT_CODEC =
 			Codec.withAlternative(
-					ExtraCodecs.nonEmptyList(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC.sizeLimitedListOf(2))
+					LycheeCodecs.OPTIONAL_INGREDIENT_CODEC.sizeLimitedListOf(2)
 							.xmap(
 									it -> Pair.of(it.get(0), it.size() > 1 ? it.get(1) : Ingredient.EMPTY),
 									it -> Util.make(Lists.newArrayList(it.getFirst()), (list) -> {
@@ -49,7 +49,7 @@ public final class LycheeCodecs {
 					.apply(instance, ItemStack::new)
 	);
 
-	public static final MapCodec<BlockPos> OFFSET_CODEC = RecordCodecBuilder.<BlockPos>mapCodec(posInstance -> posInstance.group(
+	public static final MapCodec<BlockPos> OFFSET_CODEC = RecordCodecBuilder.mapCodec(posInstance -> posInstance.group(
 			Codec.INT.optionalFieldOf("offsetX", 0).forGetter(Vec3i::getX),
 			Codec.INT.optionalFieldOf("offsetY", 0).forGetter(Vec3i::getY),
 			Codec.INT.optionalFieldOf("offsetZ", 0).forGetter(Vec3i::getZ)

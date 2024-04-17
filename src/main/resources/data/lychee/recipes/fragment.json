@@ -1,12 +1,12 @@
 {
     "type": "lychee:block_crushing",
     "_": {
-      "...@": "test",
+      "...@": "lychee:test",
       "fragment": "Fragment"
     },
     "post": [
       {
-        "@": "sugar",
+        "@": "lychee:sugar",
         "amount": 3
       }
     ]

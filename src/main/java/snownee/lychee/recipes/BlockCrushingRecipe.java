@@ -38,18 +38,13 @@ import snownee.lychee.util.recipe.LycheeRecipeSerializer;
 public class BlockCrushingRecipe extends LycheeRecipe<LycheeContext> implements BlockKeyableRecipe<BlockCrushingRecipe> {
 	public static final BlockPredicate ANVIL = BlockPredicate.Builder.block().of(BlockTags.ANVIL).build();
 
-	protected @NotNull BlockPredicate fallingBlock = ANVIL;
-	protected BlockPredicate landingBlock = BlockPredicateExtensions.ANY;
-	protected NonNullList<Ingredient> ingredients = NonNullList.create();
-
-	public BlockCrushingRecipe(final LycheeRecipeCommonProperties commonProperties) {
-		super(commonProperties);
-		onConstructed();
-	}
+	protected BlockPredicate fallingBlock;
+	protected BlockPredicate landingBlock;
+	protected NonNullList<Ingredient> ingredients;
 
 	public BlockCrushingRecipe(
 			final LycheeRecipeCommonProperties commonProperties,
-			@NotNull BlockPredicate fallingBlock,
+			BlockPredicate fallingBlock,
 			BlockPredicate landingBlock,
 			final NonNullList<Ingredient> ingredients
 	) {
@@ -66,11 +61,7 @@ public class BlockCrushingRecipe extends LycheeRecipe<LycheeContext> implements 
 			BlockPredicate landingBlock,
 			final List<Ingredient> ingredients
 	) {
-		super(commonProperties);
-		this.fallingBlock = fallingBlock;
-		this.landingBlock = landingBlock;
-		this.ingredients = NonNullListAccess.construct(ingredients, null);
-		onConstructed();
+		this(commonProperties, fallingBlock, landingBlock, NonNullListAccess.construct(ingredients, null));
 	}
 
 	@Override

@@ -184,7 +184,7 @@ public class RandomSelect implements CompoundAction, PostAction {
 	public static class Type implements PostActionType<RandomSelect> {
 		public static final MapCodec<RandomSelect> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				PostActionCommonProperties.MAP_CODEC.forGetter(RandomSelect::commonProperties),
-				ExtraCodecs.nonEmptyList(new CompactListCodec<>(Entry.CODEC, true)).fieldOf("entries").forGetter(it -> it.entries),
+				new CompactListCodec<>(Entry.CODEC).nonEmpty().fieldOf("entries").forGetter(it -> it.entries),
 				ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("empty_weight", 0)
 						.forGetter(it -> it.emptyWeight),
 				MinMaxBounds.Ints.CODEC.optionalFieldOf("rolls", BoundsExtensions.ONE).forGetter(it -> it.rolls)

@@ -4,12 +4,12 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.advancements.critereon.BlockPredicate;
 import net.minecraft.core.NonNullList;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -133,8 +133,8 @@ public class ItemInsideRecipe extends LycheeRecipe<LycheeContext> implements Blo
 				LycheeRecipeCommonProperties.MAP_CODEC.forGetter(LycheeRecipe::commonProperties),
 				BlockPredicateExtensions.CODEC.optionalFieldOf(BLOCK_IN, BlockPredicateExtensions.ANY)
 						.forGetter(ItemInsideRecipe::blockPredicate),
-				Codec.INT.optionalFieldOf("time", 0).forGetter(ItemInsideRecipe::time),
-				new CompactListCodec<>(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC, true).optionalFieldOf(ITEM_IN, List.of())
+				ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("time", 0).forGetter(ItemInsideRecipe::time),
+				new CompactListCodec<>(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC).nonEmpty().optionalFieldOf(ITEM_IN, List.of())
 						.forGetter(it -> it.ingredients)
 		).apply(instance, ItemInsideRecipe::new));
 
