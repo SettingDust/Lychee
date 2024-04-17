@@ -12,6 +12,7 @@ import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.resources.ResourceLocation;
 import snownee.lychee.util.action.PostAction;
 import snownee.lychee.util.action.PostActionType;
+import snownee.lychee.util.codec.AliasOptionalFieldCodec;
 import snownee.lychee.util.contextual.ContextualHolder;
 
 public record LycheeRecipeCommonProperties(
@@ -32,9 +33,11 @@ public record LycheeRecipeCommonProperties(
 		}
 		return DataResult.success(s);
 	}).optionalFieldOf("group", ILycheeRecipe.DEFAULT_GROUP);
-	public static final MapCodec<ContextualHolder> CONTEXTUAL_CODEC = ContextualHolder.CODEC.optionalFieldOf(
-			"contextual",
-			ContextualHolder.EMPTY);
+	public static final MapCodec<ContextualHolder> CONTEXTUAL_CODEC = AliasOptionalFieldCodec.defaulted(
+			"if",
+			ContextualHolder.CODEC,
+			ContextualHolder.EMPTY,
+			"contextual");
 	public static final MapCodec<List<PostAction>> POST_ACTION_CODEC = PostActionType.LIST_CODEC.optionalFieldOf("post", List.of());
 	public static final MapCodec<MinMaxBounds.Ints> MAX_REPEATS_CODEC = MinMaxBounds.Ints.CODEC.optionalFieldOf(
 			"max_repeats",

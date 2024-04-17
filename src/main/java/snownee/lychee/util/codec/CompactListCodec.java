@@ -10,6 +10,7 @@ import com.mojang.serialization.codecs.ListCodec;
 
 import net.minecraft.util.ExtraCodecs;
 
+//TODO move to Kiwi
 public final class CompactListCodec<E> implements Codec<List<E>> {
 	private final Codec<E> singleCodec;
 	private final Codec<List<E>> listCodec;

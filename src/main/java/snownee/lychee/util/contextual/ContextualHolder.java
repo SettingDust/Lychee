@@ -58,28 +58,27 @@ public class ContextualHolder implements ContextualPredicate, Iterable<Contextua
 	private static ContextualHolder pack(List<ContextualConditionData<?>> holders) {
 		if (holders.isEmpty()) {
 			return EMPTY;
-		} else {
-			List<ContextualCondition> conditions = Lists.newArrayListWithExpectedSize(holders.size());
-			BitSet secretFlags = null;
-			Component[] overrideDesc = null;
-			for (var i = 0; i < holders.size(); i++) {
-				var holder = holders.get(i);
-				conditions.add(holder.condition());
-				if (holder.secret()) {
-					if (secretFlags == null) {
-						secretFlags = new BitSet(holders.size());
-					}
-					secretFlags.set(i);
-				}
-				if (holder.description().isPresent()) {
-					if (overrideDesc == null) {
-						overrideDesc = new Component[holders.size()];
-					}
-					overrideDesc[i] = holder.description().get();
-				}
-			}
-			return new ContextualHolder(conditions, secretFlags, overrideDesc);
 		}
+		List<ContextualCondition> conditions = Lists.newArrayListWithExpectedSize(holders.size());
+		BitSet secretFlags = null;
+		Component[] overrideDesc = null;
+		for (var i = 0; i < holders.size(); i++) {
+			var holder = holders.get(i);
+			conditions.add(holder.condition());
+			if (holder.secret()) {
+				if (secretFlags == null) {
+					secretFlags = new BitSet(holders.size());
+				}
+				secretFlags.set(i);
+			}
+			if (holder.description().isPresent()) {
+				if (overrideDesc == null) {
+					overrideDesc = new Component[holders.size()];
+				}
+				overrideDesc[i] = holder.description().get();
+			}
+		}
+		return new ContextualHolder(conditions, secretFlags, overrideDesc);
 	}
 
 	public List<ContextualCondition> conditions() {
