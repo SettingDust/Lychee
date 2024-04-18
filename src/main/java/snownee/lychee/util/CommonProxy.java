@@ -17,6 +17,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
+import net.fabricmc.fabric.api.recipe.v1.ingredient.FabricIngredient;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -245,7 +246,7 @@ public class CommonProxy implements ModInitializer {
 	}
 
 	public static boolean isSimpleIngredient(Ingredient ingredient) {
-		return !ingredient.requiresTesting();
+		return !((FabricIngredient) (Object) ingredient).requiresTesting();
 	}
 
 	public static void itemstackToJson(ItemStack stack, JsonObject jsonObject) {
@@ -296,10 +297,11 @@ public class CommonProxy implements ModInitializer {
 	}
 
 	public static IngredientInfo.Type getIngredientType(Ingredient ingredient) {
-		if (ingredient.isEmpty()) { //FIXME not compatible with AIR_INGREDIENT!
+		if (ingredient.isEmpty()) { // TODO not compatible with AIR_INGREDIENT!
 			return IngredientInfo.Type.AIR;
 		}
-		var customIngredient = ingredient.getCustomIngredient();
+		// TODO Fabric recipe api interface injection isn't working now
+		var customIngredient = ((FabricIngredient) (Object) ingredient).getCustomIngredient();
 		if (customIngredient != null && customIngredient.getSerializer() == AlwaysTrueIngredient.SERIALIZER) {
 			return IngredientInfo.Type.ANY;
 		}

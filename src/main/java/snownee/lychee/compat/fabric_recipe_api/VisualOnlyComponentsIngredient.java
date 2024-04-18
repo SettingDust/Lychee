@@ -11,6 +11,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
+import net.fabricmc.fabric.api.recipe.v1.ingredient.FabricIngredient;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -56,7 +57,8 @@ public class VisualOnlyComponentsIngredient implements CustomIngredient {
 
 	@Override
 	public boolean requiresTesting() {
-		return base.requiresTesting();
+		// TODO Fabric recipe api interface injection isn't working now
+		return ((FabricIngredient) (Object) base).requiresTesting();
 	}
 
 	@Override
