@@ -1,47 +1,20 @@
 package snownee.lychee.compat.fabric_recipe_api;
 
 import java.util.List;
-import java.util.function.Supplier;
 
-import com.google.common.base.Suppliers;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.MapCodec;
 
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import snownee.lychee.Lychee;
 
 public class AlwaysTrueIngredient implements CustomIngredient {
-	public static final ResourceLocation ID = new ResourceLocation(Lychee.ID, "always_true");
-	public static final CustomIngredientSerializer<AlwaysTrueIngredient> SERIALIZER = new CustomIngredientSerializer<>() {
-
-		private final Supplier<AlwaysTrueIngredient> supplier = Suppliers.memoize(AlwaysTrueIngredient::new);
-
-		@Override
-		public ResourceLocation getIdentifier() {
-			return ID;
-		}
-
-		@Override
-		public AlwaysTrueIngredient read(JsonObject json) {
-			return supplier.get();
-		}
-
-		@Override
-		public void write(JsonObject json, AlwaysTrueIngredient ingredient) {
-		}
-
-		@Override
-		public AlwaysTrueIngredient read(FriendlyByteBuf buf) {
-			return supplier.get();
-		}
-
-		@Override
-		public void write(FriendlyByteBuf buf, AlwaysTrueIngredient ingredient) {
-		}
-	};
+	public static final ResourceLocation ID = Lychee.id("always_true");
+	public static final CustomIngredientSerializer<AlwaysTrueIngredient> SERIALIZER = new Serializer();
 
 	@Override
 	public boolean test(ItemStack stack) {
@@ -55,11 +28,32 @@ public class AlwaysTrueIngredient implements CustomIngredient {
 
 	@Override
 	public boolean requiresTesting() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public CustomIngredientSerializer<?> getSerializer() {
 		return SERIALIZER;
+	}
+
+	private static class Serializer implements CustomIngredientSerializer<AlwaysTrueIngredient> {
+		private static final AlwaysTrueIngredient INSTANCE = new AlwaysTrueIngredient();
+		public static final MapCodec<AlwaysTrueIngredient> CODEC = MapCodec.unit(INSTANCE);
+		public static final StreamCodec<RegistryFriendlyByteBuf, AlwaysTrueIngredient> STREAM_CODEC = StreamCodec.unit(INSTANCE);
+
+		@Override
+		public ResourceLocation getIdentifier() {
+			return ID;
+		}
+
+		@Override
+		public MapCodec<AlwaysTrueIngredient> getCodec(boolean allowEmpty) {
+			return CODEC;
+		}
+
+		@Override
+		public StreamCodec<RegistryFriendlyByteBuf, AlwaysTrueIngredient> getPacketCodec() {
+			return STREAM_CODEC;
+		}
 	}
 }
