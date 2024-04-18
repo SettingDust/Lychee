@@ -19,7 +19,6 @@ import net.minecraft.world.phys.Vec3;
 import snownee.lychee.RecipeSerializers;
 import snownee.lychee.RecipeTypes;
 import snownee.lychee.mixin.NonNullListAccess;
-import snownee.lychee.util.codec.CompactListCodec;
 import snownee.lychee.util.codec.LycheeCodecs;
 import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.context.LycheeContextKey;
@@ -97,7 +96,7 @@ public class ItemExplodingRecipe extends LycheeRecipe<LycheeContext> implements 
 		public static final MapCodec<ItemExplodingRecipe> CODEC =
 				RecordCodecBuilder.mapCodec(instance -> instance.group(
 						LycheeRecipeCommonProperties.MAP_CODEC.forGetter(LycheeRecipe::commonProperties),
-						new CompactListCodec<>(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC).optionalFieldOf(ITEM_IN, List.of())
+						LycheeCodecs.compactList(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC).optionalFieldOf(ITEM_IN, List.of())
 								.forGetter(it -> it.ingredients)
 				).apply(instance, ItemExplodingRecipe::new));
 

@@ -19,7 +19,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import snownee.lychee.Lychee;
 import snownee.lychee.LycheeRegistries;
-import snownee.lychee.util.codec.CompactListCodec;
+import snownee.lychee.util.codec.LycheeCodecs;
 import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.context.LycheeContextKey;
 import snownee.lychee.util.recipe.ILycheeRecipe;
@@ -27,7 +27,7 @@ import snownee.lychee.util.recipe.ILycheeRecipe;
 public class ContextualHolder implements ContextualPredicate, Iterable<ContextualCondition> {
 	public static final Component SECRET_COMPONENT = Component.translatable("contextual.lychee.secret").withStyle(
 			ChatFormatting.GRAY);
-	public static final Codec<ContextualHolder> CODEC = new CompactListCodec<>(ContextualConditionData.CODEC.codec()).xmap(
+	public static final Codec<ContextualHolder> CODEC = LycheeCodecs.compactList(ContextualConditionData.CODEC.codec()).xmap(
 			ContextualHolder::pack,
 			ContextualHolder::unpack);
 

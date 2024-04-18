@@ -6,7 +6,7 @@ import com.mojang.serialization.Codec;
 
 import snownee.lychee.LycheeRegistries;
 import snownee.lychee.util.SerializableType;
-import snownee.lychee.util.codec.CompactListCodec;
+import snownee.lychee.util.codec.LycheeCodecs;
 
 public interface PostActionType<T extends PostAction> extends SerializableType<T> {
 	Codec<PostAction> CODEC = LycheeRegistries.POST_ACTION.byNameCodec().dispatch(
@@ -14,5 +14,5 @@ public interface PostActionType<T extends PostAction> extends SerializableType<T
 			PostActionType::codec
 	);
 
-	Codec<List<PostAction>> LIST_CODEC = new CompactListCodec<>(CODEC);
+	Codec<List<PostAction>> LIST_CODEC = LycheeCodecs.compactList(CODEC);
 }

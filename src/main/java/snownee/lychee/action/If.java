@@ -21,7 +21,7 @@ import snownee.lychee.util.action.PostAction;
 import snownee.lychee.util.action.PostActionCommonProperties;
 import snownee.lychee.util.action.PostActionType;
 import snownee.lychee.util.action.PostActionTypes;
-import snownee.lychee.util.codec.CompactListCodec;
+import snownee.lychee.util.codec.LycheeCodecs;
 import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.context.LycheeContextKey;
 import snownee.lychee.util.json.JsonPointer;
@@ -124,8 +124,8 @@ public class If implements CompoundAction, PostAction {
 		public static final MapCodec<If> CODEC =
 				RecordCodecBuilder.<If>mapCodec(instance -> instance.group(
 								PostActionCommonProperties.MAP_CODEC.forGetter(If::commonProperties),
-								new CompactListCodec<>(PostAction.CODEC).fieldOf("then").forGetter(it -> it.successEntries),
-								new CompactListCodec<>(PostAction.CODEC).fieldOf("else").forGetter(it -> it.failureEntries)
+						LycheeCodecs.compactList(PostAction.CODEC).fieldOf("then").forGetter(it -> it.successEntries),
+						LycheeCodecs.compactList(PostAction.CODEC).fieldOf("else").forGetter(it -> it.failureEntries)
 						).apply(instance, If::new)
 				).validate(
 						it -> {
