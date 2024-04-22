@@ -42,8 +42,7 @@ public class BlockInteractingRecipe extends LycheeRecipe<LycheeContext> implemen
 		if (player.isSpectator()) {
 			return InteractionResult.PASS;
 		}
-		if (hand == InteractionHand.OFF_HAND && player.getMainHandItem().isEmpty() &&
-				player.getOffhandItem().isEmpty()) {
+		if (hand == InteractionHand.OFF_HAND && player.getOffhandItem().isEmpty()) {
 			return InteractionResult.PASS;
 		}
 		if (player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem())) {
