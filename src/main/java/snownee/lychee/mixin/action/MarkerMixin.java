@@ -9,7 +9,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.entity.Marker;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import snownee.lychee.Lychee;
+import snownee.lychee.LycheeLootContextParamSets;
 import snownee.lychee.context.ActionContext;
 import snownee.lychee.util.action.ActionData;
 import snownee.lychee.util.action.ActionMarker;
@@ -63,6 +65,12 @@ public class MarkerMixin implements ActionMarker {
 				&& Lychee.ID.equals(self().getCustomName().getString())) {
 			self().discard();
 		}
+		if (lychee$data.getContext().isPresent()) {
+			var context = lychee$data.getContext().get();
+			var lootParamsContext = context.get(LycheeContextKey.LOOT_PARAMS);
+			lootParamsContext.setParam(LootContextParams.ORIGIN, self().position());
+			lootParamsContext.validate(LycheeLootContextParamSets.ALL);
+		}
 	}
 
 	@Inject(at = @At("HEAD"), method = "addAdditionalSaveData")
@@ -74,7 +82,7 @@ public class MarkerMixin implements ActionMarker {
 		compoundTag.put(
 				"lychee:action",
 				ActionData.CODEC.encodeStart(NbtOps.INSTANCE, lychee$data).getOrThrow((err) -> {
-					Lychee.LOGGER.debug("Save Lychee action data to marker failed from data: " + lychee$data);
+					Lychee.LOGGER.debug("Save Lychee action data to marker failed from data: {}", lychee$data);
 					return new IllegalStateException("Save Lychee action data to marker failed with error: " + err);
 				})
 		);

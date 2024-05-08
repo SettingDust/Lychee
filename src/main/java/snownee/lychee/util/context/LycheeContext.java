@@ -25,7 +25,7 @@ public class LycheeContext extends EmptyContainer {
 					LycheeRegistries.CONTEXT.byNameCodec(),
 					it -> it instanceof KeyedContextValue<?> value
 							? DataResult.success(value.key())
-							: DataResult.error(() -> "Can't determine key of " + it + "that isn't LycheeContextValue"),
+							: DataResult.error(() -> "Can't determine key of " + it + " that isn't LycheeContextValue"),
 					it -> {
 						final var key = LycheeRegistries.CONTEXT.getKey(it);
 						final var serializer = LycheeRegistries.CONTEXT_SERIALIZER.get(key);
