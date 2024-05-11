@@ -28,7 +28,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import snownee.kiwi.util.Util;
+import snownee.kiwi.util.KUtil;
 import snownee.lychee.Lychee;
 import snownee.lychee.RecipeTypes;
 import snownee.lychee.client.gui.AllGuiTextures;
@@ -162,7 +162,7 @@ public class LycheeREIPlugin implements REIClientPlugin {
 
 		var registryAccess = Minecraft.getInstance().level.registryAccess();
 		try {
-			Util.getRecipes(RecipeTypes.ANVIL_CRAFTING).stream()
+			KUtil.getRecipes(RecipeTypes.ANVIL_CRAFTING).stream()
 					.filter(it ->
 							!it.value().getResultItem(registryAccess).isEmpty() &&
 									!it.value().isSpecial() && !it.value().hideInRecipeViewer())

@@ -50,7 +50,7 @@ import net.minecraft.world.phys.Vec3;
 import snownee.kiwi.Mod;
 import snownee.kiwi.loader.Platform;
 import snownee.kiwi.util.KEvent;
-import snownee.kiwi.util.Util;
+import snownee.kiwi.util.KUtil;
 import snownee.lychee.Lychee;
 import snownee.lychee.LycheeRegistries;
 import snownee.lychee.LycheeTags;
@@ -194,7 +194,7 @@ public class CommonProxy implements ModInitializer {
 
 	@Nullable
 	public static RecipeHolder<?> recipe(ResourceLocation id) {
-		var manager = Util.getRecipeManager();
+		var manager = KUtil.getRecipeManager();
 		if (manager == null) {
 			return null;
 		}
