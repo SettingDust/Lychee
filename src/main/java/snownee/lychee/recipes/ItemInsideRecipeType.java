@@ -57,6 +57,13 @@ public class ItemInsideRecipeType extends LycheeRecipeType<ItemInsideRecipe> {
 		super.refreshCache();
 		final var itemWeights = new Object2FloatOpenHashMap<Item>();
 		final var caches = recipes.stream()
+				.filter(it -> {
+					if (it.value().getIngredients().stream().noneMatch(CommonProxy::isSimpleIngredient)) {
+						specialRecipes.add(it);
+						return false;
+					}
+					return true;
+				})
 				.map(recipeHolder ->
 						new Cache(
 								recipeHolder,

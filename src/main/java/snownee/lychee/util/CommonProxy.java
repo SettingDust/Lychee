@@ -246,7 +246,7 @@ public class CommonProxy implements ModInitializer {
 	}
 
 	public static boolean isSimpleIngredient(Ingredient ingredient) {
-		return !((FabricIngredient) (Object) ingredient).requiresTesting();
+		return !ingredient.requiresTesting();
 	}
 
 	public static void itemstackToJson(ItemStack stack, JsonObject jsonObject) {
