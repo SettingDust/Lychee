@@ -14,6 +14,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -180,9 +183,31 @@ public class AnvilCraftingRecipe extends LycheeRecipe<LycheeContext> {
 								.forGetter(AnvilCraftingRecipe::materialCost)
 				).apply(instance, AnvilCraftingRecipe::new));
 
+		public static final StreamCodec<RegistryFriendlyByteBuf, AnvilCraftingRecipe> STREAM_CODEC =
+				StreamCodec.composite(
+						ByteBufCodecs.fromCodecWithRegistries(LycheeRecipeCommonProperties.MAP_CODEC.codec()),
+						AnvilCraftingRecipe::commonProperties,
+						ByteBufCodecs.fromCodecWithRegistries(LycheeCodecs.PAIR_INGREDIENT_CODEC),
+						AnvilCraftingRecipe::input,
+						ByteBufCodecs.fromCodecWithRegistries(LycheeCodecs.PLAIN_ITEM_STACK_CODEC),
+						AnvilCraftingRecipe::output,
+						PostActionType.STREAM_LIST_CODEC,
+						AnvilCraftingRecipe::postActions,
+						ByteBufCodecs.INT,
+						AnvilCraftingRecipe::levelCost,
+						ByteBufCodecs.INT,
+						AnvilCraftingRecipe::materialCost,
+						AnvilCraftingRecipe::new
+				);
+
 		@Override
 		public @NotNull MapCodec<AnvilCraftingRecipe> codec() {
 			return CODEC;
+		}
+
+		@Override
+		public @NotNull StreamCodec<RegistryFriendlyByteBuf, AnvilCraftingRecipe> streamCodec() {
+			return STREAM_CODEC;
 		}
 	}
 }
