@@ -320,6 +320,10 @@ public class CommonProxy implements ModInitializer {
 		return pStack;
 	}
 
+	public static <T> String getTagTranslationKey(TagKey<T> key) {
+		return key.getTranslationKey();
+	}
+
 	@Override
 	public void onInitialize() {
 		RecipeTypes.init();

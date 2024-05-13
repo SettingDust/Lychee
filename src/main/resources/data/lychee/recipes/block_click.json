@@ -1,6 +1,6 @@
 {
 	"type": "lychee:block_clicking",
-	"contextual": {
+	"if": {
 		"type": "is_sneaking",
 		"description": "Test"
 	},

@@ -1,7 +1,7 @@
 {
 	"type": "lychee:block_exploding",
 	"block_in": "gold_block",
-	"contextual": {
+	"if": {
 		"type": "weather",
 		"weather": "rain"
 	},

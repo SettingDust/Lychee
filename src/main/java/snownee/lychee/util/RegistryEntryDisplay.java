@@ -30,7 +30,7 @@ public final class RegistryEntryDisplay {
 	public static <T> MutableComponent of(HolderSet<T> value, ResourceKey<Registry<T>> registry) {
 		if (value instanceof HolderSet.Named<T> named) {
 			return Component.translatableWithFallback(
-					registry.location().toShortLanguageKey() + ".#" + named.key().location().toLanguageKey(),
+					CommonProxy.getTagTranslationKey(named.key()),
 					CommonProxy.capitaliseAllWords(named.key().location().getPath().replace('_', ' '))
 			);
 		}
