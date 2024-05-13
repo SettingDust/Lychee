@@ -183,27 +183,27 @@ public class AnvilCraftingRecipe extends LycheeRecipe<LycheeContext> {
 								.forGetter(AnvilCraftingRecipe::materialCost)
 				).apply(instance, AnvilCraftingRecipe::new));
 
+		@Override
+		public @NotNull MapCodec<AnvilCraftingRecipe> codec() {
+			return CODEC;
+		}
+
 		public static final StreamCodec<RegistryFriendlyByteBuf, AnvilCraftingRecipe> STREAM_CODEC =
 				StreamCodec.composite(
-						ByteBufCodecs.fromCodecWithRegistries(LycheeRecipeCommonProperties.MAP_CODEC.codec()),
+						LycheeRecipeCommonProperties.STREAM_CODEC,
 						AnvilCraftingRecipe::commonProperties,
 						ByteBufCodecs.fromCodecWithRegistries(LycheeCodecs.PAIR_INGREDIENT_CODEC),
 						AnvilCraftingRecipe::input,
 						ByteBufCodecs.fromCodecWithRegistries(LycheeCodecs.PLAIN_ITEM_STACK_CODEC),
 						AnvilCraftingRecipe::output,
 						PostActionType.STREAM_LIST_CODEC,
-						AnvilCraftingRecipe::postActions,
+						AnvilCraftingRecipe::assemblingActions,
 						ByteBufCodecs.INT,
 						AnvilCraftingRecipe::levelCost,
 						ByteBufCodecs.INT,
 						AnvilCraftingRecipe::materialCost,
 						AnvilCraftingRecipe::new
 				);
-
-		@Override
-		public @NotNull MapCodec<AnvilCraftingRecipe> codec() {
-			return CODEC;
-		}
 
 		@Override
 		public @NotNull StreamCodec<RegistryFriendlyByteBuf, AnvilCraftingRecipe> streamCodec() {

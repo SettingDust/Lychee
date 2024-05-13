@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -13,7 +14,7 @@ import snownee.lychee.util.SerializableType;
 import snownee.lychee.util.codec.LycheeCodecs;
 
 public interface PostActionType<T extends PostAction> extends SerializableType<T> {
-	Codec<PostAction> CODEC = LycheeRegistries.POST_ACTION.byNameCodec().dispatch(PostAction::type, PostActionType::codec);
+	MapCodec<PostAction> MAP_CODEC = LycheeRegistries.POST_ACTION.byNameCodec().dispatchMap(PostAction::type, PostActionType::codec);
 
 	StreamCodec<RegistryFriendlyByteBuf, PostAction> STREAM_CODEC = ByteBufCodecs.registry(LycheeRegistries.POST_ACTION.key()).dispatch(
 			PostAction::type,
@@ -44,8 +45,10 @@ public interface PostActionType<T extends PostAction> extends SerializableType<T
 				}
 			});
 
-	Codec<List<PostAction>> LIST_CODEC = LycheeCodecs.compactList(CODEC);
+	Codec<List<PostAction>> LIST_CODEC = LycheeCodecs.compactList(MAP_CODEC.codec());
 
 	@Override
-	StreamCodec<RegistryFriendlyByteBuf, T> streamCodec();
+	default StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
+		return ByteBufCodecs.fromCodecWithRegistries(codec().codec());
+	}
 }
