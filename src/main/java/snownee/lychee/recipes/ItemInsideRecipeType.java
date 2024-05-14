@@ -1,5 +1,6 @@
 package snownee.lychee.recipes;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +32,6 @@ import net.minecraft.world.phys.Vec3;
 import snownee.lychee.LycheeLootContextParams;
 import snownee.lychee.context.ItemShapelessContext;
 import snownee.lychee.util.CommonProxy;
-import snownee.lychee.util.IngredientUtils;
 import snownee.lychee.util.LycheeCounter;
 import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.context.LycheeContextKey;
@@ -67,14 +67,14 @@ public class ItemInsideRecipeType extends LycheeRecipeType<ItemInsideRecipe> {
 				.map(recipeHolder ->
 						new Cache(
 								recipeHolder,
-								IngredientUtils
-										.flattenIngredients(recipeHolder.value().getIngredients())
-										.peek(it -> {
-											final var weight = 1F / it.size();
-											for (final var itemStack : it)
-												itemWeights.merge(itemStack.getItem(), weight, Float::sum);
+								recipeHolder.value().getIngredients().stream()
+										.map(ingredient -> {
+											var items = Arrays.stream(ingredient.getItems()).map(ItemStack::getItem).toList();
+											final var weight = 1F / items.size();
+											for (final var item : items)
+												itemWeights.merge(item, weight, Float::sum);
+											return Set.copyOf(items);
 										})
-										.map(stacks -> stacks.stream().map(ItemStack::getItem).collect(Collectors.toSet()))
 										.toList()
 						)
 				)
