@@ -97,5 +97,8 @@
 	"tag.item.lychee.item_exploding_catalysts": "Item Exploding Catalysts",
 	"tag.item.lychee.fire_immune": "Fire Immune Items",
 	"tag.item.lychee.block_exploding_catalysts": "Block Exploding Catalysts",
-	"tag.item.lychee.dispenser_placement": "Dispenser Placeable Items"
+	"tag.item.lychee.dispenser_placement": "Dispenser Placeable Items",
+	"tag.block.lychee.extend_box": "Extend Interaction Box",
+	"tag.entity_type.lychee.lightning_fire_immune": "Lightning Fire Immune Entities",
+	"tag.entity_type.lychee.lightning_immune": "Lightning Immune Entities"
 }
