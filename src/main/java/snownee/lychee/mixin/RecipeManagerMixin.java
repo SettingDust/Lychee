@@ -15,9 +15,11 @@ import com.google.gson.JsonObject;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
+import snownee.kiwi.util.resource.OneTimeLoader;
 import snownee.lychee.LycheeConfig;
 import snownee.lychee.util.json.JsonFragmentManager;
 
@@ -34,6 +36,13 @@ public class RecipeManagerMixin {
 			ResourceManager resourceManager,
 			ProfilerFiller profiler,
 			CallbackInfo ci) {
+		if (LycheeConfig.enableYamlRecipes) {
+			//TODO Kiwi id & file name filter
+			Map<ResourceLocation, JsonElement> yamlRecipes = OneTimeLoader.load(resourceManager, "recipes", ExtraCodecs.JSON);
+			for (Map.Entry<ResourceLocation, JsonElement> entry : yamlRecipes.entrySet()) {
+				object.putIfAbsent(entry.getKey(), entry.getValue());
+			}
+		}
 		if (LycheeConfig.enableFragment) {
 			JsonFragmentManager fragmentManager = new JsonFragmentManager(resourceManager);
 			fragmentManagerProvider.set(fragmentManager);
