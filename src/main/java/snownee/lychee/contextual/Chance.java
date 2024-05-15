@@ -6,7 +6,6 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -41,14 +40,12 @@ public record Chance(float chance) implements ContextualCondition {
 	}
 
 	public static class Type implements ContextualConditionType<Chance> {
-		public static final MapCodec<Chance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-				Codec.FLOAT.validate(f -> {
-					if (f <= 0 || f >= 1) {
-						return DataResult.error(() -> "Chance must be between 0 and 1, exclusive");
-					}
-					return DataResult.success(f);
-				}).fieldOf("chance").forGetter(Chance::chance)
-		).apply(instance, Chance::new));
+		public static final MapCodec<Chance> CODEC = Codec.FLOAT.validate(f -> {
+			if (f <= 0 || f >= 1) {
+				return DataResult.error(() -> "Chance must be between 0 and 1, exclusive");
+			}
+			return DataResult.success(f);
+		}).xmap(Chance::new, Chance::chance).fieldOf("chance");
 
 		@Override
 		public @NotNull MapCodec<Chance> codec() {

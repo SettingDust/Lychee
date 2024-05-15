@@ -49,7 +49,7 @@ public record DropItem(PostActionCommonProperties commonProperties, ItemStack st
 				level.registryAccess(),
 				CommonProxy.jsonToTag(new JsonPointer(getPath().get()).find(context.get(LycheeContextKey.JSON).json())));
 		stack.setCount(stack.getCount() * times);
-		if (recipe.getType() == RecipeTypes.BLOCK_EXPLODING) {
+		if (recipe != null && recipe.getType() == RecipeTypes.BLOCK_EXPLODING) {
 			context.get(LycheeContextKey.ITEM).stacksNeedHandle.add(stack);
 		} else {
 			CommonProxy.dropItemStack(level, pos.x, pos.y, pos.z, stack, $ -> ((ItemEntityAccess) $).setHealth(80));

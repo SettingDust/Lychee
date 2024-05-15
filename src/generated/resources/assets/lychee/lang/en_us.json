@@ -17,6 +17,8 @@
   "contextual.lychee.execute": "Execute a command",
   "contextual.lychee.fall_distance": "Fall distance is: %s",
   "contextual.lychee.fall_distance.not": "Fall distance is not: %s",
+  "contextual.lychee.is_off_cooldown": "Off cooldown: %s",
+  "contextual.lychee.is_off_cooldown.not": "On cooldown: %s",
   "contextual.lychee.is_sneaking": "Requires crouching",
   "contextual.lychee.is_sneaking.not": "Requires not crouching",
   "contextual.lychee.location": "Check at [~%s,~%s,~%s]:",

@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Player;
@@ -42,9 +41,7 @@ public record Not(ContextualCondition condition) implements ContextualCondition 
 	}
 
 	public static class Type implements ContextualConditionType<Not> {
-		public static final MapCodec<Not> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
-				.group(ContextualCondition.CODEC.fieldOf("contextual").forGetter(Not::condition))
-				.apply(instance, Not::new));
+		public static final MapCodec<Not> CODEC = ContextualCondition.CODEC.xmap(Not::new, Not::condition).fieldOf("contextual");
 
 		@Override
 		public @NotNull MapCodec<Not> codec() {
