@@ -198,9 +198,9 @@ public class AnvilCraftingRecipe extends LycheeRecipe<LycheeContext> {
 						AnvilCraftingRecipe::output,
 						PostActionType.STREAM_LIST_CODEC,
 						AnvilCraftingRecipe::assemblingActions,
-						ByteBufCodecs.INT,
+						ByteBufCodecs.VAR_INT,
 						AnvilCraftingRecipe::levelCost,
-						ByteBufCodecs.INT,
+						ByteBufCodecs.VAR_INT,
 						AnvilCraftingRecipe::materialCost,
 						AnvilCraftingRecipe::new
 				);

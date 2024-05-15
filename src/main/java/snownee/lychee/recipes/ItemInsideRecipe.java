@@ -153,7 +153,7 @@ public class ItemInsideRecipe extends LycheeRecipe<LycheeContext> implements Blo
 						ItemInsideRecipe::commonProperties,
 						BlockPredicate.STREAM_CODEC,
 						ItemInsideRecipe::blockPredicate,
-						ByteBufCodecs.INT,
+						ByteBufCodecs.VAR_INT,
 						ItemInsideRecipe::time,
 						ByteBufCodecs.fromCodecWithRegistries(ExtraCodecs.nonEmptyList(LycheeCodecs.compactList(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC))),
 						ItemInsideRecipe::getIngredients,
