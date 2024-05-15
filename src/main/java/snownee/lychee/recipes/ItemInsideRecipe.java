@@ -9,6 +9,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.advancements.critereon.BlockPredicate;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -141,6 +144,25 @@ public class ItemInsideRecipe extends LycheeRecipe<LycheeContext> implements Blo
 		@Override
 		public @NotNull MapCodec<ItemInsideRecipe> codec() {
 			return CODEC;
+		}
+
+
+		public static final StreamCodec<RegistryFriendlyByteBuf, ItemInsideRecipe> STREAM_CODEC =
+				StreamCodec.composite(
+						LycheeRecipeCommonProperties.STREAM_CODEC,
+						ItemInsideRecipe::commonProperties,
+						BlockPredicate.STREAM_CODEC,
+						ItemInsideRecipe::blockPredicate,
+						ByteBufCodecs.INT,
+						ItemInsideRecipe::time,
+						ByteBufCodecs.fromCodecWithRegistries(ExtraCodecs.nonEmptyList(LycheeCodecs.compactList(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC))),
+						ItemInsideRecipe::getIngredients,
+						ItemInsideRecipe::new
+				);
+
+		@Override
+		public @NotNull StreamCodec<RegistryFriendlyByteBuf, ItemInsideRecipe> streamCodec() {
+			return STREAM_CODEC;
 		}
 	}
 }

@@ -8,6 +8,9 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -103,6 +106,21 @@ public class ItemExplodingRecipe extends LycheeRecipe<LycheeContext> implements 
 		@Override
 		public @NotNull MapCodec<ItemExplodingRecipe> codec() {
 			return CODEC;
+		}
+
+
+		public static final StreamCodec<RegistryFriendlyByteBuf, ItemExplodingRecipe> STREAM_CODEC =
+				StreamCodec.composite(
+						LycheeRecipeCommonProperties.STREAM_CODEC,
+						ItemExplodingRecipe::commonProperties,
+						ByteBufCodecs.fromCodecWithRegistries(LycheeCodecs.compactList(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC)),
+						ItemExplodingRecipe::getIngredients,
+						ItemExplodingRecipe::new
+				);
+
+		@Override
+		public @NotNull StreamCodec<RegistryFriendlyByteBuf, ItemExplodingRecipe> streamCodec() {
+			return STREAM_CODEC;
 		}
 	}
 }

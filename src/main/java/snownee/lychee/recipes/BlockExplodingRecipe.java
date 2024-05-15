@@ -6,6 +6,8 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.advancements.critereon.BlockPredicate;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
@@ -62,6 +64,20 @@ public class BlockExplodingRecipe extends LycheeRecipe<LycheeContext> implements
 		@Override
 		public @NotNull MapCodec<BlockExplodingRecipe> codec() {
 			return CODEC;
+		}
+
+		public static final StreamCodec<RegistryFriendlyByteBuf, BlockExplodingRecipe> STREAM_CODEC =
+				StreamCodec.composite(
+						LycheeRecipeCommonProperties.STREAM_CODEC,
+						BlockExplodingRecipe::commonProperties,
+						BlockPredicate.STREAM_CODEC,
+						BlockExplodingRecipe::blockPredicate,
+						BlockExplodingRecipe::new
+				);
+
+		@Override
+		public @NotNull StreamCodec<RegistryFriendlyByteBuf, BlockExplodingRecipe> streamCodec() {
+			return STREAM_CODEC;
 		}
 	}
 }
