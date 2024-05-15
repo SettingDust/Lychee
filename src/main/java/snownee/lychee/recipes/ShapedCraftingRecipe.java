@@ -17,6 +17,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -294,7 +295,7 @@ public class ShapedCraftingRecipe extends LycheeRecipe<CraftingContainer> implem
 				StreamCodec.composite(
 						LycheeRecipeCommonProperties.STREAM_CODEC,
 						ShapedCraftingRecipe::commonProperties,
-						RecipeSerializer.SHAPED_RECIPE.streamCodec(),
+						ByteBufCodecs.fromCodecWithRegistries(RecipeSerializer.SHAPED_RECIPE.codec().codec()),
 						ShapedCraftingRecipe::shaped,
 						PostActionType.STREAM_LIST_CODEC,
 						ShapedCraftingRecipe::assemblingActions,

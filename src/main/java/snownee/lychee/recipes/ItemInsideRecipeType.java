@@ -14,6 +14,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
@@ -73,7 +74,7 @@ public class ItemInsideRecipeType extends LycheeRecipeType<ItemInsideRecipe> {
 											final var weight = 1F / items.size();
 											for (final var item : items)
 												itemWeights.merge(item, weight, Float::sum);
-											return Set.copyOf(items);
+											return Sets.newHashSet(items);
 										})
 										.toList()
 						)
@@ -160,5 +161,5 @@ public class ItemInsideRecipeType extends LycheeRecipeType<ItemInsideRecipe> {
 		});
 	}
 
-	public record Cache(RecipeHolder<ItemInsideRecipe> recipe, List<Set<Item>> ingredients) {}
+	public record Cache(RecipeHolder<ItemInsideRecipe> recipe, List<? extends Set<Item>> ingredients) {}
 }
