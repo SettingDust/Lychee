@@ -7,8 +7,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
@@ -52,7 +52,7 @@ public record MoveTowardsFace(PostActionCommonProperties commonProperties, float
 		).apply(inst, MoveTowardsFace::new));
 
 		@Override
-		public StreamCodec<? extends ByteBuf, MoveTowardsFace> streamCodec() {
+		public StreamCodec<RegistryFriendlyByteBuf, MoveTowardsFace> streamCodec() {
 			throw new UnsupportedOperationException();
 		}
 

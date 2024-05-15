@@ -6,13 +6,14 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import io.netty.buffer.ByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import snownee.lychee.context.ActionContext;
 import snownee.lychee.util.action.PostAction;
 import snownee.lychee.util.action.PostActionCommonProperties;
 import snownee.lychee.util.action.PostActionType;
 import snownee.lychee.util.action.PostActionTypes;
+import snownee.lychee.util.codec.LycheeStreamCodecs;
 import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.context.LycheeContextKey;
 import snownee.lychee.util.recipe.ILycheeRecipe;
@@ -51,8 +52,8 @@ public record Break(PostActionCommonProperties commonProperties) implements Post
 		}
 
 		@Override
-		public StreamCodec<? extends ByteBuf, Break> streamCodec() {
-			return StreamCodec.of((buf, value) -> {}, (buf) -> CLIENT_DUMMY);
+		public StreamCodec<RegistryFriendlyByteBuf, Break> streamCodec() {
+			return LycheeStreamCodecs.unit(CLIENT_DUMMY);
 		}
 	}
 }

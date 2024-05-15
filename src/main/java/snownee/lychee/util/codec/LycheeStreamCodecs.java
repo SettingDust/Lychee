@@ -6,8 +6,19 @@ import com.mojang.datafixers.util.Function7;
 
 import net.minecraft.network.codec.StreamCodec;
 
-public class LycheeStreamCodecs {
-	public static <B, C, T1, T2, T3, T4, T5, T6, T7> StreamCodec<B, C> composite(
+public interface LycheeStreamCodecs {
+	static <B, V> StreamCodec<B, V> unit(V object) {
+		return new StreamCodec<>() {
+			public V decode(B buf) {
+				return object;
+			}
+
+			public void encode(B buf, V input) {
+			}
+		};
+	}
+
+	static <B, C, T1, T2, T3, T4, T5, T6, T7> StreamCodec<B, C> composite(
 			StreamCodec<? super B, T1> codec1,
 			Function<C, T1> getter1,
 			StreamCodec<? super B, T2> codec2,
