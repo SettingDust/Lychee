@@ -8,6 +8,9 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -46,6 +49,7 @@ public class LightningChannelingRecipe extends LycheeRecipe<LycheeContext> {
 		onConstructed();
 	}
 
+	@SuppressWarnings("UnreachableCode")
 	public LightningChannelingRecipe(
 			LycheeRecipeCommonProperties commonProperties,
 			final List<Ingredient> ingredients
@@ -86,6 +90,21 @@ public class LightningChannelingRecipe extends LycheeRecipe<LycheeContext> {
 		@Override
 		public @NotNull MapCodec<LightningChannelingRecipe> codec() {
 			return CODEC;
+		}
+
+
+		public static final StreamCodec<RegistryFriendlyByteBuf, LightningChannelingRecipe> STREAM_CODEC =
+				StreamCodec.composite(
+						LycheeRecipeCommonProperties.STREAM_CODEC,
+						LightningChannelingRecipe::commonProperties,
+						ByteBufCodecs.fromCodecWithRegistries(LycheeCodecs.compactList(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC)),
+						LightningChannelingRecipe::getIngredients,
+						LightningChannelingRecipe::new
+				);
+
+		@Override
+		public @NotNull StreamCodec<RegistryFriendlyByteBuf, LightningChannelingRecipe> streamCodec() {
+			return STREAM_CODEC;
 		}
 	}
 }

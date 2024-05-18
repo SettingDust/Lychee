@@ -9,10 +9,14 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import snownee.lychee.util.action.PostAction;
 import snownee.lychee.util.action.PostActionType;
 import snownee.lychee.util.codec.AliasOptionalFieldCodec;
+import snownee.lychee.util.codec.LycheeStreamCodecs;
 import snownee.lychee.util.contextual.ContextualHolder;
 
 public record LycheeRecipeCommonProperties(
@@ -50,4 +54,23 @@ public record LycheeRecipeCommonProperties(
 			CONTEXTUAL_CODEC.forGetter(LycheeRecipeCommonProperties::conditions),
 			POST_ACTION_CODEC.forGetter(LycheeRecipeCommonProperties::postActions),
 			MAX_REPEATS_CODEC.forGetter(LycheeRecipeCommonProperties::maxRepeats)).apply(instance, LycheeRecipeCommonProperties::new));
+
+	public static final StreamCodec<RegistryFriendlyByteBuf, LycheeRecipeCommonProperties> STREAM_CODEC =
+			LycheeStreamCodecs.composite(
+					ByteBufCodecs.BOOL,
+					LycheeRecipeCommonProperties::hideInRecipeViewer,
+					ByteBufCodecs.BOOL,
+					LycheeRecipeCommonProperties::ghost,
+					ByteBufCodecs.fromCodec(COMMENT_CODEC.codec()),
+					LycheeRecipeCommonProperties::comment,
+					ByteBufCodecs.STRING_UTF8,
+					LycheeRecipeCommonProperties::group,
+					ByteBufCodecs.fromCodec(CONTEXTUAL_CODEC.codec()),
+					LycheeRecipeCommonProperties::conditions,
+					PostActionType.STREAM_LIST_CODEC,
+					LycheeRecipeCommonProperties::postActions,
+					ByteBufCodecs.fromCodec(MinMaxBounds.Ints.CODEC),
+					LycheeRecipeCommonProperties::maxRepeats,
+					LycheeRecipeCommonProperties::new
+			);
 }

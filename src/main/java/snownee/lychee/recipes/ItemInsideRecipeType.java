@@ -1,5 +1,6 @@
 package snownee.lychee.recipes;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
@@ -31,7 +33,6 @@ import net.minecraft.world.phys.Vec3;
 import snownee.lychee.LycheeLootContextParams;
 import snownee.lychee.context.ItemShapelessContext;
 import snownee.lychee.util.CommonProxy;
-import snownee.lychee.util.IngredientUtils;
 import snownee.lychee.util.LycheeCounter;
 import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.context.LycheeContextKey;
@@ -57,17 +58,24 @@ public class ItemInsideRecipeType extends LycheeRecipeType<ItemInsideRecipe> {
 		super.refreshCache();
 		final var itemWeights = new Object2FloatOpenHashMap<Item>();
 		final var caches = recipes.stream()
+				.filter(it -> {
+					if (it.value().getIngredients().stream().noneMatch(CommonProxy::isSimpleIngredient)) {
+						specialRecipes.add(it);
+						return false;
+					}
+					return true;
+				})
 				.map(recipeHolder ->
 						new Cache(
 								recipeHolder,
-								IngredientUtils
-										.flattenIngredients(recipeHolder.value().getIngredients())
-										.peek(it -> {
-											final var weight = 1F / it.size();
-											for (final var itemStack : it)
-												itemWeights.merge(itemStack.getItem(), weight, Float::sum);
+								recipeHolder.value().getIngredients().stream()
+										.map(ingredient -> {
+											var items = Arrays.stream(ingredient.getItems()).map(ItemStack::getItem).toList();
+											final var weight = 1F / items.size();
+											for (final var item : items)
+												itemWeights.merge(item, weight, Float::sum);
+											return Sets.newHashSet(items);
 										})
-										.map(stacks -> stacks.stream().map(ItemStack::getItem).collect(Collectors.toSet()))
 										.toList()
 						)
 				)
@@ -153,5 +161,5 @@ public class ItemInsideRecipeType extends LycheeRecipeType<ItemInsideRecipe> {
 		});
 	}
 
-	public record Cache(RecipeHolder<ItemInsideRecipe> recipe, List<Set<Item>> ingredients) {}
+	public record Cache(RecipeHolder<ItemInsideRecipe> recipe, List<? extends Set<Item>> ingredients) {}
 }

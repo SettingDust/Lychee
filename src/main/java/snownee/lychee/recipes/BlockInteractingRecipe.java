@@ -9,6 +9,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.advancements.critereon.BlockPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -137,6 +140,22 @@ public class BlockInteractingRecipe extends LycheeRecipe<LycheeContext> implemen
 		@Override
 		public @NotNull MapCodec<BlockInteractingRecipe> codec() {
 			return CODEC;
+		}
+
+		public static final StreamCodec<RegistryFriendlyByteBuf, BlockInteractingRecipe> STREAM_CODEC =
+				StreamCodec.composite(
+						LycheeRecipeCommonProperties.STREAM_CODEC,
+						BlockInteractingRecipe::commonProperties,
+						ByteBufCodecs.fromCodecWithRegistries(LycheeCodecs.PAIR_INGREDIENT_CODEC),
+						BlockInteractingRecipe::input,
+						BlockPredicate.STREAM_CODEC,
+						BlockInteractingRecipe::blockPredicate,
+						BlockInteractingRecipe::new
+				);
+
+		@Override
+		public @NotNull StreamCodec<RegistryFriendlyByteBuf, BlockInteractingRecipe> streamCodec() {
+			return STREAM_CODEC;
 		}
 	}
 }

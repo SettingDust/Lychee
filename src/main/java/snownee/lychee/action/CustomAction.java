@@ -13,7 +13,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import io.netty.buffer.ByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
 import snownee.lychee.util.CommonProxy;
@@ -154,7 +154,7 @@ public record CustomAction(
 		}
 
 		@Override
-		public StreamCodec<? extends ByteBuf, CustomAction> streamCodec() {
+		public StreamCodec<RegistryFriendlyByteBuf, CustomAction> streamCodec() {
 			throw new UnsupportedOperationException();
 		}
 	}

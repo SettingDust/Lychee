@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import io.netty.buffer.ByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
 import snownee.lychee.context.ActionContext;
@@ -56,7 +56,7 @@ public record Delay(PostActionCommonProperties commonProperties, float seconds) 
 		}
 
 		@Override
-		public StreamCodec<? extends ByteBuf, Delay> streamCodec() {
+		public StreamCodec<RegistryFriendlyByteBuf, Delay> streamCodec() {
 			throw new UnsupportedOperationException();
 		}
 	}

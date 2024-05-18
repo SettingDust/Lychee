@@ -16,6 +16,9 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
@@ -102,6 +105,7 @@ public class ShapedCraftingRecipe extends LycheeRecipe<CraftingContainer> implem
 		return IntList.of(size);
 	}
 
+	@SuppressWarnings("UnreachableCode")
 	@Override
 	public boolean matches(CraftingContainer container, Level level) {
 		if (ghost()) {
@@ -284,6 +288,23 @@ public class ShapedCraftingRecipe extends LycheeRecipe<CraftingContainer> implem
 		@Override
 		public @NotNull MapCodec<ShapedCraftingRecipe> codec() {
 			return CODEC;
+		}
+
+
+		public static final StreamCodec<RegistryFriendlyByteBuf, ShapedCraftingRecipe> STREAM_CODEC =
+				StreamCodec.composite(
+						LycheeRecipeCommonProperties.STREAM_CODEC,
+						ShapedCraftingRecipe::commonProperties,
+						ByteBufCodecs.fromCodecWithRegistries(RecipeSerializer.SHAPED_RECIPE.codec().codec()),
+						ShapedCraftingRecipe::shaped,
+						PostActionType.STREAM_LIST_CODEC,
+						ShapedCraftingRecipe::assemblingActions,
+						ShapedCraftingRecipe::new
+				);
+
+		@Override
+		public @NotNull StreamCodec<RegistryFriendlyByteBuf, ShapedCraftingRecipe> streamCodec() {
+			return STREAM_CODEC;
 		}
 	}
 }

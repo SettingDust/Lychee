@@ -73,15 +73,6 @@ public record Time(MinMaxBounds.Ints value, Optional<Long> period) implements Co
 					return DataResult.success(builder.build());
 				}
 		);
-		private static final MapCodec<TimeCheck> VALIDATED_CODEC = TimeCheck.CODEC.validate(it -> {
-			if (it.value().min == null || it.value().min.getType() != NumberProviders.CONSTANT) {
-				return DataResult.error(() -> "`min` not exists or not a constant");
-			}
-			if (it.value().max == null || it.value().max.getType() != NumberProviders.CONSTANT) {
-				return DataResult.error(() -> "`max` not exists or not a constant");
-			}
-			return DataResult.success(it);
-		});
 
 		@Override
 		public @NotNull MapCodec<Time> codec() {

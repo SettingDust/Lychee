@@ -16,6 +16,8 @@ import net.minecraft.advancements.critereon.BlockPredicate;
 import net.minecraft.advancements.critereon.LocationPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -66,6 +68,7 @@ public class DripstoneRecipe extends LycheeRecipe<LycheeContext> implements Bloc
 		onConstructed();
 	}
 
+	@SuppressWarnings("UnreachableCode")
 	public static boolean invoke(BlockState blockState, ServerLevel level, BlockPos blockPos) {
 		if (RecipeTypes.DRIPSTONE_DRIPPING.isEmpty()) {
 			return false;
@@ -199,12 +202,28 @@ public class DripstoneRecipe extends LycheeRecipe<LycheeContext> implements Bloc
 				RecordCodecBuilder.mapCodec(instance -> instance.group(
 						LycheeRecipeCommonProperties.MAP_CODEC.forGetter(DripstoneRecipe::commonProperties),
 						BlockPredicateExtensions.CODEC.fieldOf("source_block").forGetter(DripstoneRecipe::sourceBlock),
-						BlockPredicateExtensions.CODEC.fieldOf("target_block").forGetter(it -> it.targetBlock)
+						BlockPredicateExtensions.CODEC.fieldOf("target_block").forGetter(DripstoneRecipe::blockPredicate)
 				).apply(instance, DripstoneRecipe::new));
 
 		@Override
 		public @NotNull MapCodec<DripstoneRecipe> codec() {
 			return CODEC;
+		}
+
+		public static final StreamCodec<RegistryFriendlyByteBuf, DripstoneRecipe> STREAM_CODEC =
+				StreamCodec.composite(
+						LycheeRecipeCommonProperties.STREAM_CODEC,
+						DripstoneRecipe::commonProperties,
+						BlockPredicate.STREAM_CODEC,
+						DripstoneRecipe::sourceBlock,
+						BlockPredicate.STREAM_CODEC,
+						DripstoneRecipe::blockPredicate,
+						DripstoneRecipe::new
+				);
+
+		@Override
+		public @NotNull StreamCodec<RegistryFriendlyByteBuf, DripstoneRecipe> streamCodec() {
+			return STREAM_CODEC;
 		}
 	}
 }

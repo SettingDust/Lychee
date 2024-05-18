@@ -6,6 +6,9 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -89,6 +92,21 @@ public class ItemBurningRecipe extends LycheeRecipe<LycheeContext> {
 		@Override
 		public @NotNull MapCodec<ItemBurningRecipe> codec() {
 			return CODEC;
+		}
+
+
+		public static final StreamCodec<RegistryFriendlyByteBuf, ItemBurningRecipe> STREAM_CODEC =
+				StreamCodec.composite(
+						LycheeRecipeCommonProperties.STREAM_CODEC,
+						ItemBurningRecipe::commonProperties,
+						ByteBufCodecs.fromCodecWithRegistries(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC),
+						ItemBurningRecipe::input,
+						ItemBurningRecipe::new
+				);
+
+		@Override
+		public @NotNull StreamCodec<RegistryFriendlyByteBuf, ItemBurningRecipe> streamCodec() {
+			return STREAM_CODEC;
 		}
 	}
 }

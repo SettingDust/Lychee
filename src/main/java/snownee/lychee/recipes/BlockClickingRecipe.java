@@ -10,6 +10,9 @@ import net.minecraft.advancements.critereon.BlockPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -95,6 +98,22 @@ public class BlockClickingRecipe extends BlockInteractingRecipe {
 		@Override
 		public @NotNull MapCodec<BlockClickingRecipe> codec() {
 			return CODEC;
+		}
+
+		public static final StreamCodec<RegistryFriendlyByteBuf, BlockClickingRecipe> STREAM_CODEC =
+				StreamCodec.composite(
+						LycheeRecipeCommonProperties.STREAM_CODEC,
+						BlockClickingRecipe::commonProperties,
+						ByteBufCodecs.fromCodecWithRegistries(LycheeCodecs.PAIR_INGREDIENT_CODEC),
+						BlockClickingRecipe::input,
+						BlockPredicate.STREAM_CODEC,
+						BlockClickingRecipe::blockPredicate,
+						BlockClickingRecipe::new
+				);
+
+		@Override
+		public @NotNull StreamCodec<RegistryFriendlyByteBuf, BlockClickingRecipe> streamCodec() {
+			return STREAM_CODEC;
 		}
 	}
 }

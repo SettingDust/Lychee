@@ -12,6 +12,9 @@ import net.minecraft.Util;
 import net.minecraft.advancements.critereon.BlockPredicate;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -156,6 +159,24 @@ public class BlockCrushingRecipe extends LycheeRecipe<LycheeContext> implements 
 		@Override
 		public @NotNull MapCodec<BlockCrushingRecipe> codec() {
 			return CODEC;
+		}
+
+		public static final StreamCodec<RegistryFriendlyByteBuf, BlockCrushingRecipe> STREAM_CODEC =
+				StreamCodec.composite(
+						LycheeRecipeCommonProperties.STREAM_CODEC,
+						BlockCrushingRecipe::commonProperties,
+						BlockPredicate.STREAM_CODEC,
+						it -> it.fallingBlock,
+						BlockPredicate.STREAM_CODEC,
+						BlockCrushingRecipe::landingBlock,
+						ByteBufCodecs.fromCodecWithRegistries(LycheeCodecs.compactList(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC)),
+						it -> it.ingredients,
+						BlockCrushingRecipe::new
+				);
+
+		@Override
+		public @NotNull StreamCodec<RegistryFriendlyByteBuf, BlockCrushingRecipe> streamCodec() {
+			return STREAM_CODEC;
 		}
 	}
 }
