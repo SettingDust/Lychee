@@ -23,6 +23,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import snownee.kiwi.util.codec.KCodecs;
 import snownee.lychee.RecipeSerializers;
 import snownee.lychee.RecipeTypes;
 import snownee.lychee.mixin.NonNullListAccess;
@@ -152,7 +153,7 @@ public class BlockCrushingRecipe extends LycheeRecipe<LycheeContext> implements 
 								.forGetter(it -> it.fallingBlock),
 						BlockPredicateExtensions.CODEC.optionalFieldOf("landing_block", BlockPredicateExtensions.ANY)
 								.forGetter(BlockCrushingRecipe::landingBlock),
-						LycheeCodecs.compactList(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC).optionalFieldOf(ITEM_IN, List.of())
+						KCodecs.compactList(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC).optionalFieldOf(ITEM_IN, List.of())
 								.forGetter(it -> it.ingredients)
 				).apply(instance, BlockCrushingRecipe::new));
 
@@ -169,7 +170,7 @@ public class BlockCrushingRecipe extends LycheeRecipe<LycheeContext> implements 
 						it -> it.fallingBlock,
 						BlockPredicate.STREAM_CODEC,
 						BlockCrushingRecipe::landingBlock,
-						ByteBufCodecs.fromCodecWithRegistries(LycheeCodecs.compactList(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC)),
+						ByteBufCodecs.fromCodecWithRegistries(KCodecs.compactList(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC)),
 						it -> it.ingredients,
 						BlockCrushingRecipe::new
 				);

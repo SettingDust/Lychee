@@ -37,7 +37,6 @@ public class RecipeManagerMixin {
 			ProfilerFiller profiler,
 			CallbackInfo ci) {
 		if (LycheeConfig.enableYamlRecipes) {
-			//TODO Kiwi id & file name filter
 			Map<ResourceLocation, JsonElement> yamlRecipes = OneTimeLoader.load(resourceManager, "recipes", ExtraCodecs.JSON);
 			for (Map.Entry<ResourceLocation, JsonElement> entry : yamlRecipes.entrySet()) {
 				object.putIfAbsent(entry.getKey(), entry.getValue());

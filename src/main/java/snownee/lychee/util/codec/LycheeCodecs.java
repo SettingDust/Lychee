@@ -1,6 +1,5 @@
 package snownee.lychee.util.codec;
 
-import java.util.List;
 import java.util.Optional;
 
 import com.google.common.collect.Lists;
@@ -60,9 +59,4 @@ public final class LycheeCodecs {
 		}
 		return new BlockPos(x, y, z);
 	}));
-
-	//TODO move to Kiwi
-	public static <T> Codec<List<T>> compactList(Codec<T> elementCodec) {
-		return Codec.withAlternative(elementCodec.listOf(), elementCodec, List::of);
-	}
 }

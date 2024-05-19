@@ -20,6 +20,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import snownee.kiwi.util.codec.KCodecs;
 import snownee.lychee.RecipeSerializers;
 import snownee.lychee.RecipeTypes;
 import snownee.lychee.mixin.NonNullListAccess;
@@ -136,7 +137,7 @@ public class ItemInsideRecipe extends LycheeRecipe<LycheeContext> implements Blo
 				BlockPredicateExtensions.CODEC.optionalFieldOf(BLOCK_IN, BlockPredicateExtensions.ANY)
 						.forGetter(ItemInsideRecipe::blockPredicate),
 				ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("time", 0).forGetter(ItemInsideRecipe::time),
-				ExtraCodecs.nonEmptyList(LycheeCodecs.compactList(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC))
+				ExtraCodecs.nonEmptyList(KCodecs.compactList(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC))
 						.optionalFieldOf(ITEM_IN, List.of())
 						.forGetter(it -> it.ingredients)
 		).apply(instance, ItemInsideRecipe::new));
@@ -155,7 +156,7 @@ public class ItemInsideRecipe extends LycheeRecipe<LycheeContext> implements Blo
 						ItemInsideRecipe::blockPredicate,
 						ByteBufCodecs.VAR_INT,
 						ItemInsideRecipe::time,
-						ByteBufCodecs.fromCodecWithRegistries(ExtraCodecs.nonEmptyList(LycheeCodecs.compactList(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC))),
+						ByteBufCodecs.fromCodecWithRegistries(ExtraCodecs.nonEmptyList(KCodecs.compactList(LycheeCodecs.OPTIONAL_INGREDIENT_CODEC))),
 						ItemInsideRecipe::getIngredients,
 						ItemInsideRecipe::new
 				);

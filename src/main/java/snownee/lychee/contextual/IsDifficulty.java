@@ -16,8 +16,8 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import snownee.kiwi.util.codec.KCodecs;
 import snownee.lychee.util.TriState;
-import snownee.lychee.util.codec.LycheeCodecs;
 import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.contextual.ContextualCondition;
 import snownee.lychee.util.contextual.ContextualConditionType;
@@ -75,7 +75,7 @@ public record IsDifficulty(List<Difficulty> difficulties) implements ContextualC
 				ExtraCodecs.NON_NEGATIVE_INT.xmap(Difficulty::byId, Difficulty::getId));
 
 		public static final MapCodec<IsDifficulty> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-				ExtraCodecs.nonEmptyList(LycheeCodecs.compactList(DIFFICULTY_CODEC))
+				ExtraCodecs.nonEmptyList(KCodecs.compactList(DIFFICULTY_CODEC))
 						.fieldOf("difficulty")
 						.forGetter(IsDifficulty::difficulties)
 		).apply(instance, IsDifficulty::new));

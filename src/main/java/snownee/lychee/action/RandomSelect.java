@@ -18,6 +18,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
+import snownee.kiwi.util.codec.KCodecs;
 import snownee.lychee.util.BoundsExtensions;
 import snownee.lychee.util.CommonProxy;
 import snownee.lychee.util.action.CompoundAction;
@@ -26,7 +27,6 @@ import snownee.lychee.util.action.PostAction;
 import snownee.lychee.util.action.PostActionCommonProperties;
 import snownee.lychee.util.action.PostActionType;
 import snownee.lychee.util.action.PostActionTypes;
-import snownee.lychee.util.codec.LycheeCodecs;
 import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.context.LycheeContextKey;
 import snownee.lychee.util.json.JsonPointer;
@@ -184,7 +184,7 @@ public class RandomSelect implements CompoundAction, PostAction {
 	public static class Type implements PostActionType<RandomSelect> {
 		public static final MapCodec<RandomSelect> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				PostActionCommonProperties.MAP_CODEC.forGetter(RandomSelect::commonProperties),
-				ExtraCodecs.nonEmptyList(LycheeCodecs.compactList(Entry.CODEC)).fieldOf("entries").forGetter(it -> it.entries),
+				ExtraCodecs.nonEmptyList(KCodecs.compactList(Entry.CODEC)).fieldOf("entries").forGetter(it -> it.entries),
 				ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("empty_weight", 0)
 						.forGetter(it -> it.emptyWeight),
 				MinMaxBounds.Ints.CODEC.optionalFieldOf("rolls", BoundsExtensions.ONE).forGetter(it -> it.rolls)
