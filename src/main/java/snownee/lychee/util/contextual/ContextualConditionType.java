@@ -12,7 +12,7 @@ import snownee.lychee.contextual.EntityHealth;
 import snownee.lychee.contextual.Execute;
 import snownee.lychee.contextual.FallDistance;
 import snownee.lychee.contextual.IsDifficulty;
-import snownee.lychee.contextual.IsOffCooldown;
+import snownee.lychee.contextual.IsOffItemCooldown;
 import snownee.lychee.contextual.IsSneaking;
 import snownee.lychee.contextual.IsWeather;
 import snownee.lychee.contextual.Location;
@@ -45,8 +45,8 @@ public interface ContextualConditionType<T extends ContextualCondition> extends 
 			register("direction", new DirectionCheck.Type());
 	ContextualConditionType<CheckParam> CHECK_PARAM =
 			register("check_param", new CheckParam.Type());
-	ContextualConditionType<IsOffCooldown> IS_OFF_COOLDOWN =
-			register("is_off_cooldown", new IsOffCooldown.Type());
+	ContextualConditionType<IsOffItemCooldown> IS_OFF_ITEM_COOLDOWN =
+			register("is_off_item_cooldown", new IsOffItemCooldown.Type());
 	ContextualConditionType<CustomCondition> CUSTOM =
 			register("custom", new CustomCondition.Type());
 

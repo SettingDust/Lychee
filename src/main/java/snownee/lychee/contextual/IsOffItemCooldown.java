@@ -22,11 +22,11 @@ import snownee.lychee.util.contextual.ContextualCondition;
 import snownee.lychee.util.contextual.ContextualConditionType;
 import snownee.lychee.util.recipe.ILycheeRecipe;
 
-public record IsOffCooldown(Holder<Item> item) implements ContextualCondition {
+public record IsOffItemCooldown(Holder<Item> item) implements ContextualCondition {
 
 	@Override
-	public ContextualConditionType<IsOffCooldown> type() {
-		return ContextualConditionType.IS_OFF_COOLDOWN;
+	public ContextualConditionType<IsOffItemCooldown> type() {
+		return ContextualConditionType.IS_OFF_ITEM_COOLDOWN;
 	}
 
 	@Override
@@ -58,13 +58,13 @@ public record IsOffCooldown(Holder<Item> item) implements ContextualCondition {
 		return Component.translatable(key, item.withStyle(ChatFormatting.WHITE));
 	}
 
-	public static class Type implements ContextualConditionType<IsOffCooldown> {
-		public static final MapCodec<IsOffCooldown> CODEC = BuiltInRegistries.ITEM.holderByNameCodec().xmap(
-				IsOffCooldown::new,
-				IsOffCooldown::item).fieldOf("item");
+	public static class Type implements ContextualConditionType<IsOffItemCooldown> {
+		public static final MapCodec<IsOffItemCooldown> CODEC = BuiltInRegistries.ITEM.holderByNameCodec().xmap(
+				IsOffItemCooldown::new,
+				IsOffItemCooldown::item).fieldOf("item");
 
 		@Override
-		public @NotNull MapCodec<IsOffCooldown> codec() {
+		public @NotNull MapCodec<IsOffItemCooldown> codec() {
 			return CODEC;
 		}
 	}
