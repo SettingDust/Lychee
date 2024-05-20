@@ -9,8 +9,8 @@
       "type": "prevent_default"
     },
     {
-      "type": "hurt",
-      "damage": 2,
+      "type": "execute",
+      "command": "damage @s 2",
       "contextual": [
         {
           "type": "entity_health",

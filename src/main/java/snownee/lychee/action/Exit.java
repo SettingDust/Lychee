@@ -18,17 +18,17 @@ import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.context.LycheeContextKey;
 import snownee.lychee.util.recipe.ILycheeRecipe;
 
-public record Break(PostActionCommonProperties commonProperties) implements PostAction {
+public record Exit(PostActionCommonProperties commonProperties) implements PostAction {
 
-	public static final Break CLIENT_DUMMY = new Break();
+	public static final Exit CLIENT_DUMMY = new Exit();
 
-	public Break() {
+	public Exit() {
 		this(new PostActionCommonProperties());
 	}
 
 	@Override
-	public PostActionType<Break> type() {
-		return PostActionTypes.BREAK;
+	public PostActionType<Exit> type() {
+		return PostActionTypes.EXIT;
 	}
 
 	@Override
@@ -41,18 +41,18 @@ public record Break(PostActionCommonProperties commonProperties) implements Post
 		return true;
 	}
 
-	public static class Type implements PostActionType<Break> {
-		public static final MapCodec<Break> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-				PostActionCommonProperties.MAP_CODEC.forGetter(Break::commonProperties)
-		).apply(instance, Break::new));
+	public static class Type implements PostActionType<Exit> {
+		public static final MapCodec<Exit> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+				PostActionCommonProperties.MAP_CODEC.forGetter(Exit::commonProperties)
+		).apply(instance, Exit::new));
 
 		@Override
-		public @NotNull MapCodec<Break> codec() {
+		public @NotNull MapCodec<Exit> codec() {
 			return CODEC;
 		}
 
 		@Override
-		public StreamCodec<RegistryFriendlyByteBuf, Break> streamCodec() {
+		public StreamCodec<RegistryFriendlyByteBuf, Exit> streamCodec() {
 			return LycheeStreamCodecs.unit(CLIENT_DUMMY);
 		}
 	}

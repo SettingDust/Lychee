@@ -17,7 +17,6 @@ import snownee.lychee.action.DropItem;
 import snownee.lychee.action.DropXp;
 import snownee.lychee.action.Execute;
 import snownee.lychee.action.Explode;
-import snownee.lychee.action.Hurt;
 import snownee.lychee.action.input.DamageItem;
 import snownee.lychee.action.input.PreventDefault;
 import snownee.lychee.action.input.SetItem;
@@ -96,10 +95,6 @@ public class ClientProxy implements ClientModInitializer {
 		PostActionRenderer.register(
 				PostActionTypes.EXPLODE,
 				(ItemBasedPostActionRenderer<Explode>) action -> Items.TNT.getDefaultInstance()
-		);
-		PostActionRenderer.register(
-				PostActionTypes.HURT,
-				(ItemBasedPostActionRenderer<Hurt>) action -> Items.IRON_SWORD.getDefaultInstance()
 		);
 		PostActionRenderer.register(PostActionTypes.IF, new IfPostActionRenderer());
 		PostActionRenderer.register(PostActionTypes.PLACE, new PlaceBlockPostActionRenderer());

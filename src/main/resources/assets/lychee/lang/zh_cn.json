@@ -16,7 +16,6 @@
   "postAction.lychee.explode.keep": "Explode (no terrain damage)",
   "postAction.lychee.explode.destroy_with_decay": "Explode (destroy blocks with decay)",
   "postAction.lychee.explode.destroy": "Explode (destroy blocks)",
-  "postAction.lychee.hurt": "Causes %s damage",
   "postAction.lychee.if": "Conditional action",
   "postAction.lychee.damage_item": "Damage item by %s",
   "contextual.lychee": "条件：",

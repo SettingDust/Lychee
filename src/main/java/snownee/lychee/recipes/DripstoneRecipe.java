@@ -31,7 +31,7 @@ import snownee.lychee.LycheeLootContextParamSets;
 import snownee.lychee.LycheeLootContextParams;
 import snownee.lychee.RecipeSerializers;
 import snownee.lychee.RecipeTypes;
-import snownee.lychee.action.Break;
+import snownee.lychee.action.Exit;
 import snownee.lychee.action.Delay;
 import snownee.lychee.contextual.Location;
 import snownee.lychee.contextual.Not;
@@ -105,12 +105,12 @@ public class DripstoneRecipe extends LycheeRecipe<LycheeContext> implements Bloc
 		var builder = new LocationPredicate.Builder();
 		((LocationPredicate$BuilderAccess) builder).setBlock(Optional.of(recipe.value().targetBlock));
 		var check = (LocationCheck) LocationCheck.checkLocation(builder).build();
-		var breakAction = new Break(new PostActionCommonProperties(
+		var exit = new Exit(new PostActionCommonProperties(
 				Optional.empty(),
 				new ContextualHolder(Lists.newArrayList(new Not(new Location(check)))),
 				true));
 		var actionContext = context.get(LycheeContextKey.ACTION);
-		actionContext.jobs.offer(new Job(breakAction, 1));
+		actionContext.jobs.offer(new Job(exit, 1));
 		actionContext.jobs.offer(new Job(new Delay(j / 20F), 1));
 		actionContext.run(context);
 		return true;

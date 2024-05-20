@@ -5,7 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import snownee.lychee.LycheeRegistries;
 import snownee.lychee.action.AddItemCooldown;
 import snownee.lychee.action.AnvilDamageChance;
-import snownee.lychee.action.Break;
+import snownee.lychee.action.Exit;
 import snownee.lychee.action.CustomAction;
 import snownee.lychee.action.CycleStateProperty;
 import snownee.lychee.action.Delay;
@@ -13,7 +13,6 @@ import snownee.lychee.action.DropItem;
 import snownee.lychee.action.DropXp;
 import snownee.lychee.action.Execute;
 import snownee.lychee.action.Explode;
-import snownee.lychee.action.Hurt;
 import snownee.lychee.action.If;
 import snownee.lychee.action.MoveTowardsFace;
 import snownee.lychee.action.PlaceBlock;
@@ -38,9 +37,8 @@ public class PostActionTypes {
 	);
 	public static final PostActionType<RandomSelect> RANDOM = register("random", new RandomSelect.Type());
 	public static final PostActionType<Explode> EXPLODE = register("explode", new Explode.Type());
-	public static final PostActionType<Hurt> HURT = register("hurt", new Hurt.Type());
 	public static final PostActionType<Delay> DELAY = register("delay", new Delay.Type());
-	public static final PostActionType<Break> BREAK = register("break", new Break.Type());
+	public static final PostActionType<Exit> EXIT = register("exit", new Exit.Type());
 	public static final PostActionType<AddItemCooldown> ADD_ITEM_COOLDOWN = register(
 			"add_item_cooldown",
 			new AddItemCooldown.Type()

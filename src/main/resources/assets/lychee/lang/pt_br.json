@@ -16,7 +16,6 @@
   "postAction.lychee.explode.keep": "Explodir (sem danos ao terreno)",
   "postAction.lychee.explode.destroy_with_decay": "Explodir (destruir blocos com deterioração)",
   "postAction.lychee.explode.destroy": "Explodir (danos aos blocos)",
-  "postAction.lychee.hurt": "Causa %s de dano",
   "postAction.lychee.if": "Ação condicional",
   "postAction.lychee.damage_item": "Danificar item por %s",
   "contextual.lychee": "{0,choice,1#Condition|1<Conditions}:",
