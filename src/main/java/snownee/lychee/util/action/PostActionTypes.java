@@ -5,13 +5,13 @@ import net.minecraft.resources.ResourceLocation;
 import snownee.lychee.LycheeRegistries;
 import snownee.lychee.action.AddItemCooldown;
 import snownee.lychee.action.AnvilDamageChance;
-import snownee.lychee.action.Exit;
 import snownee.lychee.action.CustomAction;
 import snownee.lychee.action.CycleStateProperty;
 import snownee.lychee.action.Delay;
 import snownee.lychee.action.DropItem;
 import snownee.lychee.action.DropXp;
 import snownee.lychee.action.Execute;
+import snownee.lychee.action.Exit;
 import snownee.lychee.action.Explode;
 import snownee.lychee.action.If;
 import snownee.lychee.action.MoveTowardsFace;
@@ -56,7 +56,7 @@ public class PostActionTypes {
 	public static final PostActionType<If> IF = register("if", new If.Type());
 
 	public static <T extends PostActionType<?>> T register(String name, T t) {
-		Registry.register(LycheeRegistries.POST_ACTION, new ResourceLocation(name), t);
+		Registry.register(LycheeRegistries.POST_ACTION, ResourceLocation.parse(name), t);
 		return t;
 	}
 }

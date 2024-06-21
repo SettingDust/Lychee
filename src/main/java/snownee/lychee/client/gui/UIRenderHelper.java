@@ -191,36 +191,35 @@ public class UIRenderHelper {
 			float v2
 	) {
 		Tesselator tesselator = Tesselator.getInstance();
-		BufferBuilder bufferbuilder = tesselator.getBuilder();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
-		RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
-		bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
-		bufferbuilder.vertex(m, (float) left, (float) bot, (float) z).color(
+		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+		BufferBuilder bufferbuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+		bufferbuilder.addVertex(m, (float) left, (float) bot, (float) z).setColor(
 				c.getRed(),
 				c.getGreen(),
 				c.getBlue(),
 				c.getAlpha()
-		).uv(u1, v2).endVertex();
-		bufferbuilder.vertex(m, (float) right, (float) bot, (float) z).color(
+		).setUv(u1, v2);
+		bufferbuilder.addVertex(m, (float) right, (float) bot, (float) z).setColor(
 				c.getRed(),
 				c.getGreen(),
 				c.getBlue(),
 				c.getAlpha()
-		).uv(u2, v2).endVertex();
-		bufferbuilder.vertex(m, (float) right, (float) top, (float) z).color(
+		).setUv(u2, v2);
+		bufferbuilder.addVertex(m, (float) right, (float) top, (float) z).setColor(
 				c.getRed(),
 				c.getGreen(),
 				c.getBlue(),
 				c.getAlpha()
-		).uv(u2, v1).endVertex();
-		bufferbuilder.vertex(m, (float) left, (float) top, (float) z).color(
+		).setUv(u2, v1);
+		bufferbuilder.addVertex(m, (float) left, (float) top, (float) z).setColor(
 				c.getRed(),
 				c.getGreen(),
 				c.getBlue(),
 				c.getAlpha()
-		).uv(u1, v1).endVertex();
-		tesselator.end();
+		).setUv(u1, v1);
+		tesselator.clear();
 		RenderSystem.disableBlend();
 	}
 
@@ -257,15 +256,14 @@ public class UIRenderHelper {
 			bindRead();
 
 			Tesselator tessellator = Tesselator.getInstance();
-			BufferBuilder bufferbuilder = tessellator.getBuilder();
-			bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
+			BufferBuilder bufferbuilder = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
 
-			bufferbuilder.vertex(0, vy, 0).color(1, 1, 1, alpha).uv(0, 0).endVertex();
-			bufferbuilder.vertex(vx, vy, 0).color(1, 1, 1, alpha).uv(tx, 0).endVertex();
-			bufferbuilder.vertex(vx, 0, 0).color(1, 1, 1, alpha).uv(tx, ty).endVertex();
-			bufferbuilder.vertex(0, 0, 0).color(1, 1, 1, alpha).uv(0, ty).endVertex();
+			bufferbuilder.addVertex(0, vy, 0).setColor(1, 1, 1, alpha).setUv(0, 0);
+			bufferbuilder.addVertex(vx, vy, 0).setColor(1, 1, 1, alpha).setUv(tx, 0);
+			bufferbuilder.addVertex(vx, 0, 0).setColor(1, 1, 1, alpha).setUv(tx, ty);
+			bufferbuilder.addVertex(0, 0, 0).setColor(1, 1, 1, alpha).setUv(0, ty);
 
-			tessellator.end();
+			tessellator.clear();
 			unbindRead();
 		}
 

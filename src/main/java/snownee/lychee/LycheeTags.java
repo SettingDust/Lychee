@@ -38,7 +38,7 @@ public final class LycheeTags {
 	}
 
 	public static <T> TagKey<T> tag(ResourceKey<? extends Registry<T>> registryKey, String path) {
-		return TagKey.create(registryKey, new ResourceLocation(Lychee.ID, path));
+		return TagKey.create(registryKey, ResourceLocation.fromNamespaceAndPath(Lychee.ID, path));
 	}
 
 }

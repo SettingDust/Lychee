@@ -52,7 +52,7 @@ public interface ContextualConditionType<T extends ContextualCondition> extends 
 
 
 	static <T extends ContextualConditionType<?>> T register(String name, T object) {
-		return register(new ResourceLocation(name), object);
+		return register(ResourceLocation.parse(name), object);
 	}
 
 	static <T extends ContextualConditionType<?>> T register(ResourceLocation location, T object) {

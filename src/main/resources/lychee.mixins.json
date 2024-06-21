@@ -15,6 +15,7 @@
 		"ItemEntityAccess",
 		"ItemEntityMixin",
 		"LootContextParamSetsAccess",
+		"LootContextParamSetsMixin",
 		"NonNullListAccess",
 		"RecipeManagerMixin",
 		"ReloadableServerResourcesMixin",

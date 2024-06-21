@@ -54,7 +54,7 @@ public class LycheeREIPlugin implements REIClientPlugin {
 	public static final EntryType<PostAction> POST_ACTION = EntryType.deferred(Lychee.id("post_action"));
 
 	private static ResourceLocation composeCategoryIdentifier(ResourceLocation categoryId, ResourceLocation group) {
-		return new ResourceLocation(
+		return ResourceLocation.fromNamespaceAndPath(
 				categoryId.getNamespace(),
 				"%s/%s/%s".formatted(categoryId.getPath(), group.getNamespace(), group.getPath()));
 	}
@@ -70,7 +70,7 @@ public class LycheeREIPlugin implements REIClientPlugin {
 							map.put(
 									CategoryIdentifier.of(composeCategoryIdentifier(
 											recipeType.categoryId,
-											new ResourceLocation(recipeHolder.value().group()))),
+											ResourceLocation.parse(recipeHolder.value().group()))),
 									recipeHolder
 							);
 							return map;

@@ -128,7 +128,7 @@ public final class JsonFragment {
 		}
 		ResourceLocation id;
 		try {
-			id = new ResourceLocation(object.get(key).getAsString());
+			id = ResourceLocation.parse(object.get(key).getAsString());
 		} catch (Throwable e) {
 			return null;
 		}

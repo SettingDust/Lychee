@@ -95,7 +95,16 @@ public class CachedRenderingEntity<T extends Entity> {
 
 		renderDispatcher.setRenderShadow(false);
 		var bufferSource = mc.renderBuffers().bufferSource();
-		renderDispatcher.render(entity, 0.0D, 0.0D, 0.0D, mc.getFrameTime(), 1, matrixStack, bufferSource, 15728880);
+		renderDispatcher.render(
+				entity,
+				0.0D,
+				0.0D,
+				0.0D,
+				mc.getTimer().getGameTimeDeltaPartialTick(true),
+				1,
+				matrixStack,
+				bufferSource,
+				15728880);
 		bufferSource.endBatch();
 		renderDispatcher.setRenderShadow(true);
 

@@ -103,7 +103,7 @@ public class JEIREI {
 	}
 
 	public static ResourceLocation composeCategoryIdentifier(ResourceLocation categoryId, ResourceLocation group) {
-		return new ResourceLocation(
+		return ResourceLocation.parse(
 				categoryId.getNamespace(),
 				"%s/%s/%s".formatted(categoryId.getPath(), group.getNamespace(), group.getPath())
 		);
@@ -156,7 +156,7 @@ public class JEIREI {
 			}
 			for (OldLycheeRecipe<?> recipe : recipeType.inViewerRecipes()) {
 				recipes.computeIfAbsent(recipeType.categoryId, $ -> Maps.newHashMap())
-						.computeIfAbsent(new ResourceLocation(recipe.group), $ -> Lists.newArrayList())
+						.computeIfAbsent(ResourceLocation.parse(recipe.group), $ -> Lists.newArrayList())
 						.add(recipe);
 			}
 		}

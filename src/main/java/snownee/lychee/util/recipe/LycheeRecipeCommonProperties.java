@@ -32,7 +32,7 @@ public record LycheeRecipeCommonProperties(
 	public static final MapCodec<Boolean> GHOST_CODEC = Codec.BOOL.optionalFieldOf("ghost", false);
 	public static final MapCodec<Optional<String>> COMMENT_CODEC = Codec.STRING.optionalFieldOf("comment");
 	public static final MapCodec<String> GROUP_CODEC = Codec.STRING.validate(s -> {
-		if (!ResourceLocation.isValidResourceLocation(s)) {
+		if (ResourceLocation.tryParse(s) == null) {
 			return DataResult.error(() -> "Invalid group: " + s + " (must be a valid resource location)");
 		}
 		return DataResult.success(s);

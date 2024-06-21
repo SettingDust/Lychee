@@ -10,8 +10,8 @@ public final class LycheeLootContextParamSets {
 				.optional(LootContextParams.THIS_ENTITY)
 				.optional(LootContextParams.LAST_DAMAGE_PLAYER)
 				.optional(LootContextParams.DAMAGE_SOURCE)
-				.optional(LootContextParams.KILLER_ENTITY)
-				.optional(LootContextParams.DIRECT_KILLER_ENTITY)
+				.optional(LootContextParams.ATTACKING_ENTITY)
+				.optional(LootContextParams.DIRECT_ATTACKING_ENTITY)
 				.optional(LootContextParams.BLOCK_STATE)
 				.optional(LootContextParams.BLOCK_ENTITY)
 				.optional(LootContextParams.EXPLOSION_RADIUS);

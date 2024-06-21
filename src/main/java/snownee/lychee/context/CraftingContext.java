@@ -12,10 +12,10 @@ import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.TransientCraftingContainer;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.phys.Vec3;
 import snownee.lychee.mixin.CraftingMenuAccess;
 import snownee.lychee.mixin.InventoryMenuAccess;
@@ -24,18 +24,18 @@ import snownee.lychee.util.context.LycheeContext;
 
 public record CraftingContext(
 		LycheeContext context,
-		CraftingContainer container,
+	CraftingInput container,
 		int matchX,
 		int matchY,
 		boolean mirror
 ) {
-	public static final LoadingCache<Class<?>, Function<CraftingContainer, Pair<Vec3, Player>>>
+	public static final LoadingCache<Class<?>, Function<CraftingInput, Pair<Vec3, Player>>>
 			CONTAINER_WORLD_LOCATOR =
 			CacheBuilder.newBuilder().build(new CacheLoader<>() {
 				@Override
-				public @NotNull Function<CraftingContainer, Pair<Vec3, Player>> load(final @NotNull Class<?> key) {
+				public @NotNull Function<CraftingInput, Pair<Vec3, Player>> load(final @NotNull Class<?> key) {
 					var clazz = key.getSuperclass();
-					while (clazz != CraftingContainer.class) {
+					while (clazz != CraftingInput.class) {
 						var locator = CONTAINER_WORLD_LOCATOR.getIfPresent(clazz);
 						if (locator != null) {
 							return locator;
