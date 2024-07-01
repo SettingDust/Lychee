@@ -12,12 +12,12 @@ import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import snownee.kiwi.recipe.EmptyContainer;
+import snownee.kiwi.recipe.EmptyRecipeInput;
 import snownee.lychee.LycheeRegistries;
 import snownee.lychee.util.codec.KeyDispatchedMapCodec;
 
 @SuppressWarnings("unchecked")
-public class LycheeContext extends EmptyContainer {
+public class LycheeContext extends EmptyRecipeInput {
 	private final Map<LycheeContextKey<?>, Object> context =
 			new Object2ObjectOpenHashMap<>(LycheeRegistries.CONTEXTUAL.size());
 	public static final Codec<LycheeContext> CODEC =
@@ -74,7 +74,7 @@ public class LycheeContext extends EmptyContainer {
 	}
 
 	@Override
-	public int getContainerSize() {
+	public int size() {
 		return get(LycheeContextKey.ITEM).size();
 	}
 
@@ -83,7 +83,6 @@ public class LycheeContext extends EmptyContainer {
 		return get(LycheeContextKey.ITEM).get(index).get();
 	}
 
-	@Override
 	public void setItem(final int index, final ItemStack stack) {
 		get(LycheeContextKey.ITEM).replace(index, stack);
 	}

@@ -1,11 +1,13 @@
-package snownee.lychee.compat.rei;
+package snownee.lychee.compat.jei;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 import dev.architectury.event.EventResult;
@@ -14,16 +16,17 @@ import me.shedaniel.math.Rectangle;
 import me.shedaniel.rei.api.client.gui.DisplayRenderer;
 import me.shedaniel.rei.api.client.gui.widgets.Arrow;
 import me.shedaniel.rei.api.client.gui.widgets.Widget;
-import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
-import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
 import me.shedaniel.rei.api.client.registry.category.extension.CategoryExtensionProvider;
 import me.shedaniel.rei.api.client.registry.display.DisplayCategory;
 import me.shedaniel.rei.api.client.registry.display.DisplayCategoryView;
 import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.display.Display;
-import me.shedaniel.rei.api.common.entry.type.EntryType;
 import me.shedaniel.rei.api.common.entry.type.EntryTypeRegistry;
+import mezz.jei.api.IModPlugin;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
@@ -32,26 +35,25 @@ import snownee.kiwi.util.KUtil;
 import snownee.lychee.Lychee;
 import snownee.lychee.RecipeTypes;
 import snownee.lychee.client.gui.AllGuiTextures;
-import snownee.lychee.client.gui.ScreenElement;
-import snownee.lychee.compat.rei.category.CategoryProviders;
-import snownee.lychee.compat.rei.category.IconProviders;
-import snownee.lychee.compat.rei.category.LycheeCategory;
-import snownee.lychee.compat.rei.category.LycheeDisplayCategory;
-import snownee.lychee.compat.rei.category.WorkstationRegisters;
-import snownee.lychee.compat.rei.display.AnvilCraftingDisplay;
-import snownee.lychee.compat.rei.display.DisplayRegisters;
-import snownee.lychee.compat.rei.display.LycheeDisplay;
-import snownee.lychee.compat.rei.elements.LEntryWidget;
-import snownee.lychee.compat.rei.elements.ScreenElementWidget;
-import snownee.lychee.compat.rei.ingredient.PostActionIngredientHelper;
+import snownee.lychee.compat.jei.category.CategoryProviders;
+import snownee.lychee.compat.jei.category.IconProviders;
+import snownee.lychee.compat.jei.category.LycheeCategory;
+import snownee.lychee.compat.jei.category.LycheeDisplayCategory;
+import snownee.lychee.compat.jei.category.WorkstationRegisters;
+import snownee.lychee.compat.jei.display.AnvilCraftingDisplay;
+import snownee.lychee.compat.jei.display.DisplayRegisters;
+import snownee.lychee.compat.jei.display.LycheeDisplay;
+import snownee.lychee.compat.jei.ingredient.PostActionIngredientHelper;
 import snownee.lychee.util.action.PostAction;
 import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.recipe.ILycheeRecipe;
 import snownee.lychee.util.recipe.LycheeRecipeType;
 
-public class LycheeREIPlugin implements REIClientPlugin {
+public class LycheeJEIPlugin implements IModPlugin {
 	public static final ResourceLocation ID = Lychee.id("main");
-	public static final EntryType<PostAction> POST_ACTION = EntryType.deferred(Lychee.id("post_action"));
+	public static final IIngredientType<PostAction> POST_ACTION = () -> PostAction.class;
+	private static final Map<AllGuiTextures, IDrawable> elementMap = Maps.newIdentityHashMap();
+	private final Multimap<ResourceLocation, CategoryHolder> categories = LinkedHashMultimap.create();
 
 	private static ResourceLocation composeCategoryIdentifier(ResourceLocation categoryId, ResourceLocation group) {
 		return ResourceLocation.fromNamespaceAndPath(
@@ -79,10 +81,22 @@ public class LycheeREIPlugin implements REIClientPlugin {
 				.build();
 	}
 
-	private final Multimap<ResourceLocation, CategoryHolder> categories = LinkedHashMultimap.create();
+	public static Rectangle offsetRect(Point startPoint, Rect2i rect) {
+		return new Rectangle(startPoint.x + rect.getX(), startPoint.y + rect.getY(), rect.getWidth(), rect.getHeight());
+	}
+
+	public static IDrawable slot(SlotType slotType) {
+		return slotType.element;
+	}
 
 	@Override
-	public void registerCategories(CategoryRegistry registry) {
+	public ResourceLocation getPluginUid() {
+		return ID;
+	}
+
+	@Override
+	public void registerCategories(IRecipeCategoryRegistration registry) {
+		var helpers = registry.getJeiHelpers();
 		categories.clear();
 		for (var recipeType : RecipeTypes.ALL) {
 			if (!recipeType.hasStandaloneCategory) {
@@ -104,7 +118,7 @@ public class LycheeREIPlugin implements REIClientPlugin {
 						Objects.requireNonNull(IconProviders.get(recipeType), recipeType::toString).get(recipes),
 						(Collection) recipes);
 				categories.put(recipeType.categoryId, new CategoryHolder(category, (Collection) recipes));
-				registry.add(category);
+				registry.addRecipeCategories(category);
 				var workstationRegister = WorkstationRegisters.get(recipeType);
 				if (workstationRegister != null) {
 					workstationRegister.consume(registry, category, (Collection) recipes);
@@ -180,34 +194,25 @@ public class LycheeREIPlugin implements REIClientPlugin {
 		});
 	}
 
-	public static Rectangle offsetRect(Point startPoint, Rect2i rect) {
-		return new Rectangle(startPoint.x + rect.getX(), startPoint.y + rect.getY(), rect.getWidth(), rect.getHeight());
-	}
-
-	public record CategoryHolder(
-			LycheeDisplayCategory<?> category,
-			Collection<RecipeHolder<ILycheeRecipe<LycheeContext>>> recipes) {}
-
-	public static LEntryWidget slot(Point startPoint, int x, int y, SlotType slotType) {
-		LEntryWidget widget = new LEntryWidget(new Point(startPoint.x + x + 1, startPoint.y + y + 1));
-		widget.background(slotType.element);
-		return widget;
-	}
-
 	@Override
 	public void registerEntryTypes(EntryTypeRegistry registration) {
 		registration.register(POST_ACTION, new PostActionIngredientHelper());
 	}
+
 
 	public enum SlotType {
 		NORMAL(AllGuiTextures.JEI_SLOT),
 		CHANCE(AllGuiTextures.JEI_CHANCE_SLOT),
 		CATALYST(AllGuiTextures.JEI_CATALYST_SLOT);
 
-		final ScreenElement element;
+		final IDrawable element;
 
 		SlotType(AllGuiTextures element) {
-			this.element = new ScreenElementWidget(element).element;
+			this.element = elementMap.computeIfAbsent(element, ScreenElementWrapper::new);
 		}
 	}
+
+	public record CategoryHolder(
+			LycheeDisplayCategory<?> category,
+			Collection<RecipeHolder<ILycheeRecipe<LycheeContext>>> recipes) {}
 }

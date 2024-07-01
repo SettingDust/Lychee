@@ -69,7 +69,7 @@ import snownee.lychee.util.CommonProxy;
 @JeiPlugin
 public class JEICompat implements IModPlugin {
 
-	public static final ResourceLocation UID = new ResourceLocation(Lychee.ID, "main");
+	public static final ResourceLocation UID = ResourceLocation.parse(Lychee.ID, "main");
 	public static final IIngredientType<PostAction> POST_ACTION = () -> PostAction.class;
 	public static IJeiRuntime RUNTIME;
 	public static IJeiHelpers HELPERS;

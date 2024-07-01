@@ -171,7 +171,7 @@ public class CommonProxy implements ModInitializer {
 		if (string.isEmpty()) {
 			return null;
 		} else {
-			return new ResourceLocation(string);
+			return ResourceLocation.parse(string);
 		}
 	}
 
@@ -343,17 +343,17 @@ public class CommonProxy implements ModInitializer {
 		// Dripstone recipes
 		Registry.register(
 				BuiltInRegistries.PARTICLE_TYPE,
-				new ResourceLocation(Lychee.ID, "dripstone_dripping"),
+				Lychee.id("dripstone_dripping"),
 				DripstoneParticleService.DRIPSTONE_DRIPPING
 		);
 		Registry.register(
 				BuiltInRegistries.PARTICLE_TYPE,
-				new ResourceLocation(Lychee.ID, "dripstone_falling"),
+				Lychee.id("dripstone_falling"),
 				DripstoneParticleService.DRIPSTONE_FALLING
 		);
 		Registry.register(
 				BuiltInRegistries.PARTICLE_TYPE,
-				new ResourceLocation(Lychee.ID, "dripstone_splash"),
+				Lychee.id("dripstone_splash"),
 				DripstoneParticleService.DRIPSTONE_SPLASH
 		);
 	}

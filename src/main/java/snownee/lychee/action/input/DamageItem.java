@@ -8,6 +8,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -51,8 +52,8 @@ public record DamageItem(PostActionCommonProperties commonProperties, int damage
 
 			itemStack.hurtAndBreak(
 					damage,
-					context.get(LycheeContextKey.RANDOM),
-					thisEntity instanceof ServerPlayer player ? player : null, () -> {
+					(ServerLevel) context.get(LycheeContextKey.LEVEL),
+					thisEntity instanceof ServerPlayer player ? player : null, (it) -> {
 						if (thisEntity instanceof LivingEntity livingEntity) {
 							EquipmentSlot hand = null;
 							if (livingEntity.getMainHandItem() == itemStack) {
@@ -61,7 +62,7 @@ public record DamageItem(PostActionCommonProperties commonProperties, int damage
 								hand = EquipmentSlot.OFFHAND;
 							}
 							if (hand != null) {
-								livingEntity.broadcastBreakEvent(hand);
+								livingEntity.onEquippedItemBroken(it, hand);
 							}
 						}
 						var item = itemStack.getItem();

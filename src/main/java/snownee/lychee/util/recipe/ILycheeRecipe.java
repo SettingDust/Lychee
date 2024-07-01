@@ -13,9 +13,9 @@ import net.minecraft.advancements.critereon.BlockPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.util.Mth;
-import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import snownee.lychee.util.BoundsExtensions;
@@ -30,7 +30,7 @@ import snownee.lychee.util.contextual.ContextualPredicate;
 import snownee.lychee.util.json.JsonPointer;
 import snownee.lychee.util.predicates.BlockPredicateExtensions;
 
-public interface ILycheeRecipe<C extends Container> extends Recipe<C>, ContextualPredicate, Contextual {
+public interface ILycheeRecipe<C extends RecipeInput> extends Recipe<C>, ContextualPredicate, Contextual {
 	String DEFAULT_GROUP = "default";
 	String ITEM_IN = "item_in";
 	String ITEM_OUT = "item_out";

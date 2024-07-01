@@ -20,9 +20,9 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -48,8 +48,8 @@ import snownee.lychee.util.recipe.LycheeRecipe;
 import snownee.lychee.util.recipe.LycheeRecipeCommonProperties;
 import snownee.lychee.util.recipe.LycheeRecipeSerializer;
 
-public class ShapedCraftingRecipe extends LycheeRecipe<CraftingContainer> implements CraftingRecipe {
-	private static final Cache<CraftingContainer, LycheeContext> CONTEXT_CACHE =
+public class ShapedCraftingRecipe extends LycheeRecipe<CraftingInput> implements CraftingRecipe {
+	private static final Cache<CraftingInput, LycheeContext> CONTEXT_CACHE =
 			CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.SECONDS).build();
 
 	protected final ShapedRecipe shaped;
@@ -90,10 +90,11 @@ public class ShapedCraftingRecipe extends LycheeRecipe<CraftingContainer> implem
 				return IntList.of();
 			}
 			var pattern = ((ShapedRecipeAccess) shaped).getPattern();
-			if (pattern.data().isEmpty()) {
+			var dataOptional = ((ShapedRecipePatternAccess) (Object) pattern).data();
+			if (dataOptional.isEmpty()) {
 				return IntList.of();
 			}
-			var data = pattern.data().get();
+			var data = dataOptional.get();
 			IntList list = IntArrayList.of();
 			for (var i = 0; i < data.pattern().size(); i++) {
 				if (key.equals(data.pattern().get(i))) {
@@ -107,12 +108,12 @@ public class ShapedCraftingRecipe extends LycheeRecipe<CraftingContainer> implem
 
 	@SuppressWarnings("UnreachableCode")
 	@Override
-	public boolean matches(CraftingContainer container, Level level) {
+	public boolean matches(CraftingInput input, Level level) {
 		if (ghost()) {
 			return false;
 		}
 		if (level.isClientSide) {
-			return shaped.matches(container, level);
+			return shaped.matches(input, level);
 		}
 		final var context = new LycheeContext();
 		context.put(LycheeContextKey.LEVEL, level);
@@ -124,13 +125,13 @@ public class ShapedCraftingRecipe extends LycheeRecipe<CraftingContainer> implem
 		final var shapedRecipeAccess = (ShapedRecipeAccess) shaped;
 		final var pattern = (ShapedRecipePatternAccess) (Object) shapedRecipeAccess.getPattern();
 		outer:
-		for (matchX = 0; matchX <= container.getWidth() - getWidth(); ++matchX) {
-			for (matchY = 0; matchY <= container.getHeight() - getHeight(); ++matchY) {
-				if (pattern.callMatches(container, matchX, matchY, true)) {
+		for (matchX = 0; matchX <= input.width() - getWidth(); ++matchX) {
+			for (matchY = 0; matchY <= input.height() - getHeight(); ++matchY) {
+				if (pattern.callMatches(CraftingInput.of(matchX, matchY, input.items()), true)) {
 					matched = true;
 					break outer;
 				}
-				if (getWidth() > 1 && pattern.callMatches(container, matchX, matchY, false)) {
+				if (getWidth() > 1 && pattern.callMatches(CraftingInput.of(matchX, matchY, input.items()), false)) {
 					matched = true;
 					mirror = true;
 					break outer;
@@ -140,14 +141,14 @@ public class ShapedCraftingRecipe extends LycheeRecipe<CraftingContainer> implem
 		if (!matched) {
 			return false;
 		}
-		var craftingContext = new CraftingContext(context, container, matchX, matchY, mirror);
+		var craftingContext = new CraftingContext(context, input, matchX, matchY, mirror);
 		context.put(LycheeContextKey.CRAFTING, craftingContext);
 
 		final var passed = conditions().test(this, context, 1) > 0;
 
 		Pair<Vec3, Player> pair = null;
 		try {
-			pair = CraftingContext.CONTAINER_WORLD_LOCATOR.get(container.getClass()).apply(container);
+			pair = CraftingContext.CONTAINER_WORLD_LOCATOR.get(input.getClass()).apply(input);
 		} catch (ExecutionException ignored) {
 		}
 		final var lootParamsContext = context.get(LycheeContextKey.LOOT_PARAMS);
@@ -156,17 +157,17 @@ public class ShapedCraftingRecipe extends LycheeRecipe<CraftingContainer> implem
 			lootParamsContext.setParam(LootContextParams.THIS_ENTITY, pair.getSecond());
 		}
 
-		CONTEXT_CACHE.put(container, context);
+		CONTEXT_CACHE.put(input, context);
 
 		if (passed) {
 			final var result = getResultItem(level.registryAccess()).copy();
 			final var ingredients = getIngredients();
 			final var items = new ItemStack[ingredients.size() + 1];
-			final var startIndex = container.getWidth() * craftingContext.matchY() + craftingContext.matchX();
+			final var startIndex = input.width() * craftingContext.matchY() + craftingContext.matchX();
 			var k = 0;
 			for (var i = 0; i < getHeight(); i++) {
 				for (var j = 0; j < getWidth(); j++) {
-					items[k] = container.getItem(startIndex + container.getWidth() * k + (craftingContext.mirror() ? getWidth() - j : j));
+					items[k] = input.getItem(startIndex + input.width() * k + (craftingContext.mirror() ? getWidth() - j : j));
 					if (!items[k].isEmpty()) {
 						items[k] = items[k].copy();
 						items[k].setCount(1);
@@ -182,7 +183,7 @@ public class ShapedCraftingRecipe extends LycheeRecipe<CraftingContainer> implem
 
 
 	@Override
-	public @NotNull ItemStack assemble(CraftingContainer container, HolderLookup.Provider provider) {
+	public @NotNull ItemStack assemble(CraftingInput container, HolderLookup.Provider provider) {
 		var context = CONTEXT_CACHE.getIfPresent(container);
 		if (context == null) {
 			return ItemStack.EMPTY;
@@ -195,11 +196,11 @@ public class ShapedCraftingRecipe extends LycheeRecipe<CraftingContainer> implem
 		actionContext.reset();
 		actionContext.jobs.addAll(assemblingActions.stream().map(it -> new Job(it, 1)).toList());
 		actionContext.run(context);
-		return context.getItem(context.getContainerSize() - 1);
+		return context.getItem(context.size() - 1);
 	}
 
 	@Override
-	public @NotNull NonNullList<ItemStack> getRemainingItems(CraftingContainer container) {
+	public @NotNull NonNullList<ItemStack> getRemainingItems(CraftingInput container) {
 		var items = shaped.getRemainingItems(container);
 		var context = CONTEXT_CACHE.getIfPresent(container);
 		if (context == null) {
@@ -207,13 +208,13 @@ public class ShapedCraftingRecipe extends LycheeRecipe<CraftingContainer> implem
 		}
 		applyPostActions(context, 1);
 		var craftingContext = context.get(LycheeContextKey.CRAFTING);
-		var startIndex = container.getWidth() * craftingContext.matchY() + craftingContext.matchX();
+		var startIndex = container.width() * craftingContext.matchY() + craftingContext.matchX();
 		var itemStackHolders = context.get(LycheeContextKey.ITEM);
 		var k = 0;
 		for (var i = 0; i < getHeight(); i++) {
 			for (var j = 0; j < getWidth(); j++) {
 				if (itemStackHolders.get(k).getIgnoreConsumption()) {
-					items.set(startIndex + container.getWidth() * i + (craftingContext.mirror() ? getWidth() - j : j), context.getItem(k));
+					items.set(startIndex + container.width() * i + (craftingContext.mirror() ? getWidth() - j : j), context.getItem(k));
 				}
 				++k;
 			}
