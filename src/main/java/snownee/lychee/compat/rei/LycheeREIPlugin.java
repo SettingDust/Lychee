@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 
@@ -24,7 +23,6 @@ import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.display.Display;
 import me.shedaniel.rei.api.common.entry.type.EntryType;
 import me.shedaniel.rei.api.common.entry.type.EntryTypeRegistry;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -33,6 +31,7 @@ import snownee.lychee.Lychee;
 import snownee.lychee.RecipeTypes;
 import snownee.lychee.client.gui.AllGuiTextures;
 import snownee.lychee.client.gui.ScreenElement;
+import snownee.lychee.compat.JEIREI;
 import snownee.lychee.compat.rei.category.CategoryProviders;
 import snownee.lychee.compat.rei.category.IconProviders;
 import snownee.lychee.compat.rei.category.LycheeCategory;
@@ -47,37 +46,10 @@ import snownee.lychee.compat.rei.ingredient.PostActionIngredientHelper;
 import snownee.lychee.util.action.PostAction;
 import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.recipe.ILycheeRecipe;
-import snownee.lychee.util.recipe.LycheeRecipeType;
 
 public class LycheeREIPlugin implements REIClientPlugin {
 	public static final ResourceLocation ID = Lychee.id("main");
 	public static final EntryType<PostAction> POST_ACTION = EntryType.deferred(Lychee.id("post_action"));
-
-	private static ResourceLocation composeCategoryIdentifier(ResourceLocation categoryId, ResourceLocation group) {
-		return ResourceLocation.fromNamespaceAndPath(
-				categoryId.getNamespace(),
-				"%s/%s/%s".formatted(categoryId.getPath(), group.getNamespace(), group.getPath()));
-	}
-
-	private static ImmutableMultimap<CategoryIdentifier<? extends LycheeDisplay<?>>, RecipeHolder<? extends ILycheeRecipe<LycheeContext>>> generateCategories(
-			LycheeRecipeType<? extends ILycheeRecipe<LycheeContext>> recipeType) {
-		return recipeType
-				.inViewerRecipes()
-				.stream()
-				.reduce(
-						ImmutableMultimap.<CategoryIdentifier<? extends LycheeDisplay<?>>, RecipeHolder<? extends ILycheeRecipe<LycheeContext>>>builder(),
-						(map, recipeHolder) -> {
-							map.put(
-									CategoryIdentifier.of(composeCategoryIdentifier(
-											recipeType.categoryId,
-											ResourceLocation.parse(recipeHolder.value().group()))),
-									recipeHolder
-							);
-							return map;
-						},
-						(map, ignored) -> map)
-				.build();
-	}
 
 	private final Multimap<ResourceLocation, CategoryHolder> categories = LinkedHashMultimap.create();
 
@@ -89,7 +61,7 @@ public class LycheeREIPlugin implements REIClientPlugin {
 				continue;
 			}
 
-			var generatedCategories = generateCategories(recipeType);
+			var generatedCategories = JEIREI.generateCategories(recipeType, CategoryIdentifier::of);
 
 			var categoryProvider = CategoryProviders.get(recipeType);
 
@@ -98,7 +70,7 @@ public class LycheeREIPlugin implements REIClientPlugin {
 				continue;
 			}
 
-			generatedCategories.asMap().forEach((id, recipes) -> {
+			generatedCategories.forEach((id, recipes) -> {
 				var category = categoryProvider.get(
 						(CategoryIdentifier) id,
 						Objects.requireNonNull(IconProviders.get(recipeType), recipeType::toString).get(recipes),
@@ -144,8 +116,8 @@ public class LycheeREIPlugin implements REIClientPlugin {
 			}
 			return lastView;
 		};
-		registry.get(CategoryIdentifier.of("minecraft", "plugins/crafting")).registerExtension(extensionProvider);
-		registry.get(CategoryIdentifier.of("minecraft", "plugins/anvil")).registerExtension(extensionProvider);
+		registry.get(CategoryIdentifier.of("plugins/crafting")).registerExtension(extensionProvider);
+		registry.get(CategoryIdentifier.of("plugins/anvil")).registerExtension(extensionProvider);
 	}
 
 	@Override
@@ -160,11 +132,10 @@ public class LycheeREIPlugin implements REIClientPlugin {
 			}
 		});
 
-		var registryAccess = Minecraft.getInstance().level.registryAccess();
 		try {
 			KUtil.getRecipes(RecipeTypes.ANVIL_CRAFTING).stream()
 					.filter(it ->
-							!it.value().getResultItem(registryAccess).isEmpty() &&
+							!it.value().output().isEmpty() &&
 									!it.value().isSpecial() && !it.value().hideInRecipeViewer())
 					.map(AnvilCraftingDisplay::new)
 					.forEach(registry::add);

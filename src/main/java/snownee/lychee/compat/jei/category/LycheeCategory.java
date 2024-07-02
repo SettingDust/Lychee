@@ -22,7 +22,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import snownee.lychee.action.DropItem;
 import snownee.lychee.action.RandomSelect;
 import snownee.lychee.client.gui.AllGuiTextures;
-import snownee.lychee.compat.DisplayUtils;
+import snownee.lychee.compat.JEIREI;
 import snownee.lychee.compat.jei.LycheeJEIPlugin;
 import snownee.lychee.compat.jei.display.LycheeDisplay;
 import snownee.lychee.util.action.CompoundAction;
@@ -153,7 +153,7 @@ public interface LycheeCategory<R extends ILycheeRecipe<LycheeContext>> {
 	}
 
 	default void ingredientGroup(IRecipeLayoutBuilder builder, R recipe, int x, int y) {
-		var ingredients = DisplayUtils.generateShapelessInputs(recipe);
+		var ingredients = JEIREI.generateShapelessInputs(recipe);
 		slotGroup(builder, x + 1, y + 1, 0, ingredients, (layout0, ingredient, i, x0, y0) -> {
 			var items = ingredient.ingredient.getItems();
 			var slotBuilder = builder.addSlot(RecipeIngredientRole.INPUT, x0, y0);

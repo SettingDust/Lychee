@@ -1,95 +1,50 @@
 package snownee.lychee.compat.jei.ingredient;
 
 import java.util.Objects;
-import java.util.stream.Stream;
 
-import org.jetbrains.annotations.Nullable;
-
-import me.shedaniel.rei.api.client.entry.renderer.EntryRenderer;
-import me.shedaniel.rei.api.common.entry.EntrySerializer;
-import me.shedaniel.rei.api.common.entry.EntryStack;
-import me.shedaniel.rei.api.common.entry.comparison.ComparisonContext;
-import me.shedaniel.rei.api.common.entry.type.EntryDefinition;
-import me.shedaniel.rei.api.common.entry.type.EntryType;
-import net.minecraft.network.chat.Component;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import snownee.lychee.LycheeRegistries;
 import snownee.lychee.compat.jei.LycheeJEIPlugin;
 import snownee.lychee.util.CommonProxy;
 import snownee.lychee.util.action.PostAction;
 
-public class PostActionIngredientHelper implements EntryDefinition<PostAction> {
+public class PostActionIngredientHelper implements IIngredientHelper<PostAction> {
 
 	@Override
-	public @Nullable String getContainingNamespace(EntryStack<PostAction> entry, PostAction value) {
-		String modid = LycheeRegistries.POST_ACTION.getKey(value.type()).getNamespace();
-		return CommonProxy.wrapNamespace(modid);
+	public PostAction copyIngredient(PostAction postAction) {
+		return postAction;
 	}
 
 	@Override
-	public Class<PostAction> getValueType() {
-		return PostAction.class;
+	public String getDisplayName(PostAction postAction) {
+		return postAction.getDisplayName().getString();
 	}
 
 	@Override
-	public EntryType<PostAction> getType() {
+	public String getErrorInfo(PostAction postAction) {
+		return Objects.toString(postAction);
+	}
+
+	@Override
+	public IIngredientType<PostAction> getIngredientType() {
 		return LycheeJEIPlugin.POST_ACTION;
 	}
 
 	@Override
-	public EntryRenderer<PostAction> getRenderer() {
-		return PostActionIngredientRenderer.INSTANCE;
+	public String getDisplayModId(PostAction postAction) {
+		String modid = postAction.type().getRegistryName().getNamespace();
+		return CommonProxy.wrapNamespace(modid);
 	}
 
 	@Override
-	public @Nullable ResourceLocation getIdentifier(EntryStack<PostAction> entry, PostAction value) {
-		return LycheeRegistries.POST_ACTION.getKey(value.type());
+	public ResourceLocation getResourceLocation(PostAction postAction) {
+		return postAction.type().getRegistryName();
 	}
 
 	@Override
-	public boolean isEmpty(EntryStack<PostAction> entry, PostAction value) {
-		return false;
+	public String getUniqueId(PostAction postAction, UidContext arg1) {
+		return postAction.type().getRegistryName().toString() + postAction.toString();
 	}
-
-	@Override
-	public PostAction copy(EntryStack<PostAction> entry, PostAction value) {
-		return value;
-	}
-
-	@Override
-	public PostAction normalize(EntryStack<PostAction> entry, PostAction value) {
-		return copy(entry, value);
-	}
-
-	@Override
-	public PostAction wildcard(EntryStack<PostAction> entry, PostAction value) {
-		return copy(entry, value);
-	}
-
-	@Override
-	public long hash(EntryStack<PostAction> entry, PostAction value, ComparisonContext context) {
-		return Objects.hashCode(value);
-	}
-
-	@Override
-	public boolean equals(PostAction o1, PostAction o2, ComparisonContext context) {
-		return Objects.equals(o1, o2);
-	}
-
-	@Override
-	public @Nullable EntrySerializer<PostAction> getSerializer() {
-		return null;
-	}
-
-	@Override
-	public Component asFormattedText(EntryStack<PostAction> entry, PostAction value) {
-		return value.getDisplayName();
-	}
-
-	@Override
-	public Stream<? extends TagKey<?>> getTagsFor(EntryStack<PostAction> entry, PostAction value) {
-		return Stream.of();
-	}
-
 }

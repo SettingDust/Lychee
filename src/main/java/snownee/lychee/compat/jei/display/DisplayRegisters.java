@@ -1,12 +1,12 @@
 package snownee.lychee.compat.jei.display;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
 
-import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
-import me.shedaniel.rei.api.common.category.CategoryIdentifier;
+import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import snownee.lychee.compat.jei.category.LycheeDisplayCategory;
@@ -18,11 +18,8 @@ public interface DisplayRegisters {
 	Map<ResourceLocation, DisplayRegister<?>> ALL = Maps.newHashMap();
 
 	DisplayRegister<ILycheeRecipe<?>> DEFAULT = (registry, category, recipes) -> {
-		for (var recipe : recipes) {
-			registry.add(new SimpleLycheeDisplay<>(recipe.value(), (CategoryIdentifier) category.getCategoryIdentifier()));
-		}
+		registry.addRecipes(category.getRecipeType(), List.copyOf(recipes));
 	};
-
 
 	static <R extends ILycheeRecipe<?>> DisplayRegister<R> get(ResourceLocation id) {
 		return (DisplayRegister<R>) ALL.getOrDefault(id, DEFAULT);
@@ -38,7 +35,7 @@ public interface DisplayRegisters {
 	@FunctionalInterface
 	interface DisplayRegister<R extends ILycheeRecipe<?>> {
 		void consume(
-				DisplayRegistry registry,
+				IRecipeRegistration registry,
 				LycheeDisplayCategory<? extends LycheeDisplay<R>> category,
 				Collection<RecipeHolder<R>> recipes);
 	}

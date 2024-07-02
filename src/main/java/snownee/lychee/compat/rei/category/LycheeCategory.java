@@ -26,7 +26,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import snownee.lychee.action.DropItem;
 import snownee.lychee.action.RandomSelect;
 import snownee.lychee.client.gui.AllGuiTextures;
-import snownee.lychee.compat.DisplayUtils;
+import snownee.lychee.compat.JEIREI;
 import snownee.lychee.compat.rei.LycheeREIPlugin;
 import snownee.lychee.compat.rei.display.LycheeDisplay;
 import snownee.lychee.compat.rei.elements.InteractiveWidget;
@@ -142,7 +142,7 @@ public interface LycheeCategory<R extends ILycheeRecipe<LycheeContext>> {
 			matrixStack.popPose();
 		}));
 		var reactive = new InteractiveWidget(LycheeREIPlugin.offsetRect(startPoint, rect));
-		reactive.setTooltipFunction($ -> DisplayUtils.getRecipeTooltip(recipe).toArray(new Component[0]));
+		reactive.setTooltipFunction($ -> JEIREI.getRecipeTooltip(recipe).toArray(new Component[0]));
 		reactive.setOnClick((widget, button) -> ClientProxy.postInfoBadgeClickEvent(recipe, button));
 		widgets.add(reactive);
 	}
@@ -162,7 +162,7 @@ public interface LycheeCategory<R extends ILycheeRecipe<LycheeContext>> {
 	}
 
 	default void ingredientGroup(List<Widget> widgets, Point startPoint, R recipe, int x, int y) {
-		var ingredients = DisplayUtils.generateShapelessInputs(recipe);
+		var ingredients = JEIREI.generateShapelessInputs(recipe);
 		slotGroup(widgets, startPoint, x, y, ingredients, (widgets0, startPoint0, ingredient, x0, y0) -> {
 			var items = ingredient.ingredient.getItems();
 			var slot = LycheeREIPlugin.slot(

@@ -10,13 +10,13 @@ import me.shedaniel.math.Rectangle;
 import me.shedaniel.rei.api.client.gui.Renderer;
 import me.shedaniel.rei.api.client.gui.widgets.Widget;
 import me.shedaniel.rei.api.client.gui.widgets.Widgets;
-import me.shedaniel.rei.api.common.category.CategoryIdentifier;
+import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import snownee.lychee.RecipeTypes;
-import snownee.lychee.compat.DisplayUtils;
+import snownee.lychee.compat.JEIREI;
 import snownee.lychee.compat.jei.display.LycheeDisplay;
 import snownee.lychee.recipes.BlockCrushingRecipe;
 import snownee.lychee.recipes.BlockExplodingRecipe;
@@ -81,7 +81,7 @@ public interface CategoryProviders {
 						Rectangle bounds
 				) {
 					Widget widget = Widgets.createDrawableWidget((GuiGraphics graphics, int mouseX, int mouseY, float delta) ->
-							DisplayUtils.renderTnt(graphics, bounds.x + 89, bounds.y + 38));
+							JEIREI.renderTnt(graphics, bounds.x + 89, bounds.y + 38));
 					widgets.add(widget);
 				}
 			}
@@ -111,7 +111,7 @@ public interface CategoryProviders {
 	@FunctionalInterface
 	interface CategoryProvider<R extends ILycheeRecipe<LycheeContext>> {
 		LycheeDisplayCategory<? extends LycheeDisplay<R>> get(
-				CategoryIdentifier<? extends LycheeDisplay<R>> identifier,
+				RecipeType<? extends LycheeDisplay<R>> identifier,
 				Renderer icon,
 				Collection<RecipeHolder<R>> recipes);
 	}

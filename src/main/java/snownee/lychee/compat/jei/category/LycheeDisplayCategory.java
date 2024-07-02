@@ -6,7 +6,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.network.chat.Component;
-import snownee.lychee.compat.DisplayUtils;
+import snownee.lychee.compat.JEIREI;
 import snownee.lychee.compat.jei.display.LycheeDisplay;
 
 public abstract class LycheeDisplayCategory<T extends LycheeDisplay<?>> implements IRecipeCategory<T> {
@@ -44,6 +44,6 @@ public abstract class LycheeDisplayCategory<T extends LycheeDisplay<?>> implemen
 
 	@Override
 	public Component getTitle() {
-		return DisplayUtils.makeTitle(getRecipeType().getUid());
+		return JEIREI.makeTitle(getRecipeType().getUid());
 	}
 }

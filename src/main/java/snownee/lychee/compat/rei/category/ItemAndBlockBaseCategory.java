@@ -23,7 +23,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.lychee.client.gui.AllGuiTextures;
 import snownee.lychee.client.gui.GuiGameElement;
-import snownee.lychee.compat.DisplayUtils;
+import snownee.lychee.compat.JEIREI;
 import snownee.lychee.compat.rei.LycheeREIPlugin;
 import snownee.lychee.compat.rei.display.LycheeDisplay;
 import snownee.lychee.compat.rei.elements.InteractiveWidget;
@@ -54,7 +54,7 @@ public class ItemAndBlockBaseCategory<T extends ILycheeRecipe<LycheeContext>> ex
 		if (con == null) {
 			return Blocks.AIR.defaultBlockState();
 		}
-		return DisplayUtils.getMostUsedBlock(recipes).getFirst();
+		return JEIREI.getMostUsedBlock(recipes).getFirst();
 	}
 
 	public BlockPredicate getInputBlock(T recipe) {
@@ -106,7 +106,7 @@ public class ItemAndBlockBaseCategory<T extends ILycheeRecipe<LycheeContext>> ex
 			GuiGameElement.of(state)
 					.rotateBlock(12.5, -22.5, 0)
 					.scale(15)
-					.lighting(DisplayUtils.BLOCK_LIGHTING)
+					.lighting(JEIREI.BLOCK_LIGHTING)
 					.atLocal(0, 0.2, 0)
 					.at(inputBlockRect.getX(), inputBlockRect.getY())
 					.render(graphics);

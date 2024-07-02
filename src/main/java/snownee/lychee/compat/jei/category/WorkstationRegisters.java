@@ -5,8 +5,7 @@ import java.util.Map;
 
 import com.google.common.collect.Maps;
 
-import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
-import me.shedaniel.rei.api.common.util.EntryStacks;
+import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import net.minecraft.advancements.critereon.BlockPredicate;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -44,10 +43,7 @@ public interface WorkstationRegisters {
 						.forEach((block) -> {
 							var item = block.asItem();
 							if (!item.equals(Items.AIR)) {
-								var itemStack = item.getDefaultInstance();
-								registry.addWorkstations(
-										category.getCategoryIdentifier(),
-										EntryStacks.of(itemStack));
+								registry.addRecipeCatalyst(item.getDefaultInstance(), category.getRecipeType());
 							}
 						});
 			});
@@ -56,28 +52,30 @@ public interface WorkstationRegisters {
 			RecipeTypes.BLOCK_EXPLODING,
 			(registry, category, recipes) -> {
 				for (Item item : CommonProxy.tagElements(BuiltInRegistries.ITEM, LycheeTags.BLOCK_EXPLODING_CATALYSTS)) {
-					registry.addWorkstations(category.getCategoryIdentifier(), EntryStacks.of(item));
+					registry.addRecipeCatalyst(item.getDefaultInstance(), category.getRecipeType());
 				}
 			}
 	);
 
 	WorkstationRegister<DripstoneRecipe> DRIPSTONE = register(
 			RecipeTypes.DRIPSTONE_DRIPPING,
-			(registry, category, recipes) -> registry.addWorkstations(
-					category.getCategoryIdentifier(),
-					EntryStacks.of(Items.POINTED_DRIPSTONE))
+			(registry, category, recipes) -> registry.addRecipeCatalyst(
+					Items.POINTED_DRIPSTONE.getDefaultInstance(),
+					category.getRecipeType())
 	);
 
 	WorkstationRegister<LightningChannelingRecipe> LIGHTNING_CHANNELING = register(
 			RecipeTypes.LIGHTNING_CHANNELING,
-			(registry, category, recipes) -> registry.addWorkstations(category.getCategoryIdentifier(), EntryStacks.of(Items.LIGHTNING_ROD))
+			(registry, category, recipes) -> registry.addRecipeCatalyst(
+					Items.LIGHTNING_ROD.getDefaultInstance(),
+					category.getRecipeType())
 	);
 
 	WorkstationRegister<ItemExplodingRecipe> ITEM_EXPLODING = register(
 			RecipeTypes.ITEM_EXPLODING,
 			(registry, category, recipes) -> {
 				for (Item item : CommonProxy.tagElements(BuiltInRegistries.ITEM, LycheeTags.ITEM_EXPLODING_CATALYSTS)) {
-					registry.addWorkstations(category.getCategoryIdentifier(), EntryStacks.of(item));
+					registry.addRecipeCatalyst(item.getDefaultInstance(), category.getRecipeType());
 				}
 			}
 	);
@@ -96,7 +94,7 @@ public interface WorkstationRegisters {
 	@FunctionalInterface
 	interface WorkstationRegister<R extends ILycheeRecipe<LycheeContext>> {
 		void consume(
-				CategoryRegistry registry,
+				IRecipeCatalystRegistration registry,
 				LycheeDisplayCategory<? extends LycheeDisplay<R>> category,
 				Collection<RecipeHolder<R>> recipes);
 	}

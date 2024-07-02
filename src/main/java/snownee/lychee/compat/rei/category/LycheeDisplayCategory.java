@@ -4,7 +4,7 @@ import me.shedaniel.rei.api.client.gui.Renderer;
 import me.shedaniel.rei.api.client.registry.display.DisplayCategory;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import net.minecraft.network.chat.Component;
-import snownee.lychee.compat.DisplayUtils;
+import snownee.lychee.compat.JEIREI;
 import snownee.lychee.compat.rei.display.LycheeDisplay;
 
 public abstract class LycheeDisplayCategory<T extends LycheeDisplay<?>> implements DisplayCategory<T> {
@@ -26,7 +26,7 @@ public abstract class LycheeDisplayCategory<T extends LycheeDisplay<?>> implemen
 
 	@Override
 	public Component getTitle() {
-		return DisplayUtils.makeTitle(getIdentifier());
+		return JEIREI.makeTitle(getIdentifier());
 	}
 
 	@Override

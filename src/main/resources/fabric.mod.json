@@ -32,6 +32,7 @@
 			"snownee.lychee.compat.rei.LycheeREIPlugin"
 		],
 		"jei_mod_plugin": [
+			"snownee.lychee.compat.jei.LycheeJEIPlugin"
 		]
 	},
 	"mixins": [

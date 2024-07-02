@@ -4,82 +4,53 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 
-import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
-import dev.architectury.event.EventResult;
 import me.shedaniel.math.Point;
 import me.shedaniel.math.Rectangle;
-import me.shedaniel.rei.api.client.gui.DisplayRenderer;
-import me.shedaniel.rei.api.client.gui.widgets.Arrow;
-import me.shedaniel.rei.api.client.gui.widgets.Widget;
-import me.shedaniel.rei.api.client.registry.category.extension.CategoryExtensionProvider;
-import me.shedaniel.rei.api.client.registry.display.DisplayCategory;
-import me.shedaniel.rei.api.client.registry.display.DisplayCategoryView;
-import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
-import me.shedaniel.rei.api.common.category.CategoryIdentifier;
-import me.shedaniel.rei.api.common.display.Display;
-import me.shedaniel.rei.api.common.entry.type.EntryTypeRegistry;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
+import mezz.jei.api.registration.IModIngredientRegistration;
+import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
+import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
+import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import snownee.kiwi.util.KUtil;
 import snownee.lychee.Lychee;
 import snownee.lychee.RecipeTypes;
 import snownee.lychee.client.gui.AllGuiTextures;
+import snownee.lychee.compat.JEIREI;
 import snownee.lychee.compat.jei.category.CategoryProviders;
+import snownee.lychee.compat.jei.category.CraftingRecipeCategoryExtension;
 import snownee.lychee.compat.jei.category.IconProviders;
-import snownee.lychee.compat.jei.category.LycheeCategory;
 import snownee.lychee.compat.jei.category.LycheeDisplayCategory;
 import snownee.lychee.compat.jei.category.WorkstationRegisters;
-import snownee.lychee.compat.jei.display.AnvilCraftingDisplay;
 import snownee.lychee.compat.jei.display.DisplayRegisters;
-import snownee.lychee.compat.jei.display.LycheeDisplay;
 import snownee.lychee.compat.jei.ingredient.PostActionIngredientHelper;
+import snownee.lychee.compat.jei.ingredient.PostActionIngredientRenderer;
+import snownee.lychee.recipes.ShapedCraftingRecipe;
 import snownee.lychee.util.action.PostAction;
 import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.recipe.ILycheeRecipe;
-import snownee.lychee.util.recipe.LycheeRecipeType;
 
 public class LycheeJEIPlugin implements IModPlugin {
 	public static final ResourceLocation ID = Lychee.id("main");
 	public static final IIngredientType<PostAction> POST_ACTION = () -> PostAction.class;
 	private static final Map<AllGuiTextures, IDrawable> elementMap = Maps.newIdentityHashMap();
 	private final Multimap<ResourceLocation, CategoryHolder> categories = LinkedHashMultimap.create();
-
-	private static ResourceLocation composeCategoryIdentifier(ResourceLocation categoryId, ResourceLocation group) {
-		return ResourceLocation.fromNamespaceAndPath(
-				categoryId.getNamespace(),
-				"%s/%s/%s".formatted(categoryId.getPath(), group.getNamespace(), group.getPath()));
-	}
-
-	private static ImmutableMultimap<CategoryIdentifier<? extends LycheeDisplay<?>>, RecipeHolder<? extends ILycheeRecipe<LycheeContext>>> generateCategories(
-			LycheeRecipeType<? extends ILycheeRecipe<LycheeContext>> recipeType) {
-		return recipeType
-				.inViewerRecipes()
-				.stream()
-				.reduce(
-						ImmutableMultimap.<CategoryIdentifier<? extends LycheeDisplay<?>>, RecipeHolder<? extends ILycheeRecipe<LycheeContext>>>builder(),
-						(map, recipeHolder) -> {
-							map.put(
-									CategoryIdentifier.of(composeCategoryIdentifier(
-											recipeType.categoryId,
-											ResourceLocation.parse(recipeHolder.value().group()))),
-									recipeHolder
-							);
-							return map;
-						},
-						(map, ignored) -> map)
-				.build();
-	}
 
 	public static Rectangle offsetRect(Point startPoint, Rect2i rect) {
 		return new Rectangle(startPoint.x + rect.getX(), startPoint.y + rect.getY(), rect.getWidth(), rect.getHeight());
@@ -96,14 +67,13 @@ public class LycheeJEIPlugin implements IModPlugin {
 
 	@Override
 	public void registerCategories(IRecipeCategoryRegistration registry) {
-		var helpers = registry.getJeiHelpers();
 		categories.clear();
 		for (var recipeType : RecipeTypes.ALL) {
 			if (!recipeType.hasStandaloneCategory) {
 				continue;
 			}
 
-			var generatedCategories = generateCategories(recipeType);
+			var generatedCategories = JEIREI.generateCategories(recipeType, $ -> new RecipeType<>($, recipeType.clazz));
 
 			var categoryProvider = CategoryProviders.get(recipeType);
 
@@ -112,58 +82,24 @@ public class LycheeJEIPlugin implements IModPlugin {
 				continue;
 			}
 
-			generatedCategories.asMap().forEach((id, recipes) -> {
+			generatedCategories.forEach((id, recipes) -> {
 				var category = categoryProvider.get(
-						(CategoryIdentifier) id,
+						(RecipeType) id,
 						Objects.requireNonNull(IconProviders.get(recipeType), recipeType::toString).get(recipes),
 						(Collection) recipes);
 				categories.put(recipeType.categoryId, new CategoryHolder(category, (Collection) recipes));
 				registry.addRecipeCategories(category);
-				var workstationRegister = WorkstationRegisters.get(recipeType);
-				if (workstationRegister != null) {
-					workstationRegister.consume(registry, category, (Collection) recipes);
-				}
 			});
 		}
-
-		CategoryExtensionProvider<Display> extensionProvider = (display, category, lastView) -> {
-			if (display instanceof LycheeDisplay<?> lycheeDisplay) {
-				var recipe = lycheeDisplay.recipe();
-				return new DisplayCategoryView<>() {
-					@Override
-					public DisplayRenderer getDisplayRenderer(Display display) {
-						return lastView.getDisplayRenderer(display);
-					}
-
-					@Override
-					public List<Widget> setupDisplay(Display display, Rectangle bounds) {
-						List<Widget> widgets = lastView.setupDisplay(display, bounds);
-						Rect2i rect = null;
-						for (Widget widget : widgets) {
-							if (widget instanceof Arrow arrow) {
-								rect = new Rect2i(
-										arrow.getBounds().getCenterX() - bounds.getX() - 4,
-										Math.max(arrow.getY() - bounds.getY() - 9, 4),
-										8,
-										8);
-								break;
-							}
-						}
-						if (rect != null) {
-							LycheeCategory.drawInfoBadgeIfNeeded(widgets, recipe, bounds.getLocation(), rect);
-						}
-						return widgets;
-					}
-				};
-			}
-			return lastView;
-		};
-		registry.get(CategoryIdentifier.of("minecraft", "plugins/crafting")).registerExtension(extensionProvider);
-		registry.get(CategoryIdentifier.of("minecraft", "plugins/anvil")).registerExtension(extensionProvider);
 	}
 
 	@Override
-	public void registerDisplays(DisplayRegistry registry) {
+	public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
+		registration.getCraftingCategory().addExtension(ShapedCraftingRecipe.class, new CraftingRecipeCategoryExtension());
+	}
+
+	@Override
+	public void registerRecipes(IRecipeRegistration registry) {
 		categories.asMap().forEach((id, categories) -> {
 			var displayRegister = DisplayRegisters.get(id);
 			for (var category : categories) {
@@ -174,31 +110,76 @@ public class LycheeJEIPlugin implements IModPlugin {
 			}
 		});
 
-		var registryAccess = Minecraft.getInstance().level.registryAccess();
 		try {
-			KUtil.getRecipes(RecipeTypes.ANVIL_CRAFTING).stream()
-					.filter(it ->
-							!it.value().getResultItem(registryAccess).isEmpty() &&
-									!it.value().isSpecial() && !it.value().hideInRecipeViewer())
-					.map(AnvilCraftingDisplay::new)
-					.forEach(registry::add);
+			List<IJeiAnvilRecipe> recipes = KUtil.getRecipes(RecipeTypes.ANVIL_CRAFTING)
+					.stream()
+					.map(RecipeHolder::value)
+					.filter($ -> {
+						return !$.output().isEmpty() && !$.isSpecial() && !$.hideInRecipeViewer();
+					})
+					.map($ -> {
+						List<ItemStack> right = Stream.of($.input().getSecond().getItems())
+								.map(ItemStack::copy)
+								.peek($$ -> $$.setCount($.materialCost()))
+								.toList();
+						return registry.getVanillaRecipeFactory().createAnvilRecipe(
+								List.of($.input().getFirst().getItems()),
+								right,
+								List.of($.output()));
+					})
+					.toList();
+			registry.addRecipes(mezz.jei.api.constants.RecipeTypes.ANVIL, recipes);
 		} catch (Throwable e) {
 			Lychee.LOGGER.error("", e);
 		}
-
-		registry.registerVisibilityPredicate((DisplayCategory<?> category, Display display) -> {
-			if (display instanceof LycheeDisplay<?> lycheeDisplay && lycheeDisplay.recipe().hideInRecipeViewer()) {
-				return EventResult.interruptFalse();
-			}
-			return EventResult.pass();
-		});
 	}
 
 	@Override
-	public void registerEntryTypes(EntryTypeRegistry registration) {
-		registration.register(POST_ACTION, new PostActionIngredientHelper());
+	public void registerIngredients(IModIngredientRegistration registration) {
+		registration.register(POST_ACTION, List.of(), new PostActionIngredientHelper(), PostActionIngredientRenderer.INSTANCE);
 	}
 
+	@Override
+	public void registerRecipeCatalysts(IRecipeCatalystRegistration registry) {
+		for (var recipeType : RecipeTypes.ALL) {
+			if (!recipeType.hasStandaloneCategory) {
+				continue;
+			}
+
+			var generatedCategories = JEIREI.generateCategories(recipeType, $ -> new RecipeType<>($, recipeType.clazz));
+
+			var categoryProvider = CategoryProviders.get(recipeType);
+
+			if (categoryProvider == null) {
+				Lychee.LOGGER.error("Missing category provider for {}", recipeType);
+				continue;
+			}
+
+			generatedCategories.forEach((id, recipes) -> {
+				var category = categoryProvider.get(
+						(RecipeType) id,
+						Objects.requireNonNull(IconProviders.get(recipeType), recipeType::toString).get(recipes),
+						(Collection) recipes);
+				categories.put(recipeType.categoryId, new CategoryHolder(category, (Collection) recipes));
+				var workstationRegister = WorkstationRegisters.get(recipeType);
+				if (workstationRegister != null) {
+					workstationRegister.consume(registry, category, (Collection) recipes);
+				}
+			});
+		}
+	}
+
+	@Override
+	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+		Minecraft.getInstance().execute(() -> {
+			/* off */
+			var recipes = KUtil.getRecipes(net.minecraft.world.item.crafting.RecipeType.CRAFTING).stream()
+					.filter($ -> $.value() instanceof ILycheeRecipe<?> recipe && recipe.hideInRecipeViewer())
+					.toList();
+			/* on */
+			jeiRuntime.getRecipeManager().hideRecipes(mezz.jei.api.constants.RecipeTypes.CRAFTING, recipes);
+		});
+	}
 
 	public enum SlotType {
 		NORMAL(AllGuiTextures.JEI_SLOT),

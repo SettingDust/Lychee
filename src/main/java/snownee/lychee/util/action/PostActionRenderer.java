@@ -86,7 +86,7 @@ public interface PostActionRenderer<T extends PostAction> {
 			list.add(ClientProxy.format("contextual.lychee", c).withStyle(ChatFormatting.GRAY));
 		}
 		var mc = Minecraft.getInstance();
-		action.conditions().appendToTooltips(list, mc.level, mc.player, 0);
+		action.conditions().appendToTooltips(list, mc.level, player, 0);
 		return list;
 	}
 

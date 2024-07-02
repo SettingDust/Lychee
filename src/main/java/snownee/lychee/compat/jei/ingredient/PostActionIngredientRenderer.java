@@ -1,32 +1,28 @@
 package snownee.lychee.compat.jei.ingredient;
 
-import org.jetbrains.annotations.Nullable;
+import java.util.List;
 
-import me.shedaniel.math.Rectangle;
-import me.shedaniel.rei.api.client.entry.renderer.EntryRenderer;
-import me.shedaniel.rei.api.client.gui.widgets.Tooltip;
-import me.shedaniel.rei.api.client.gui.widgets.TooltipContext;
-import me.shedaniel.rei.api.common.entry.EntryStack;
+import mezz.jei.api.ingredients.IIngredientRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.TooltipFlag;
 import snownee.lychee.util.action.PostAction;
 import snownee.lychee.util.action.PostActionRenderer;
 
-public enum PostActionIngredientRenderer implements EntryRenderer<PostAction> {
+public enum PostActionIngredientRenderer implements IIngredientRenderer<PostAction> {
 
 	INSTANCE;
 
 	@Override
-	public void render(EntryStack<PostAction> entry, GuiGraphics graphics, Rectangle bounds, int mx, int my, float delta) {
-		if (entry.isEmpty()) {
-			return;
-		}
-		PostActionRenderer.of(entry.getValue()).render(entry.getValue(), graphics, bounds.x, bounds.y);
+	public List<Component> getTooltip(PostAction action, TooltipFlag flag) {
+		var player = Minecraft.getInstance().player;
+		return PostActionRenderer.of(action).getTooltips(action, player);
 	}
 
 	@Override
-	public @Nullable Tooltip getTooltip(EntryStack<PostAction> entry, TooltipContext context) {
-		return Tooltip.create(PostActionRenderer.of(entry.getValue()).getTooltips(entry.getValue(), Minecraft.getInstance().player));
+	public void render(GuiGraphics graphics, PostAction action) {
+		PostActionRenderer.of(action).render(action, graphics, 0, 0);
 	}
 
 }

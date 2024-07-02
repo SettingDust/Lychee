@@ -16,7 +16,7 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import snownee.lychee.RecipeTypes;
-import snownee.lychee.compat.DisplayUtils;
+import snownee.lychee.compat.JEIREI;
 import snownee.lychee.compat.rei.display.LycheeDisplay;
 import snownee.lychee.recipes.BlockCrushingRecipe;
 import snownee.lychee.recipes.BlockExplodingRecipe;
@@ -81,7 +81,7 @@ public interface CategoryProviders {
 						Rectangle bounds
 				) {
 					Widget widget = Widgets.createDrawableWidget((GuiGraphics graphics, int mouseX, int mouseY, float delta) ->
-							DisplayUtils.renderTnt(graphics, bounds.x + 89, bounds.y + 38));
+							JEIREI.renderTnt(graphics, bounds.x + 89, bounds.y + 38));
 					widgets.add(widget);
 				}
 			}
