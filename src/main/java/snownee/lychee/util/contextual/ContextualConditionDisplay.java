@@ -11,7 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import snownee.lychee.util.TriState;
+import snownee.kiwi.util.TriState;
 
 public interface ContextualConditionDisplay {
 	static void appendToTooltips(
