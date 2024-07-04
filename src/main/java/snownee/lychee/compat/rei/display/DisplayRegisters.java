@@ -9,7 +9,7 @@ import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import snownee.lychee.compat.rei.category.LycheeDisplayCategory;
+import snownee.lychee.compat.rei.category.AbstractLycheeCategory;
 import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.recipe.ILycheeRecipe;
 import snownee.lychee.util.recipe.LycheeRecipeType;
@@ -39,7 +39,7 @@ public interface DisplayRegisters {
 	interface DisplayRegister<R extends ILycheeRecipe<?>> {
 		void consume(
 				DisplayRegistry registry,
-				LycheeDisplayCategory<? extends LycheeDisplay<R>> category,
+				AbstractLycheeCategory<? extends LycheeDisplay<R>> category,
 				Collection<RecipeHolder<R>> recipes);
 	}
 }

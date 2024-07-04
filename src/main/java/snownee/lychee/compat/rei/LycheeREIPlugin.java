@@ -32,10 +32,10 @@ import snownee.lychee.RecipeTypes;
 import snownee.lychee.client.gui.AllGuiTextures;
 import snownee.lychee.client.gui.ScreenElement;
 import snownee.lychee.compat.JEIREI;
+import snownee.lychee.compat.rei.category.AbstractLycheeCategory;
 import snownee.lychee.compat.rei.category.CategoryProviders;
 import snownee.lychee.compat.rei.category.IconProviders;
 import snownee.lychee.compat.rei.category.LycheeCategory;
-import snownee.lychee.compat.rei.category.LycheeDisplayCategory;
 import snownee.lychee.compat.rei.category.WorkstationRegisters;
 import snownee.lychee.compat.rei.display.AnvilCraftingDisplay;
 import snownee.lychee.compat.rei.display.DisplayRegisters;
@@ -127,7 +127,7 @@ public class LycheeREIPlugin implements REIClientPlugin {
 			for (var category : categories) {
 				displayRegister.consume(
 						registry,
-						(LycheeDisplayCategory) category.category,
+						(AbstractLycheeCategory) category.category,
 						(Collection) category.recipes);
 			}
 		});
@@ -156,7 +156,7 @@ public class LycheeREIPlugin implements REIClientPlugin {
 	}
 
 	public record CategoryHolder(
-			LycheeDisplayCategory<?> category,
+			AbstractLycheeCategory<?> category,
 			Collection<RecipeHolder<ILycheeRecipe<LycheeContext>>> recipes) {}
 
 	public static LEntryWidget slot(Point startPoint, int x, int y, SlotType slotType) {
