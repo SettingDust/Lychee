@@ -10,8 +10,6 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
-import me.shedaniel.math.Point;
-import me.shedaniel.math.Rectangle;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -24,7 +22,6 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -33,12 +30,11 @@ import snownee.lychee.Lychee;
 import snownee.lychee.RecipeTypes;
 import snownee.lychee.client.gui.AllGuiTextures;
 import snownee.lychee.compat.JEIREI;
+import snownee.lychee.compat.jei.category.AbstractLycheeCategory;
 import snownee.lychee.compat.jei.category.CategoryProviders;
 import snownee.lychee.compat.jei.category.CraftingRecipeCategoryExtension;
 import snownee.lychee.compat.jei.category.IconProviders;
-import snownee.lychee.compat.jei.category.LycheeDisplayCategory;
 import snownee.lychee.compat.jei.category.WorkstationRegisters;
-import snownee.lychee.compat.jei.display.DisplayRegisters;
 import snownee.lychee.compat.jei.ingredient.PostActionIngredientHelper;
 import snownee.lychee.compat.jei.ingredient.PostActionIngredientRenderer;
 import snownee.lychee.recipes.ShapedCraftingRecipe;
@@ -51,10 +47,7 @@ public class LycheeJEIPlugin implements IModPlugin {
 	public static final IIngredientType<PostAction> POST_ACTION = () -> PostAction.class;
 	private static final Map<AllGuiTextures, IDrawable> elementMap = Maps.newIdentityHashMap();
 	private final Multimap<ResourceLocation, CategoryHolder> categories = LinkedHashMultimap.create();
-
-	public static Rectangle offsetRect(Point startPoint, Rect2i rect) {
-		return new Rectangle(startPoint.x + rect.getX(), startPoint.y + rect.getY(), rect.getWidth(), rect.getHeight());
-	}
+	public static IJeiRuntime runtime;
 
 	public static IDrawable slot(SlotType slotType) {
 		return slotType.element;
@@ -105,7 +98,7 @@ public class LycheeJEIPlugin implements IModPlugin {
 			for (var category : categories) {
 				displayRegister.consume(
 						registry,
-						(LycheeDisplayCategory) category.category,
+						(AbstractLycheeCategory) category.category,
 						(Collection) category.recipes);
 			}
 		});
@@ -171,15 +164,15 @@ public class LycheeJEIPlugin implements IModPlugin {
 
 	@Override
 	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+		this.runtime = jeiRuntime;
 		Minecraft.getInstance().execute(() -> {
-			/* off */
 			var recipes = KUtil.getRecipes(net.minecraft.world.item.crafting.RecipeType.CRAFTING).stream()
 					.filter($ -> $.value() instanceof ILycheeRecipe<?> recipe && recipe.hideInRecipeViewer())
 					.toList();
-			/* on */
 			jeiRuntime.getRecipeManager().hideRecipes(mezz.jei.api.constants.RecipeTypes.CRAFTING, recipes);
 		});
 	}
+
 
 	public enum SlotType {
 		NORMAL(AllGuiTextures.JEI_SLOT),
@@ -194,6 +187,6 @@ public class LycheeJEIPlugin implements IModPlugin {
 	}
 
 	public record CategoryHolder(
-			LycheeDisplayCategory<?> category,
+			AbstractLycheeCategory<?> category,
 			Collection<RecipeHolder<ILycheeRecipe<LycheeContext>>> recipes) {}
 }

@@ -6,10 +6,6 @@ import java.util.Map;
 
 import com.google.common.collect.Maps;
 
-import me.shedaniel.math.Rectangle;
-import me.shedaniel.rei.api.client.gui.Renderer;
-import me.shedaniel.rei.api.client.gui.widgets.Widget;
-import me.shedaniel.rei.api.client.gui.widgets.Widgets;
 import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
@@ -110,7 +106,7 @@ public interface CategoryProviders {
 
 	@FunctionalInterface
 	interface CategoryProvider<R extends ILycheeRecipe<LycheeContext>> {
-		LycheeDisplayCategory<? extends LycheeDisplay<R>> get(
+		AbstractLycheeCategory<? extends LycheeDisplay<R>> get(
 				RecipeType<? extends LycheeDisplay<R>> identifier,
 				Renderer icon,
 				Collection<RecipeHolder<R>> recipes);

@@ -30,7 +30,7 @@ import snownee.lychee.util.CommonProxy;
 
 public class BlockCrushingRecipeCategory extends BaseJEICategory<BlockCrushingContext, BlockCrushingRecipe> {
 
-	public static final Rect2i fallingBlockRect = new Rect2i(0, -35, 20, 35);
+	public static final Rect2i fallingBlckRect = new Rect2i(0, -35, 20, 35);
 	public static final Rect2i landingBlockRect = new Rect2i(0, 0, 20, 20);
 
 	public BlockCrushingRecipeCategory(LycheeRecipeType<BlockCrushingContext, BlockCrushingRecipe> recipeType) {

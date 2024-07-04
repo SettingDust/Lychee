@@ -6,6 +6,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.resources.ResourceLocation;
+import snownee.lychee.LycheeRegistries;
 import snownee.lychee.compat.jei.LycheeJEIPlugin;
 import snownee.lychee.util.CommonProxy;
 import snownee.lychee.util.action.PostAction;
@@ -34,17 +35,17 @@ public class PostActionIngredientHelper implements IIngredientHelper<PostAction>
 
 	@Override
 	public String getDisplayModId(PostAction postAction) {
-		String modid = postAction.type().getRegistryName().getNamespace();
+		var modid = getResourceLocation(postAction).getNamespace();
 		return CommonProxy.wrapNamespace(modid);
 	}
 
 	@Override
 	public ResourceLocation getResourceLocation(PostAction postAction) {
-		return postAction.type().getRegistryName();
+		return LycheeRegistries.POST_ACTION.getKey(postAction.type());
 	}
 
 	@Override
 	public String getUniqueId(PostAction postAction, UidContext arg1) {
-		return postAction.type().getRegistryName().toString() + postAction.toString();
+		return getResourceLocation(postAction).toString() + postAction;
 	}
 }

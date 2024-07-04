@@ -95,7 +95,7 @@ public interface WorkstationRegisters {
 	interface WorkstationRegister<R extends ILycheeRecipe<LycheeContext>> {
 		void consume(
 				IRecipeCatalystRegistration registry,
-				LycheeDisplayCategory<? extends LycheeDisplay<R>> category,
+				AbstractLycheeCategory<? extends LycheeDisplay<R>> category,
 				Collection<RecipeHolder<R>> recipes);
 	}
 }
