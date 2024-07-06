@@ -51,7 +51,7 @@ public class LycheeREIPlugin implements REIClientPlugin {
 	public static final ResourceLocation ID = Lychee.id("main");
 	public static final EntryType<PostAction> POST_ACTION = EntryType.deferred(Lychee.id("post_action"));
 
-	private final Multimap<ResourceLocation, CategoryHolder> categories = LinkedHashMultimap.create();
+	private final Multimap<AbstractLycheeCategory<?>, RecipeHolder<? extends ILycheeRecipe<LycheeContext>>> categories = LinkedHashMultimap.create();
 
 	@Override
 	public void registerCategories(CategoryRegistry registry) {
@@ -71,15 +71,18 @@ public class LycheeREIPlugin implements REIClientPlugin {
 			}
 
 			generatedCategories.forEach((id, recipes) -> {
-				var category = categoryProvider.get(
+				var registeredCategory = categories.keys().stream().filter(it -> it.getCategoryIdentifier().equals(id)).findAny();
+				var category = registeredCategory.orElseGet(() -> categoryProvider.get(
 						(CategoryIdentifier) id,
 						Objects.requireNonNull(IconProviders.get(recipeType), recipeType::toString).get(recipes),
-						(Collection) recipes);
-				categories.put(recipeType.categoryId, new CategoryHolder(category, (Collection) recipes));
-				registry.add(category);
+						(List) recipes));
+				categories.putAll(category, recipes);
+				if (registeredCategory.isEmpty()) {
+					registry.add(category);
+				}
 				var workstationRegister = WorkstationRegisters.get(recipeType);
 				if (workstationRegister != null) {
-					workstationRegister.consume(registry, category, (Collection) recipes);
+					workstationRegister.consume(registry, (AbstractLycheeCategory) category, (Collection) recipes);
 				}
 			});
 		}
@@ -122,14 +125,12 @@ public class LycheeREIPlugin implements REIClientPlugin {
 
 	@Override
 	public void registerDisplays(DisplayRegistry registry) {
-		categories.asMap().forEach((id, categories) -> {
-			var displayRegister = DisplayRegisters.get(id);
-			for (var category : categories) {
-				displayRegister.consume(
-						registry,
-						(AbstractLycheeCategory) category.category,
-						(Collection) category.recipes);
-			}
+		categories.asMap().forEach((category, recipes) -> {
+			var displayRegister = DisplayRegisters.get(category.recipeType().categoryId);
+			displayRegister.consume(
+					registry,
+					(AbstractLycheeCategory) category,
+					(Collection) recipes);
 		});
 
 		try {
@@ -154,10 +155,6 @@ public class LycheeREIPlugin implements REIClientPlugin {
 	public static Rectangle offsetRect(Point startPoint, Rect2i rect) {
 		return new Rectangle(startPoint.x + rect.getX(), startPoint.y + rect.getY(), rect.getWidth(), rect.getHeight());
 	}
-
-	public record CategoryHolder(
-			AbstractLycheeCategory<?> category,
-			Collection<RecipeHolder<ILycheeRecipe<LycheeContext>>> recipes) {}
 
 	public static LEntryWidget slot(Point startPoint, int x, int y, SlotType slotType) {
 		LEntryWidget widget = new LEntryWidget(new Point(startPoint.x + x + 1, startPoint.y + y + 1));

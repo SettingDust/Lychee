@@ -44,7 +44,7 @@ public class LycheeJEIPlugin implements IModPlugin {
 	public static final ResourceLocation ID = Lychee.id("main");
 	public static final IIngredientType<PostAction> POST_ACTION = () -> PostAction.class;
 	private static final Map<AllGuiTextures, IDrawable> elementMap = Maps.newIdentityHashMap();
-	private final Multimap<ResourceLocation, CategoryHolder> categories = LinkedHashMultimap.create();
+	private final Multimap<AbstractLycheeCategory<?>, RecipeHolder<? extends ILycheeRecipe<LycheeContext>>> categories = LinkedHashMultimap.create();
 	public static IJeiRuntime runtime;
 
 	public static IDrawable slot(SlotType slotType) {
@@ -76,13 +76,17 @@ public class LycheeJEIPlugin implements IModPlugin {
 			var guiHelper = registry.getJeiHelpers().getGuiHelper();
 
 			generatedCategories.forEach((id, recipes) -> {
-				var category = categoryProvider.get(
+				var registeredCategory = categories.keys().stream().filter(it -> it.getRecipeType().getUid().equals(id.getUid())).findAny();
+
+				var category = registeredCategory.orElseGet(() -> categoryProvider.get(
 						(RecipeType) id,
 						Objects.requireNonNull(IconProviders.get(recipeType), recipeType::toString).get(guiHelper, recipes),
 						(List) recipes,
-						guiHelper);
-				categories.put(recipeType.categoryId, new CategoryHolder(category, (List) recipes));
-				registry.addRecipeCategories(category);
+						guiHelper));
+				categories.putAll(category, recipes);
+				if (registeredCategory.isEmpty()) {
+					registry.addRecipeCategories(category);
+				}
 			});
 		}
 	}
@@ -96,11 +100,10 @@ public class LycheeJEIPlugin implements IModPlugin {
 
 	@Override
 	public void registerRecipes(IRecipeRegistration registry) {
-		categories.asMap().forEach((id, categories) -> {
-			categories.forEach(it -> {
-				registry.addRecipes((RecipeType) it.category.getRecipeType(), it.recipes);
-			});
-		});
+		categories.asMap()
+				.forEach((category, recipes) -> registry.addRecipes(
+						(RecipeType) category.getRecipeType(),
+						recipes.stream().map(RecipeHolder::value).toList()));
 
 		try {
 			var recipes = KUtil.getRecipes(RecipeTypes.ANVIL_CRAFTING)
@@ -131,36 +134,12 @@ public class LycheeJEIPlugin implements IModPlugin {
 
 	@Override
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration registry) {
-		for (var recipeType : RecipeTypes.ALL) {
-			if (!recipeType.hasStandaloneCategory) {
-				continue;
+		categories.asMap().forEach((category, recipes) -> {
+			var workstationRegister = WorkstationRegisters.get(category.recipeType());
+			if (workstationRegister != null) {
+				workstationRegister.consume(registry, (AbstractLycheeCategory) category, (List) recipes.stream().toList());
 			}
-
-			var generatedCategories = JEIREI.generateCategories(recipeType, $ -> new RecipeType<>($, recipeType.clazz));
-
-			var categoryProvider = CategoryProviders.get(recipeType);
-
-			if (categoryProvider == null) {
-				Lychee.LOGGER.error("Missing category provider for {}", recipeType);
-				continue;
-			}
-
-			var guiHelper = registry.getJeiHelpers().getGuiHelper();
-
-			generatedCategories.forEach((id, recipes) -> {
-				var category = categoryProvider.get(
-						(RecipeType) id,
-						Objects.requireNonNull(IconProviders.get(recipeType), recipeType::toString)
-								.get(guiHelper, recipes),
-						(List) recipes,
-						guiHelper);
-				categories.put(recipeType.categoryId, new CategoryHolder(category, (List) recipes));
-				var workstationRegister = WorkstationRegisters.get(recipeType);
-				if (workstationRegister != null) {
-					workstationRegister.consume(registry, category, (List) recipes);
-				}
-			});
-		}
+		});
 	}
 
 	@Override
@@ -186,8 +165,4 @@ public class LycheeJEIPlugin implements IModPlugin {
 			this.element = elementMap.computeIfAbsent(element, ScreenElementWrapper::new);
 		}
 	}
-
-	public record CategoryHolder(
-			AbstractLycheeCategory<?> category,
-			List<RecipeHolder<ILycheeRecipe<LycheeContext>>> recipes) {}
 }
