@@ -1,7 +1,10 @@
 package snownee.lychee.compat.jei.category;
 
+import java.util.List;
+
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -53,5 +56,15 @@ public abstract class AbstractLycheeCategory<T extends ILycheeRecipe<LycheeConte
 	@Override
 	public Rect2i infoRect() {
 		return infoRect;
+	}
+
+	@Override
+	public int getWidth() {
+		return contentWidth();
+	}
+
+	@Override
+	public List<Component> getTooltipStrings(T recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+		return getInfoBadgeTooltipStrings(recipe, mouseX, mouseY);
 	}
 }

@@ -88,7 +88,9 @@ public class LycheeJEIPlugin implements IModPlugin {
 
 	@Override
 	public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
-		registration.getCraftingCategory().addExtension(ShapedCraftingRecipe.class, new CraftingRecipeCategoryExtension());
+		registration.getCraftingCategory().addExtension(
+				ShapedCraftingRecipe.class,
+				new CraftingRecipeCategoryExtension(net.minecraft.world.item.crafting.RecipeType.CRAFTING));
 	}
 
 	@Override

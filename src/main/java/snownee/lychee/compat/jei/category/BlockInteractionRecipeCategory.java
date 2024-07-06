@@ -1,13 +1,11 @@
 package snownee.lychee.compat.jei.category;
 
-import java.util.List;
-
 import org.jetbrains.annotations.Nullable;
 
-import me.shedaniel.math.Point;
-import me.shedaniel.rei.api.client.gui.Renderer;
-import me.shedaniel.rei.api.client.gui.widgets.Widget;
-import me.shedaniel.rei.api.common.category.CategoryIdentifier;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -16,17 +14,15 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import snownee.lychee.RecipeTypes;
 import snownee.lychee.client.gui.AllGuiTextures;
-import snownee.lychee.compat.jei.display.LycheeDisplay;
 import snownee.lychee.recipes.BlockInteractingRecipe;
 
 public class BlockInteractionRecipeCategory extends ItemAndBlockBaseCategory<BlockInteractingRecipe> {
 
 
 	public BlockInteractionRecipeCategory(
-			CategoryIdentifier<? extends LycheeDisplay<BlockInteractingRecipe>> id,
-			Renderer icon
+			RecipeType<BlockInteractingRecipe> recipeType, IDrawable icon, IGuiHelper guiHelper
 	) {
-		super(id, icon, RecipeTypes.BLOCK_INTERACTING);
+		super(recipeType, icon, guiHelper, RecipeTypes.BLOCK_INTERACTING);
 		inputBlockRect.setX(inputBlockRect.getX() + 18);
 		methodRect.setX(methodRect.getX() + 18);
 		infoRect.setX(infoRect.getX() + 10);
@@ -38,8 +34,8 @@ public class BlockInteractionRecipeCategory extends ItemAndBlockBaseCategory<Blo
 	}
 
 	@Override
-	protected void renderIngredientGroup(List<Widget> widgets, Point startPoint, BlockInteractingRecipe recipe, int y) {
-		ingredientGroup(widgets, startPoint, recipe, 22, 21);
+	protected void renderIngredientGroup(IRecipeLayoutBuilder builder, BlockInteractingRecipe recipe, int y) {
+		ingredientGroup(builder, recipe, 22, 21);
 	}
 
 	@Override

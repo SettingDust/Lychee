@@ -1,6 +1,7 @@
 package snownee.lychee.compat.jei.category;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +23,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -37,7 +39,6 @@ import snownee.lychee.util.action.PostActionRenderer;
 import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.predicates.BlockPredicateExtensions;
 import snownee.lychee.util.recipe.ILycheeRecipe;
-import snownee.lychee.util.recipe.LycheeRecipeType;
 
 public interface LycheeCategory<R extends ILycheeRecipe<LycheeContext>> {
 	static void addBlockIngredients(IRecipeLayoutBuilder builder, ILycheeRecipe<LycheeContext> recipe) {
@@ -156,7 +157,14 @@ public interface LycheeCategory<R extends ILycheeRecipe<LycheeContext>> {
 		matrixStack.popPose();
 	}
 
-	LycheeRecipeType<? extends R> recipeType();
+	static List<Component> getInfoBadgeTooltipStrings(ILycheeRecipe<?> recipe, double mouseX, double mouseY, Rect2i infoRect) {
+		if (infoRect.contains((int) mouseX, (int) mouseY)) {
+			return JEIREI.getRecipeTooltip(recipe);
+		}
+		return Collections.emptyList();
+	}
+
+	RecipeType<? extends R> recipeType();
 
 	Rect2i infoRect();
 
@@ -166,6 +174,10 @@ public interface LycheeCategory<R extends ILycheeRecipe<LycheeContext>> {
 
 	default void drawInfoBadgeIfNeeded(GuiGraphics graphics, ILycheeRecipe<?> recipe, double mouseX, double mouseY) {
 		drawInfoBadgeIfNeeded(graphics, recipe, mouseX, mouseY, infoRect());
+	}
+
+	default List<Component> getInfoBadgeTooltipStrings(ILycheeRecipe<?> recipe, double mouseX, double mouseY) {
+		return getInfoBadgeTooltipStrings(recipe, mouseX, mouseY, infoRect());
 	}
 
 	default void actionGroup(IRecipeLayoutBuilder builder, R recipe, int x, int y) {

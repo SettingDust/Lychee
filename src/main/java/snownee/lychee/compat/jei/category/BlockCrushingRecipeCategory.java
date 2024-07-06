@@ -36,12 +36,7 @@ public final class BlockCrushingRecipeCategory extends AbstractLycheeCategory<Bl
 
 	@Override
 	public int contentWidth() {
-		return WIDTH + 20;
-	}
-
-	@Override
-	public int getWidth() {
-		return contentWidth() + 30;
+		return WIDTH + 50;
 	}
 
 	@Override
