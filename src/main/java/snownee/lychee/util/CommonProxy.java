@@ -325,7 +325,7 @@ public class CommonProxy implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		RecipeTypes.init();
+		Objects.requireNonNull(RecipeTypes.ALL);
 		Objects.requireNonNull(LycheeTags.FIRE_IMMUNE);
 		Objects.requireNonNull(LycheeRegistries.CONTEXTUAL);
 		Objects.requireNonNull(ContextualConditionType.AND);
