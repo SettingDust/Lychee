@@ -11,10 +11,9 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeType;
 import snownee.lychee.recipes.ShapedCraftingRecipe;
 
-public record CraftingRecipeCategoryExtension(RecipeType<ShapedCraftingRecipe> recipeType) implements ICraftingCategoryExtension<ShapedCraftingRecipe> {
+public class CraftingRecipeCategoryExtension implements ICraftingCategoryExtension<ShapedCraftingRecipe> {
 
 	private static final Rect2i infoRect = new Rect2i(67, 11, 8, 8);
 

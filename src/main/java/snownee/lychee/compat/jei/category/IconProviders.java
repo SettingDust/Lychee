@@ -1,6 +1,7 @@
 package snownee.lychee.compat.jei.category;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import com.google.common.base.Suppliers;
@@ -78,6 +79,6 @@ public interface IconProviders {
 
 	@FunctionalInterface
 	interface IconProvider {
-		IDrawable get(IGuiHelper guiHelper, Collection<RecipeHolder<? extends ILycheeRecipe<LycheeContext>>> recipes);
+		IDrawable get(IGuiHelper guiHelper, List<RecipeHolder<? extends ILycheeRecipe<LycheeContext>>> recipes);
 	}
 }

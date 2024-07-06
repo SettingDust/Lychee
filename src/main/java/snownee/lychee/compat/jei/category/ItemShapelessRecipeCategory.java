@@ -1,10 +1,5 @@
 package snownee.lychee.compat.jei.category;
 
-import java.util.List;
-
-import me.shedaniel.math.Rectangle;
-import me.shedaniel.rei.api.client.gui.widgets.Widget;
-import me.shedaniel.rei.api.client.gui.widgets.Widgets;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -13,7 +8,6 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
-import snownee.lychee.compat.jei.display.LycheeDisplay;
 import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.recipe.ILycheeRecipe;
 import snownee.lychee.util.recipe.LycheeRecipeType;
@@ -65,15 +59,5 @@ public class ItemShapelessRecipeCategory<T extends ILycheeRecipe<LycheeContext>>
 		matrixStack.scale(1.5F, 1.5F, 1.5F);
 		getIcon().draw(graphics);
 		matrixStack.popPose();
-	}
-
-	public void drawExtra(List<Widget> widgets, LycheeDisplay<T> display, Rectangle bounds) {
-		var iconBounds = new Rectangle(bounds.getCenterX() - 8, bounds.y + 19, 24, 24);
-		widgets.add(Widgets.createDrawableWidget((GuiGraphics graphics, int mouseX, int mouseY, float delta) -> {
-			graphics.pose().pushPose();
-			graphics.pose().translate(0, 0, 100);
-			getIcon().render(graphics, iconBounds, mouseX, mouseY, delta);
-			graphics.pose().popPose();
-		}));
 	}
 }
