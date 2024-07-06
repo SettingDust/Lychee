@@ -2,14 +2,15 @@ package snownee.lychee.compat.jei.category;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
-import me.shedaniel.math.Point;
 import me.shedaniel.math.Rectangle;
-import me.shedaniel.rei.api.client.gui.Renderer;
 import me.shedaniel.rei.api.client.gui.widgets.Widget;
 import me.shedaniel.rei.api.client.gui.widgets.Widgets;
-import me.shedaniel.rei.api.common.category.CategoryIdentifier;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import snownee.lychee.compat.jei.display.LycheeDisplay;
@@ -21,11 +22,12 @@ public class ItemShapelessRecipeCategory<T extends ILycheeRecipe<LycheeContext>>
 	private final LycheeRecipeType<T> recipeType;
 
 	public ItemShapelessRecipeCategory(
-			CategoryIdentifier<? extends LycheeDisplay<T>> id,
-			Renderer icon,
-			LycheeRecipeType<T> recipeType) {
-		super(id, icon);
-		this.recipeType = recipeType;
+			RecipeType<T> recipeType,
+			IDrawable icon,
+			IGuiHelper guiHelper,
+			LycheeRecipeType<T> lycheeRecipeType) {
+		super(recipeType, icon, guiHelper);
+		this.recipeType = lycheeRecipeType;
 		this.infoRect = new Rect2i(3, 25, 8, 8);
 	}
 
@@ -35,27 +37,34 @@ public class ItemShapelessRecipeCategory<T extends ILycheeRecipe<LycheeContext>>
 	}
 
 	@Override
-	public int getDisplayWidth(LycheeDisplay<T> display) {
-		return contentWidth();
-	}
-
-	@Override
 	public int contentWidth() {
-		return WIDTH + 20;
+		return WIDTH + 50;
 	}
 
 	@Override
-	public List<Widget> setupDisplay(LycheeDisplay<T> display, Rectangle bounds) {
-		var startPoint = new Point(bounds.getCenterX() - contentWidth() / 2, bounds.getY() + 4);
-		var recipe = display.recipe();
-		var widgets = Lists.<Widget>newArrayList(Widgets.createRecipeBase(bounds));
-		drawInfoBadgeIfNeeded(widgets, display, startPoint);
-		var xCenter = bounds.getCenterX();
-		var y = recipe.getIngredients().size() > 9 || recipe.conditions().showingCount() > 9 ? 26 : 28;
-		ingredientGroup(widgets, startPoint, recipe, xCenter - 45 - startPoint.x, y);
-		actionGroup(widgets, startPoint, recipe, xCenter + 50 - startPoint.x, y);
-		drawExtra(widgets, display, bounds);
-		return widgets;
+	public void setRecipe(IRecipeLayoutBuilder builder, T recipe, IFocusGroup focuses) {
+		int xCenter = getWidth() / 2;
+		int y = recipe.getIngredients().size() > 9 || recipe.conditions().showingCount() > 9 ? 26 : 28;
+		ingredientGroup(builder, recipe, xCenter - 45, y);
+		actionGroup(builder, recipe, xCenter + 50, y);
+		LycheeCategory.addBlockIngredients(builder, recipe);
+	}
+
+	@Override
+	public void draw(
+			T recipe,
+			IRecipeSlotsView recipeSlotsView,
+			GuiGraphics graphics,
+			double mouseX,
+			double mouseY
+	) {
+		drawInfoBadgeIfNeeded(graphics, recipe, mouseX, mouseY);
+		var matrixStack = graphics.pose();
+		matrixStack.pushPose();
+		matrixStack.translate(76, 16, 0);
+		matrixStack.scale(1.5F, 1.5F, 1.5F);
+		getIcon().draw(graphics);
+		matrixStack.popPose();
 	}
 
 	public void drawExtra(List<Widget> widgets, LycheeDisplay<T> display, Rectangle bounds) {

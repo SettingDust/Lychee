@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.mojang.blaze3d.platform.InputConstants;
 
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -13,7 +13,6 @@ import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.lychee.RecipeTypes;
@@ -30,8 +29,8 @@ public final class BlockCrushingRecipeCategory extends AbstractLycheeCategory<Bl
 	public static final Rect2i FALLING_BLOCK_RECT = new Rect2i(0, -35, 20, 35);
 	public static final Rect2i LANDING_BLOCK_RECT = new Rect2i(0, 0, 20, 20);
 
-	public BlockCrushingRecipeCategory(RecipeType<BlockCrushingRecipe> recipeType, IGuiHelper guiHelper) {
-		super(recipeType, guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, Items.ANVIL.getDefaultInstance()), guiHelper);
+	public BlockCrushingRecipeCategory(RecipeType<BlockCrushingRecipe> recipeType, IDrawable icon, IGuiHelper guiHelper) {
+		super(recipeType, icon, guiHelper);
 	}
 
 	@Override
