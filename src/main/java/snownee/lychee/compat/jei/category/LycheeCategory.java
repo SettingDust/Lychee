@@ -203,9 +203,7 @@ public interface LycheeCategory<R extends ILycheeRecipe<LycheeContext>> {
 					LycheeJEIPlugin.SlotType.CATALYST :
 					LycheeJEIPlugin.SlotType.NORMAL), -1, -1);
 			if (!ingredient.tooltips.isEmpty()) {
-				slotBuilder.addTooltipCallback((stack, tooltip) -> {
-					tooltip.addAll(ingredient.tooltips);
-				});
+				slotBuilder.addTooltipCallback((stack, tooltip) -> tooltip.addAll(ingredient.tooltips));
 			}
 		});
 	}
