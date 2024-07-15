@@ -11,6 +11,7 @@ import com.google.common.collect.Multimap;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.IModIngredientRegistration;
@@ -46,6 +47,7 @@ public class LycheeJEIPlugin implements IModPlugin {
 	private static final Map<AllGuiTextures, IDrawable> elementMap = Maps.newIdentityHashMap();
 	private final Multimap<AbstractLycheeCategory<?>, RecipeHolder<? extends ILycheeRecipe<LycheeContext>>> categories = LinkedHashMultimap.create();
 	public static IJeiRuntime runtime;
+	public static IJeiHelpers helpers;
 
 	public static IDrawable slot(SlotType slotType) {
 		return slotType.element;
@@ -100,6 +102,7 @@ public class LycheeJEIPlugin implements IModPlugin {
 
 	@Override
 	public void registerRecipes(IRecipeRegistration registry) {
+		helpers = registry.getJeiHelpers();
 		categories.asMap()
 				.forEach((category, recipes) -> registry.addRecipes(
 						(RecipeType) category.getRecipeType(),

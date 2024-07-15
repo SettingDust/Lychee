@@ -55,7 +55,7 @@ public interface LycheeCategory<R extends ILycheeRecipe<LycheeContext>> {
 				acceptor.addItemStacks(items);
 				fluids.forEach(fluid -> acceptor.addFluidStack(
 						fluid,
-						LycheeJEIPlugin.runtime.getJeiHelpers().getPlatformFluidHelper().bucketVolume()));
+						LycheeJEIPlugin.helpers.getPlatformFluidHelper().bucketVolume()));
 			}
 		}
 	}
@@ -217,14 +217,14 @@ public interface LycheeCategory<R extends ILycheeRecipe<LycheeContext>> {
 			state = Blocks.ANVIL.defaultBlockState();
 		}
 		var recipesGui = LycheeJEIPlugin.runtime.getRecipesGui();
-		var focusFactory = LycheeJEIPlugin.runtime.getJeiHelpers().getFocusFactory();
+		var focusFactory = LycheeJEIPlugin.helpers.getFocusFactory();
 		var role = input.getValue() == 1 ? RecipeIngredientRole.INPUT : RecipeIngredientRole.OUTPUT;
 		var stack = state.getBlock().asItem().getDefaultInstance();
 		if (!stack.isEmpty()) {
 			recipesGui.show(focusFactory.createFocus(role, VanillaTypes.ITEM_STACK, stack));
 			return true;
 		} else if (state.getBlock() instanceof LiquidBlock) {
-			var fluidHelper = (IPlatformFluidHelper<IJeiFluidIngredient>) LycheeJEIPlugin.runtime.getJeiHelpers().getPlatformFluidHelper();
+			var fluidHelper = (IPlatformFluidHelper<IJeiFluidIngredient>) LycheeJEIPlugin.helpers.getPlatformFluidHelper();
 			recipesGui.show(focusFactory.createFocus(
 					role,
 					fluidHelper.getFluidIngredientType(),
