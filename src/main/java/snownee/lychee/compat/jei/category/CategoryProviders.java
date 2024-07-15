@@ -43,6 +43,7 @@ public interface CategoryProviders {
 					RecipeTypes.BLOCK_EXPLODING) {
 				{
 					inputBlockRect = new Rect2i(15, 30, 20, 20);
+					infoRect.setPosition(0, 25);
 				}
 
 				@Override
@@ -91,11 +92,7 @@ public interface CategoryProviders {
 						double mouseY
 				) {
 					drawInfoBadgeIfNeeded(graphics, recipe, mouseX, mouseY);
-					var matrixStack = graphics.pose();
-					matrixStack.pushPose();
-					matrixStack.translate(85, 34, 0);
-					matrixStack.scale(15, 15, 15);
-					JEIREI.renderTnt(graphics, 0, 0);
+					JEIREI.renderTnt(graphics, 85, 34);
 				}
 			}
 	);
