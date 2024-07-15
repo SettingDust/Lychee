@@ -29,7 +29,7 @@ public class ItemInsideRecipeCategory extends ItemAndBlockBaseCategory<ItemInsid
 		if (recipe.time() > 0) {
 			var component = ClientProxy.format("tip.lychee.sec", recipe.time());
 			var font = Minecraft.getInstance().font;
-			graphics.drawCenteredString(font, component, methodRect.getX() + 10, methodRect.getY() - 8, 0x666666);
+			ClientProxy.drawCenteredStringNoShadow(graphics, font, component, methodRect.getX() + 10, methodRect.getY() - 8, 0x666666);
 		}
 	}
 
