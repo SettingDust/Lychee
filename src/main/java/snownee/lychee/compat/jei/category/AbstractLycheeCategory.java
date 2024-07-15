@@ -30,7 +30,7 @@ public abstract class AbstractLycheeCategory<T extends ILycheeRecipe<LycheeConte
 	}
 
 	public AbstractLycheeCategory(RecipeType<T> type, IDrawable icon, IGuiHelper guiHelper) {
-		this(type, icon, guiHelper.createBlankDrawable(WIDTH, HEIGHT + 8));
+		this(type, icon, guiHelper.createBlankDrawable(WIDTH, HEIGHT));
 	}
 
 	@Override
