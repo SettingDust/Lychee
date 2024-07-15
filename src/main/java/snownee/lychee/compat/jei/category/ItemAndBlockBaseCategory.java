@@ -5,14 +5,12 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.collect.Lists;
-
-import me.shedaniel.math.Point;
-import me.shedaniel.math.Rectangle;
-import me.shedaniel.rei.api.client.gui.Renderer;
-import me.shedaniel.rei.api.client.gui.widgets.Widget;
-import me.shedaniel.rei.api.client.gui.widgets.Widgets;
-import me.shedaniel.rei.api.common.category.CategoryIdentifier;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.advancements.critereon.BlockPredicate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -24,9 +22,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import snownee.lychee.client.gui.AllGuiTextures;
 import snownee.lychee.client.gui.GuiGameElement;
 import snownee.lychee.compat.JEIREI;
-import snownee.lychee.compat.jei.LycheeJEIPlugin;
-import snownee.lychee.compat.jei.display.LycheeDisplay;
-import snownee.lychee.compat.jei.elements.InteractiveWidget;
 import snownee.lychee.util.CommonProxy;
 import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.predicates.BlockPredicateExtensions;
@@ -41,11 +36,12 @@ public class ItemAndBlockBaseCategory<T extends ILycheeRecipe<LycheeContext>> ex
 	public Rect2i methodRect = new Rect2i(30, 12, 20, 20);
 
 	public ItemAndBlockBaseCategory(
-			CategoryIdentifier<? extends LycheeDisplay<T>> id,
-			Renderer icon,
-			LycheeRecipeType<T> recipeType) {
-		super(id, icon);
-		this.recipeType = recipeType;
+			RecipeType<T> recipeType,
+			IDrawable icon,
+			IGuiHelper guiHelper,
+			LycheeRecipeType<T> vanillaRecipeType) {
+		super(recipeType, icon, guiHelper);
+		this.recipeType = vanillaRecipeType;
 		infoRect.setPosition(8, 32);
 	}
 
@@ -68,84 +64,79 @@ public class ItemAndBlockBaseCategory<T extends ILycheeRecipe<LycheeContext>> ex
 				1000);
 	}
 
-	public void drawExtra(T recipe, GuiGraphics graphics, double mouseX, double mouseY, int centerX) {
-		AllGuiTextures.JEI_DOWN_ARROW.render(graphics, methodRect.getX(), methodRect.getY());
-	}
-
 	@Nullable
 	public Component getMethodDescription(T recipe) {
 		return null;
 	}
 
 	@Override
-	public List<Widget> setupDisplay(LycheeDisplay<T> display, Rectangle bounds) {
-		var startPoint = new Point(bounds.getCenterX() - contentWidth() / 2, bounds.getY() + 4);
-		var recipe = display.recipe();
-		var widgets = Lists.<Widget>newArrayList(Widgets.createRecipeBase(bounds));
-		drawInfoBadgeIfNeeded(widgets, display, startPoint);
-		widgets.add(Widgets.createDrawableWidget((GuiGraphics graphics, int mouseX, int mouseY, float delta) -> {
-			var matrixStack = graphics.pose();
-			matrixStack.pushPose();
-			matrixStack.translate(startPoint.x, startPoint.y, 0);
-			drawExtra(recipe, graphics, mouseX, mouseY, bounds.getCenterX());
-
-			var state = getRenderingBlock(recipe);
-			if (state.isAir()) {
-				AllGuiTextures.JEI_QUESTION_MARK.render(graphics, inputBlockRect.getX() + 4, inputBlockRect.getY() + 2);
-				matrixStack.popPose();
-				return;
-			}
-			if (state.getLightEmission() < 5) {
-				matrixStack.pushPose();
-				matrixStack.translate(inputBlockRect.getX() + 11, inputBlockRect.getY() + 16, 0);
-				matrixStack.scale(.7F, .7F, .7F);
-				AllGuiTextures.JEI_SHADOW.render(graphics, -26, -5);
-				matrixStack.popPose();
-			}
-
-			GuiGameElement.of(state)
-					.rotateBlock(12.5, -22.5, 0)
-					.scale(15)
-					.lighting(JEIREI.BLOCK_LIGHTING)
-					.atLocal(0, 0.2, 0)
-					.at(inputBlockRect.getX(), inputBlockRect.getY())
-					.render(graphics);
-			matrixStack.popPose();
-		}));
-
+	public void setRecipe(IRecipeLayoutBuilder builder, T recipe, IFocusGroup focuses) {
 		var y = recipe.getIngredients().size() > 9 || recipe.conditions().showingCount() > 9 ? 26 : 28;
+		renderIngredientGroup(builder, recipe, y);
+		actionGroup(builder, recipe, getWidth() - 29, y);
+		LycheeCategory.addBlockIngredients(builder, recipe);
+	}
 
-		renderIngredientGroup(widgets, startPoint, recipe, y);
+	public void drawExtra(T recipe, GuiGraphics graphics, double mouseX, double mouseY, int centerX) {
+		AllGuiTextures.JEI_DOWN_ARROW.render(graphics, methodRect.getX(), methodRect.getY());
+	}
 
-		actionGroup(widgets, startPoint, recipe, contentWidth() - 34, y);
+	@Override
+	public void draw(
+			T recipe,
+			IRecipeSlotsView recipeSlotsView,
+			GuiGraphics graphics,
+			double mouseX,
+			double mouseY
+	) {
+		drawInfoBadgeIfNeeded(graphics, recipe, mouseX, mouseY);
+		var centerX = getWidth() / 2;
+		drawExtra(recipe, graphics, mouseX, mouseY, centerX);
 
-		InteractiveWidget reactive;
-		var description = getMethodDescription(recipe);
-		if (description != null) {
-			reactive = new InteractiveWidget(LycheeJEIPlugin.offsetRect(startPoint, methodRect));
-			reactive.setTooltipFunction($ -> new Component[]{description});
-			widgets.add(reactive);
+		var state = getRenderingBlock(recipe);
+		if (state.isAir()) {
+			AllGuiTextures.JEI_QUESTION_MARK.render(graphics, inputBlockRect.getX() + 4, inputBlockRect.getY() + 2);
+			return;
+		}
+		var matrixStack = graphics.pose();
+		if (state.getLightEmission() < 5) {
+			matrixStack.pushPose();
+			matrixStack.translate(inputBlockRect.getX() + 11, inputBlockRect.getY() + 16, 0);
+			matrixStack.scale(.7F, .7F, .7F);
+			AllGuiTextures.JEI_SHADOW.render(graphics, -26, -5);
+			matrixStack.popPose();
 		}
 
-		if (needRenderInputBlock(recipe)) {
-			reactive = new InteractiveWidget(LycheeJEIPlugin.offsetRect(startPoint, inputBlockRect));
-			reactive.setTooltipFunction($ -> {
-				var list = BlockPredicateExtensions.getTooltips(getRenderingBlock(recipe), getInputBlock(recipe));
-				return list.toArray(new Component[0]);
-			});
-			reactive.setOnClick(($, button) -> clickBlock(getRenderingBlock(recipe), button));
-			widgets.add(reactive);
-		}
+		GuiGameElement.of(state)
+				.rotateBlock(12.5, 202.5, 0)
+				.scale(15)
+				.lighting(JEIREI.BLOCK_LIGHTING)
+				.atLocal(0, 0.2, 0)
+				.at(inputBlockRect.getX(), inputBlockRect.getY())
+				.render(graphics);
+	}
 
-		return widgets;
+
+	@Override
+	public List<Component> getTooltipStrings(T recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+		if (needRenderInputBlock(recipe) && inputBlockRect.contains((int) mouseX, (int) mouseY)) {
+			return BlockPredicateExtensions.getTooltips(getRenderingBlock(recipe), getInputBlock(recipe));
+		}
+		if (methodRect.contains((int) mouseX, (int) mouseY)) {
+			Component description = getMethodDescription(recipe);
+			if (description != null) {
+				return List.of(description);
+			}
+		}
+		return super.getTooltipStrings(recipe, recipeSlotsView, mouseX, mouseY);
 	}
 
 	protected boolean needRenderInputBlock(T recipe) {
 		return !BlockPredicateExtensions.isAny(getInputBlock(recipe));
 	}
 
-	protected void renderIngredientGroup(List<Widget> widgets, Point startPoint, T recipe, int y) {
-		ingredientGroup(widgets, startPoint, recipe, 12, 21);
+	protected void renderIngredientGroup(IRecipeLayoutBuilder builder, T recipe, int y) {
+		ingredientGroup(builder, recipe, 12, 21);
 	}
 
 	@Override

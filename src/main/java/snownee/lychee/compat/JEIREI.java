@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -162,7 +161,7 @@ public final class JEIREI {
 		TNT_ENTITY.render(graphics.pose(), x, y, 20, quaternion);
 	}
 
-	public static <T> ImmutableMap<T, Collection<RecipeHolder<? extends ILycheeRecipe<LycheeContext>>>> generateCategories(
+	public static <T> ImmutableMap<T, List<RecipeHolder<? extends ILycheeRecipe<LycheeContext>>>> generateCategories(
 			LycheeRecipeType<? extends ILycheeRecipe<LycheeContext>> recipeType,
 			Function<ResourceLocation, T> categoryFactory) {
 		return recipeType
@@ -184,7 +183,7 @@ public final class JEIREI {
 				.stream()
 				.collect(ImmutableMap.toImmutableMap(
 						entry -> categoryFactory.apply(composeCategoryIdentifier(recipeType.categoryId, entry.getKey())),
-						Map.Entry::getValue));
+						it -> List.copyOf(it.getValue())));
 	}
 
 	public static ResourceLocation composeCategoryIdentifier(ResourceLocation categoryId, ResourceLocation group) {

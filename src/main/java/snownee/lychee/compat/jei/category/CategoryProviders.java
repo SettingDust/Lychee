@@ -1,15 +1,13 @@
 package snownee.lychee.compat.jei.category;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
 
-import me.shedaniel.math.Rectangle;
-import me.shedaniel.rei.api.client.gui.Renderer;
-import me.shedaniel.rei.api.client.gui.widgets.Widget;
-import me.shedaniel.rei.api.client.gui.widgets.Widgets;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
@@ -17,7 +15,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import snownee.lychee.RecipeTypes;
 import snownee.lychee.compat.JEIREI;
-import snownee.lychee.compat.jei.display.LycheeDisplay;
 import snownee.lychee.recipes.BlockCrushingRecipe;
 import snownee.lychee.recipes.BlockExplodingRecipe;
 import snownee.lychee.recipes.BlockInteractingRecipe;
@@ -35,14 +32,18 @@ public interface CategoryProviders {
 
 	CategoryProvider<BlockCrushingRecipe> BLOCK_CRUSHING = register(
 			RecipeTypes.BLOCK_CRUSHING,
-			(id, icon, recipes) -> new BlockCrushingRecipeCategory(id, icon));
+			(recipeType, icon, recipes, guiHelper) -> new BlockCrushingRecipeCategory(recipeType, icon, guiHelper));
 
 	CategoryProvider<BlockExplodingRecipe> BLOCK_EXPLODING = register(
 			RecipeTypes.BLOCK_EXPLODING,
-			(id, icon, recipes) -> new ItemAndBlockBaseCategory<>(id, icon, RecipeTypes.BLOCK_EXPLODING) {
+			(recipeType, icon, recipes, guiHelper) -> new ItemAndBlockBaseCategory<>(
+					recipeType,
+					icon,
+					guiHelper,
+					RecipeTypes.BLOCK_EXPLODING) {
 				{
-					inputBlockRect = new Rect2i(18, 30, 20, 20);
-					infoRect = new Rect2i(3, 25, 8, 8);
+					inputBlockRect = new Rect2i(15, 30, 20, 20);
+					infoRect.setPosition(0, 25);
 				}
 
 				@Override
@@ -58,43 +59,52 @@ public interface CategoryProviders {
 
 	CategoryProvider<BlockInteractingRecipe> BLOCK_INTERACTING = register(
 			RecipeTypes.BLOCK_INTERACTING,
-			(id, icon, recipes) -> new BlockInteractionRecipeCategory(id, icon)
+			(recipeType, icon, recipes, guiHelper) -> new BlockInteractionRecipeCategory(recipeType, icon, guiHelper)
 	);
 
 	CategoryProvider<DripstoneRecipe> DRIPSTONE = register(
 			RecipeTypes.DRIPSTONE_DRIPPING,
-			(id, icon, recipes) -> new DripstoneRecipeCategory(id, icon)
+			(recipeType, icon, recipes, guiHelper) -> new DripstoneRecipeCategory(recipeType, icon, guiHelper)
 	);
 
 	CategoryProvider<LightningChannelingRecipe> LIGHTNING_CHANNELING = register(
 			RecipeTypes.LIGHTNING_CHANNELING,
-			(id, icon, recipes) -> new ItemShapelessRecipeCategory<>(id, icon, RecipeTypes.LIGHTNING_CHANNELING)
+			(recipeType, icon, recipes, guiHelper) -> new ItemShapelessRecipeCategory<>(
+					recipeType,
+					icon,
+					guiHelper,
+					RecipeTypes.LIGHTNING_CHANNELING)
 	);
 
 	CategoryProvider<ItemExplodingRecipe> ITEM_EXPLODING = register(
 			RecipeTypes.ITEM_EXPLODING,
-			(id, icon, recipes) -> new ItemShapelessRecipeCategory<>(id, icon, RecipeTypes.ITEM_EXPLODING) {
+			(recipeType, icon, recipes, guiHelper) -> new ItemShapelessRecipeCategory<>(
+					recipeType,
+					icon,
+					guiHelper,
+					RecipeTypes.ITEM_EXPLODING) {
 				@Override
-				public void drawExtra(
-						List<Widget> widgets,
-						LycheeDisplay<ItemExplodingRecipe> display,
-						Rectangle bounds
+				public void draw(
+						ItemExplodingRecipe recipe,
+						IRecipeSlotsView recipeSlotsView,
+						GuiGraphics graphics,
+						double mouseX,
+						double mouseY
 				) {
-					Widget widget = Widgets.createDrawableWidget((GuiGraphics graphics, int mouseX, int mouseY, float delta) ->
-							JEIREI.renderTnt(graphics, bounds.x + 89, bounds.y + 38));
-					widgets.add(widget);
+					drawInfoBadgeIfNeeded(graphics, recipe, mouseX, mouseY);
+					JEIREI.renderTnt(graphics, 85, 34);
 				}
 			}
 	);
 
 	CategoryProvider<ItemInsideRecipe> ITEM_INSIDE = register(
 			RecipeTypes.ITEM_INSIDE,
-			(id, icon, recipes) -> new ItemInsideRecipeCategory(id, icon)
+			(recipeType, icon, recipes, guiHelper) -> new ItemInsideRecipeCategory(recipeType, icon, guiHelper)
 	);
 
 	CategoryProvider<ItemBurningRecipe> ITEM_BURNING = register(
 			RecipeTypes.ITEM_BURNING,
-			(id, icon, recipes) -> new ItemBurningRecipeCategory(id, icon)
+			(recipeType, icon, recipes, guiHelper) -> new ItemBurningRecipeCategory(recipeType, icon, guiHelper)
 	);
 
 	static <R extends ILycheeRecipe<LycheeContext>> CategoryProvider<R> get(LycheeRecipeType<R> type) {
@@ -110,9 +120,10 @@ public interface CategoryProviders {
 
 	@FunctionalInterface
 	interface CategoryProvider<R extends ILycheeRecipe<LycheeContext>> {
-		LycheeDisplayCategory<? extends LycheeDisplay<R>> get(
-				RecipeType<? extends LycheeDisplay<R>> identifier,
-				Renderer icon,
-				Collection<RecipeHolder<R>> recipes);
+		AbstractLycheeCategory<R> get(
+				RecipeType<R> recipeType,
+				IDrawable icon,
+				List<RecipeHolder<R>> recipes,
+				IGuiHelper guiHelper);
 	}
 }

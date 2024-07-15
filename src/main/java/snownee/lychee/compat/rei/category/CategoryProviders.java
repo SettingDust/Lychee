@@ -110,7 +110,7 @@ public interface CategoryProviders {
 
 	@FunctionalInterface
 	interface CategoryProvider<R extends ILycheeRecipe<LycheeContext>> {
-		LycheeDisplayCategory<? extends LycheeDisplay<R>> get(
+		AbstractLycheeCategory<R> get(
 				CategoryIdentifier<? extends LycheeDisplay<R>> identifier,
 				Renderer icon,
 				Collection<RecipeHolder<R>> recipes);

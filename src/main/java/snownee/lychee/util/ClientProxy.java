@@ -7,9 +7,12 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.Items;
 import snownee.kiwi.util.KEvent;
 import snownee.lychee.LycheeRegistries;
@@ -59,6 +62,11 @@ public class ClientProxy implements ClientModInitializer {
 
 	public static boolean postInfoBadgeClickEvent(ILycheeRecipe recipe, int button) {
 		return RECIPE_VIEWER_WIDGET_CLICK_EVENT.invoker().onClick(recipe, button);
+	}
+
+	public static void drawCenteredStringNoShadow(GuiGraphics graphics, Font font, Component text, int x, int y, int color) {
+		FormattedCharSequence formattedCharSequence = text.getVisualOrderText();
+		graphics.drawString(font, formattedCharSequence, x - font.width(formattedCharSequence) / 2, y, color, false);
 	}
 
 	@Override

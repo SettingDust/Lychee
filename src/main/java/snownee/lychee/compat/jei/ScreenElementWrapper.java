@@ -36,6 +36,6 @@ public class ScreenElementWrapper implements IDrawable {
 
 	@Override
 	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
-		element.render(guiGraphics, bounds.x, bounds.y);
+		element.render(guiGraphics, bounds.x + xOffset, bounds.y + yOffset);
 	}
 }

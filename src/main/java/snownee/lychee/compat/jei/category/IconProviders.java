@@ -1,13 +1,15 @@
 package snownee.lychee.compat.jei.category;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Maps;
 
-import me.shedaniel.rei.api.client.gui.Renderer;
-import me.shedaniel.rei.api.common.util.EntryStacks;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.helpers.IGuiHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -24,11 +26,15 @@ import snownee.lychee.util.recipe.LycheeRecipeType;
 public interface IconProviders {
 	Map<ResourceLocation, IconProvider> ALL = Maps.newHashMap();
 
-	IconProvider BLOCK_CRUSHING = register(RecipeTypes.BLOCK_CRUSHING, (recipes) -> EntryStacks.of(Items.ANVIL));
-	IconProvider BLOCK_EXPLODING = register(RecipeTypes.BLOCK_EXPLODING, (recipes) -> new ScreenElementWrapper(new SideBlockIcon(
-			GuiGameElement.of(Items.TNT),
-			Suppliers.memoize(() -> ItemAndBlockBaseCategory.getIconBlock((Collection) recipes)))));
-	IconProvider BLOCK_INTERACTING = register(RecipeTypes.BLOCK_INTERACTING, (recipes) -> {
+	IconProvider BLOCK_CRUSHING = register(
+			RecipeTypes.BLOCK_CRUSHING,
+			(guiHelper, recipes) -> guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, Items.ANVIL.getDefaultInstance()));
+	IconProvider BLOCK_EXPLODING = register(
+			RecipeTypes.BLOCK_EXPLODING,
+			(guiHelper, recipes) -> new ScreenElementWrapper(new SideBlockIcon(
+					GuiGameElement.of(Items.TNT),
+					Suppliers.memoize(() -> ItemAndBlockBaseCategory.getIconBlock((Collection) recipes)))));
+	IconProvider BLOCK_INTERACTING = register(RecipeTypes.BLOCK_INTERACTING, (guiHelper, recipes) -> {
 		var mainIcon = recipes.stream()
 				.map(it -> it.value().getType())
 				.anyMatch(it -> it == RecipeTypes.BLOCK_INTERACTING) ? AllGuiTextures.RIGHT_CLICK : AllGuiTextures.LEFT_CLICK;
@@ -37,18 +43,26 @@ public interface IconProviders {
 				Suppliers.memoize(() -> ItemAndBlockBaseCategory.getIconBlock((Collection) recipes))));
 	});
 
-	IconProvider DRIPSTONE = register(RecipeTypes.DRIPSTONE_DRIPPING, (recipes) -> EntryStacks.of(Items.POINTED_DRIPSTONE));
+	IconProvider DRIPSTONE = register(
+			RecipeTypes.DRIPSTONE_DRIPPING,
+			(guiHelper, recipes) -> guiHelper.createDrawableIngredient(
+					VanillaTypes.ITEM_STACK,
+					Items.POINTED_DRIPSTONE.getDefaultInstance()));
 
-	IconProvider LIGHTNING_CHANNELING = register(RecipeTypes.LIGHTNING_CHANNELING, (recipes) -> EntryStacks.of(Items.LIGHTNING_ROD));
-	IconProvider ITEM_EXPLODING = register(RecipeTypes.ITEM_EXPLODING, (recipes) -> EntryStacks.of(Items.TNT));
+	IconProvider LIGHTNING_CHANNELING = register(
+			RecipeTypes.LIGHTNING_CHANNELING,
+			(guiHelper, recipes) -> guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, Items.LIGHTNING_ROD.getDefaultInstance()));
+	IconProvider ITEM_EXPLODING = register(
+			RecipeTypes.ITEM_EXPLODING,
+			(guiHelper, recipes) -> guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, Items.TNT.getDefaultInstance()));
 
 	IconProvider ITEM_BURNING = register(
 			RecipeTypes.ITEM_BURNING,
-			(recipes) -> new ScreenElementWrapper(new SideBlockIcon(
+			(guiHelper, recipes) -> new ScreenElementWrapper(new SideBlockIcon(
 					AllGuiTextures.JEI_DOWN_ARROW,
 					Suppliers.memoize(Blocks.FIRE::defaultBlockState))));
 
-	IconProvider ITEM_INSIDE = register(RecipeTypes.ITEM_INSIDE, (recipes) -> new ScreenElementWrapper(new SideBlockIcon(
+	IconProvider ITEM_INSIDE = register(RecipeTypes.ITEM_INSIDE, (guiHelper, recipes) -> new ScreenElementWrapper(new SideBlockIcon(
 			AllGuiTextures.JEI_DOWN_ARROW,
 			Suppliers.memoize(() -> ItemAndBlockBaseCategory.getIconBlock((Collection) recipes)))));
 
@@ -65,6 +79,6 @@ public interface IconProviders {
 
 	@FunctionalInterface
 	interface IconProvider {
-		Renderer get(Collection<RecipeHolder<? extends ILycheeRecipe<LycheeContext>>> recipes);
+		IDrawable get(IGuiHelper guiHelper, List<RecipeHolder<? extends ILycheeRecipe<LycheeContext>>> recipes);
 	}
 }

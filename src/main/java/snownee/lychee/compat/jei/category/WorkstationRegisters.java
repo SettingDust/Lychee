@@ -14,7 +14,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import snownee.lychee.LycheeTags;
 import snownee.lychee.RecipeTypes;
-import snownee.lychee.compat.jei.display.LycheeDisplay;
 import snownee.lychee.recipes.BlockCrushingRecipe;
 import snownee.lychee.recipes.BlockExplodingRecipe;
 import snownee.lychee.recipes.DripstoneRecipe;
@@ -95,7 +94,7 @@ public interface WorkstationRegisters {
 	interface WorkstationRegister<R extends ILycheeRecipe<LycheeContext>> {
 		void consume(
 				IRecipeCatalystRegistration registry,
-				LycheeDisplayCategory<? extends LycheeDisplay<R>> category,
+				AbstractLycheeCategory<R> category,
 				Collection<RecipeHolder<R>> recipes);
 	}
 }
