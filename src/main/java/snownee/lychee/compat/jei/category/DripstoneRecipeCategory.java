@@ -33,7 +33,6 @@ public class DripstoneRecipeCategory extends AbstractLycheeCategory<DripstoneRec
 
 	public DripstoneRecipeCategory(RecipeType<DripstoneRecipe> recipeType, IDrawable icon, IGuiHelper guiHelper) {
 		super(recipeType, icon, guiHelper);
-		infoRect.setX(-10);
 	}
 
 
