@@ -36,6 +36,7 @@
 		"recipes.iteminside.EntityMixin",
 		"recipes.lightningchanneling.LightningBoltMixin",
 		"recipes.randomblockticking.BlockBehaviourMixin",
+		"recipes.randomblockticking.BlocksMixin",
 		"recipes.randomblockticking.BlockStateMixin",
 		"rei.DefaultCraftingDisplayMixin"
 	],

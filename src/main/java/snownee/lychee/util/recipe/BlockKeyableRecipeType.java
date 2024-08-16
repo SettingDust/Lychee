@@ -129,7 +129,7 @@ public class BlockKeyableRecipeType<R extends BlockKeyableRecipe<?>> extends Lyc
 		final var itemContext = context.get(LycheeContextKey.ITEM);
 		final var actionContext = context.get(LycheeContextKey.ACTION);
 
-		final var iterable = Iterables.concat(recipes, anyBlockRecipes);
+		final Iterable<RecipeHolder<R>> iterable = mergeAnyBlockRecipes(recipes);
 		for (final var recipe : iterable) {
 
 			if (tryMatch(recipe, level, context).isPresent()) {
@@ -170,7 +170,7 @@ public class BlockKeyableRecipeType<R extends BlockKeyableRecipe<?>> extends Lyc
 			LycheeContext context
 	) {
 		final var recipes = recipesByBlock.getOrDefault(state.getBlock(), List.of());
-		final var iterable = Iterables.concat(recipes, anyBlockRecipes);
+		final var iterable = mergeAnyBlockRecipes(recipes);
 		for (final var recipe : iterable) {
 			if (extractChance) {
 				var chance = (ChanceRecipe) recipe.value();
@@ -186,6 +186,16 @@ public class BlockKeyableRecipeType<R extends BlockKeyableRecipe<?>> extends Lyc
 			}
 		}
 		return null;
+	}
+
+	public Iterable<RecipeHolder<R>> mergeAnyBlockRecipes(List<RecipeHolder<R>> recipes) {
+		if (anyBlockRecipes.isEmpty()) {
+			return recipes;
+		}
+		if (recipes.isEmpty()) {
+			return anyBlockRecipes;
+		}
+		return Iterables.concat(recipes, anyBlockRecipes);
 	}
 
 }

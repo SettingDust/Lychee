@@ -1,35 +1,28 @@
 package snownee.lychee.mixin.recipes.randomblockticking;
 
+import java.util.function.Predicate;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.lychee.util.RandomlyTickable;
+import snownee.lychee.util.predicates.BlockStateSet;
 
 @Mixin(BlockBehaviour.class)
 public class BlockBehaviourMixin implements RandomlyTickable {
 
 	@Unique
-	private boolean lychee$randomlyTickable;
+	private Predicate<BlockState> lychee$randomlyTickable = BlockStateSet.NONE;
 
-	@Inject(at = @At("HEAD"), method = "isRandomlyTicking", cancellable = true)
-	private void isRandomlyTicking(BlockState blockState, CallbackInfoReturnable<Boolean> ci) {
-		if (lychee$randomlyTickable) {
-			ci.setReturnValue(true);
-		}
+	@Override
+	public void lychee$setTickable(Predicate<BlockState> predicate) {
+		lychee$randomlyTickable = predicate;
 	}
 
 	@Override
-	public void lychee$setTickable(boolean randomlyTickable) {
-		lychee$randomlyTickable = randomlyTickable;
-	}
-
-	@Override
-	public boolean lychee$isTickable() {
-		return lychee$randomlyTickable;
+	public boolean lychee$isTickable(BlockState blockState) {
+		return lychee$randomlyTickable.test(blockState);
 	}
 }
