@@ -7,7 +7,7 @@ public interface ActionMarker {
 
 	ActionData lychee$getData();
 
-	default Marker self() {
+	default Marker lychee$self() {
 		return (Marker) this;
 	}
 }

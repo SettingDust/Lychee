@@ -1,5 +1,6 @@
 package snownee.lychee.mixin.action;
 
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,6 +21,7 @@ import snownee.lychee.util.context.LycheeContextKey;
 @Mixin(Marker.class)
 public class MarkerMixin implements ActionMarker {
 	@Unique
+	@Nullable
 	private ActionData lychee$data;
 
 	public ActionData lychee$getData() {
@@ -32,7 +34,7 @@ public class MarkerMixin implements ActionMarker {
 
 	@Inject(at = @At("HEAD"), method = "tick")
 	private void lychee_tick(CallbackInfo ci) {
-		if (lychee$data.getContext().isEmpty()) {
+		if (lychee$data == null || lychee$data.getContext().isEmpty()) {
 			return;
 		}
 		if (lychee$data.consumeDelayedTicks() > 0) {
@@ -44,38 +46,35 @@ public class MarkerMixin implements ActionMarker {
 		actionContext.state = ActionContext.State.RUNNING;
 		actionContext.run(context);
 		if (actionContext.state == ActionContext.State.STOPPED) {
-			self().discard();
+			lychee$self().discard();
 		}
 	}
 
 	@Inject(at = @At("HEAD"), method = "readAdditionalSaveData")
 	private void lychee_readAdditionalSaveData(CompoundTag compoundTag, CallbackInfo ci) {
-		if (compoundTag.contains("lychee:action")) {
-			final var tag = compoundTag.getCompound("lychee:action");
-			lychee$data = ActionData.CODEC
-					.parse(NbtOps.INSTANCE, tag)
-					.getOrThrow((err) -> {
-						Lychee.LOGGER.debug("Load Lychee action data from marker failed from tag: " + tag);
-						self().discard();
-						return new IllegalStateException("Load Lychee action data from marker failed with error: " + err);
-					});
+		if (!compoundTag.contains("lychee:action")) {
+			return;
 		}
-		if (lychee$data.getContext().isEmpty()
-				&& self().hasCustomName()
-				&& Lychee.ID.equals(self().getCustomName().getString())) {
-			self().discard();
+		final var tag = compoundTag.getCompound("lychee:action");
+		lychee$data = ActionData.CODEC
+				.parse(NbtOps.INSTANCE, tag)
+				.getOrThrow((err) -> {
+					Lychee.LOGGER.debug("Load Lychee action data from marker failed from tag: " + tag);
+					lychee$self().discard();
+					return new IllegalStateException("Load Lychee action data from marker failed with error: " + err);
+				});
+		if (lychee$data.getContext().isEmpty()) {
+			lychee$self().discard();
 		}
-		if (lychee$data.getContext().isPresent()) {
-			var context = lychee$data.getContext().get();
-			var lootParamsContext = context.get(LycheeContextKey.LOOT_PARAMS);
-			lootParamsContext.setParam(LootContextParams.ORIGIN, self().position());
-			lootParamsContext.validate(LycheeLootContextParamSets.ALL);
-		}
+		var context = lychee$data.getContext().get();
+		var lootParamsContext = context.get(LycheeContextKey.LOOT_PARAMS);
+		lootParamsContext.setParam(LootContextParams.ORIGIN, lychee$self().position());
+		lootParamsContext.validate(LycheeLootContextParamSets.ALL);
 	}
 
 	@Inject(at = @At("HEAD"), method = "addAdditionalSaveData")
 	private void lychee_addAdditionalSaveData(CompoundTag compoundTag, CallbackInfo ci) {
-		if (lychee$data.getContext().isEmpty()) {
+		if (lychee$data == null || lychee$data.getContext().isEmpty()) {
 			return;
 		}
 
