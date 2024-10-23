@@ -13,7 +13,6 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.JsonOps;
 
-import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
@@ -46,7 +45,7 @@ import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import snownee.kiwi.Mod;
+import net.neoforged.fml.common.Mod;
 import snownee.kiwi.loader.Platform;
 import snownee.kiwi.util.KEvent;
 import snownee.kiwi.util.KUtil;
@@ -70,7 +69,7 @@ import snownee.lychee.util.particles.dripstone.DripstoneParticleService;
 import snownee.lychee.util.recipe.ILycheeRecipe;
 
 @Mod(Lychee.ID)
-public class CommonProxy implements ModInitializer {
+public class CommonProxy {
 	public static final KEvent<CustomActionListener> CUSTOM_ACTION_EVENT = KEvent.createArrayBacked(
 			CustomActionListener.class,
 			listeners -> (id, action, recipe) -> {
@@ -245,7 +244,7 @@ public class CommonProxy implements ModInitializer {
 	}
 
 	public static boolean isSimpleIngredient(Ingredient ingredient) {
-		return !ingredient.requiresTesting();
+		return ingredient.isSimple();
 	}
 
 	public static void itemstackToJson(ItemStack stack, JsonObject jsonObject) {

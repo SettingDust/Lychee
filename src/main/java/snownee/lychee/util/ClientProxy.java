@@ -3,7 +3,6 @@ package snownee.lychee.util;
 import java.text.MessageFormat;
 import java.util.List;
 
-import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -36,7 +35,7 @@ import snownee.lychee.util.particles.dripstone.client.ParticleFactories;
 import snownee.lychee.util.recipe.ILycheeRecipe;
 import snownee.lychee.util.recipe.LycheeRecipeType;
 
-public class ClientProxy implements ClientModInitializer {
+public class ClientProxy {
 
 	private static final KEvent<RecipeViewerWidgetClickListener> RECIPE_VIEWER_WIDGET_CLICK_EVENT =
 			KEvent.createArrayBacked(RecipeViewerWidgetClickListener.class, listeners -> (recipe, button) -> {

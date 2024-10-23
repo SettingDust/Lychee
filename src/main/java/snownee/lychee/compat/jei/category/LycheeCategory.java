@@ -11,7 +11,6 @@ import com.google.common.collect.Maps;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.fabric.ingredients.fluids.IJeiFluidIngredient;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
@@ -27,6 +26,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
+import net.neoforged.neoforge.fluids.FluidStack;
 import snownee.lychee.action.DropItem;
 import snownee.lychee.action.RandomSelect;
 import snownee.lychee.client.gui.AllGuiTextures;
@@ -92,7 +92,7 @@ public interface LycheeCategory<R extends ILycheeRecipe<LycheeContext>> {
 		var slotBuilder = builder.addSlot(RecipeIngredientRole.OUTPUT, x + 1, y + 1);
 		var itemMap = Maps.<ItemStack, PostAction>newIdentityHashMap();
 		buildActionSlot(builder, slotBuilder, action, itemMap);
-		slotBuilder.addTooltipCallback((view, tooltip) -> {
+		slotBuilder.addRichTooltipCallback((view, tooltip) -> {
 			var displayedIngredient = view.getDisplayedIngredient();
 			if (displayedIngredient.isEmpty()) {
 				return;
@@ -203,7 +203,7 @@ public interface LycheeCategory<R extends ILycheeRecipe<LycheeContext>> {
 					LycheeJEIPlugin.SlotType.CATALYST :
 					LycheeJEIPlugin.SlotType.NORMAL), -1, -1);
 			if (!ingredient.tooltips.isEmpty()) {
-				slotBuilder.addTooltipCallback((stack, tooltip) -> tooltip.addAll(ingredient.tooltips));
+				slotBuilder.addRichTooltipCallback((stack, tooltip) -> tooltip.addAll(ingredient.tooltips));
 			}
 		});
 	}
@@ -224,7 +224,8 @@ public interface LycheeCategory<R extends ILycheeRecipe<LycheeContext>> {
 			recipesGui.show(focusFactory.createFocus(role, VanillaTypes.ITEM_STACK, stack));
 			return true;
 		} else if (state.getBlock() instanceof LiquidBlock) {
-			var fluidHelper = (IPlatformFluidHelper<IJeiFluidIngredient>) LycheeJEIPlugin.helpers.getPlatformFluidHelper();
+			//noinspection unchecked
+			var fluidHelper = (IPlatformFluidHelper<FluidStack>) LycheeJEIPlugin.helpers.getPlatformFluidHelper();
 			recipesGui.show(focusFactory.createFocus(
 					role,
 					fluidHelper.getFluidIngredientType(),

@@ -37,7 +37,11 @@ public class RecipeManagerMixin {
 			ProfilerFiller profiler,
 			CallbackInfo ci) {
 		if (LycheeConfig.enableYamlRecipes) {
-			Map<ResourceLocation, JsonElement> yamlRecipes = OneTimeLoader.load(resourceManager, "recipes", ExtraCodecs.JSON);
+			Map<ResourceLocation, JsonElement> yamlRecipes = OneTimeLoader.load(
+					resourceManager,
+					"recipes",
+					ExtraCodecs.JSON,
+					new OneTimeLoader.Context());
 			for (Map.Entry<ResourceLocation, JsonElement> entry : yamlRecipes.entrySet()) {
 				object.putIfAbsent(entry.getKey(), entry.getValue());
 			}
