@@ -1,4 +1,4 @@
-package snownee.lychee.compat.fabric_recipe_api;
+package snownee.lychee.compat.recipe_api;
 
 import java.util.ArrayList;
 import java.util.List;

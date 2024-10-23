@@ -1,15 +1,15 @@
-package snownee.lychee.compat.fabric_recipe_api;
+package snownee.lychee.compat.recipe_api;
 
 import java.util.List;
 
 import com.mojang.serialization.MapCodec;
 
-import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
-import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import snownee.kiwi.recipe.CustomIngredient;
+import snownee.kiwi.recipe.CustomIngredientSerializer;
 import snownee.lychee.Lychee;
 
 public class AlwaysTrueIngredient implements CustomIngredient {

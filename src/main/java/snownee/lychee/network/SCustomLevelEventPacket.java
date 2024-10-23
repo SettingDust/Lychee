@@ -29,7 +29,7 @@ public record SCustomLevelEventPacket(ItemStack stack, Vector3f pos) implements 
 	}
 
 	public void sendToAround(ServerLevel level) {
-		KPacketSender.sendToAround(this, level, new Vec3(pos), 16);
+		KPacketSender.sendToAround(this, level, null, new Vec3(pos), 16);
 	}
 
 	@Override
