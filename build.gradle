@@ -24,7 +24,8 @@ apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = "${minecraft_version}-forge-${mod_version}"
+version = "${minecraft_version}-Forge-${mod_version}"
+var realVersion = project.mod_version + "+forge"
 group = "${mod_base_package}" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = mod_name
 
@@ -258,7 +259,7 @@ jar {
                 "Specification-Title"     : mod_id,
                 "Specification-Version"   : "1", // We are version 1 of ourselves
                 "Implementation-Title"    : project.name,
-                "Implementation-Version"  : mod_version,
+                "Implementation-Version"  : realVersion,
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
                 "MixinConfigs"            : "${mod_id}.mixins.json"
         ])
@@ -288,7 +289,7 @@ publishing {
 unifiedPublishing {
     project {
         displayName = "[Forge $project.supported_version] $project.mod_version"
-        version = project.mod_version // Optional, Inferred from project by default
+        version = realVersion // Optional, Inferred from project by default
         changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
         releaseType = project.release_type // Optional, use "release", "beta" or "alpha"
         gameVersions = ["1.20", "1.20.1"]
