@@ -3,17 +3,17 @@ package snownee.lychee.client.gui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
-import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
-import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.Direction.AxisDirection;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.material.FluidState;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.textures.FluidSpriteCache;
 
 public class FluidRenderer {
 
@@ -115,9 +115,11 @@ public class FluidRenderer {
 			boolean renderBottom
 	) {
 		var fluid = fluidState.getType();
-		var fluidTexture = FluidVariantRendering.getSprites(FluidVariant.of(fluid))[0];
+		IClientFluidTypeExtensions handler = IClientFluidTypeExtensions.of(fluid);
+		ResourceLocation fluidStill = handler.getStillTexture();
+		TextureAtlasSprite fluidTexture = FluidSpriteCache.getSprite(fluidStill);
 
-		var color = FluidRenderHandlerRegistry.INSTANCE.get(fluid).getFluidColor(null, null, fluidState) | 0xFF000000;
+		var color = handler.getTintColor();
 		//		int blockLightIn = (light >> 4) & 0xF;
 		//		int luminosity = Math.max(blockLightIn, fluidAttributes.getLuminosity(fluidStack));
 		//		light = (light & 0xF00000) | luminosity << 4;

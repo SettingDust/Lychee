@@ -127,11 +127,14 @@ dependencies {
     implementation "maven.modrinth:cloth-config:${project.cloth_config_version}+neoforge"
 
     implementation "me.shedaniel:RoughlyEnoughItems-neoforge:${project.rei_version}"
+//    compileOnly "me.shedaniel:REIPluginCompatibilities-neoforge-annotations:16.+"
 
     implementation "mezz.jei:jei-${project.minecraft_version}-common-api:${project.jei_version}"
     implementation "mezz.jei:jei-${project.minecraft_version}-neoforge-api:${project.jei_version}"
     implementation "mezz.jei:jei-${project.minecraft_version}-neoforge:${project.jei_version}"
 
+//    implementation "org.sinytra.forgified-fabric-api:forgified-fabric-api:0.107.0+2.0.22+1.21.1"
+    implementation "org.sinytra.forgified-fabric-api:fabric-api-base:0.4.42+d1308ded19"
     implementation "org.sinytra.forgified-fabric-api:fabric-particles-v1:4.0.2+824f924c19"
 }
 

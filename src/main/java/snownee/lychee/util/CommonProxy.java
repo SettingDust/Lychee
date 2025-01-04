@@ -13,9 +13,6 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.JsonOps;
 
-import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -33,6 +30,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.BlockItem;
@@ -45,13 +43,18 @@ import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import snownee.kiwi.loader.Platform;
 import snownee.kiwi.util.KEvent;
 import snownee.kiwi.util.KUtil;
 import snownee.lychee.Lychee;
 import snownee.lychee.LycheeRegistries;
-import snownee.lychee.LycheeTags;
 import snownee.lychee.RecipeSerializers;
 import snownee.lychee.RecipeTypes;
 import snownee.lychee.action.CustomAction;
@@ -295,14 +298,14 @@ public class CommonProxy {
 	}
 
 	public static IngredientInfo.Type getIngredientType(Ingredient ingredient) {
-		var customIngredient = ingredient.getCustomIngredient();
-		if (customIngredient != null && customIngredient.getSerializer() == AlwaysTrueIngredient.SERIALIZER) {
-			return IngredientInfo.Type.ANY;
-		}
-		if (ingredient.isEmpty()) { // TODO not compatible with AIR_INGREDIENT!
-			return IngredientInfo.Type.AIR;
-		}
-		// TODO Fabric recipe api interface injection isn't working now
+//		var customIngredient = ingredient.getCustomIngredient();
+//		if (customIngredient != null && customIngredient.getSerializer() == AlwaysTrueIngredient.SERIALIZER) {
+//			return IngredientInfo.Type.ANY;
+//		}
+//		if (ingredient.isEmpty()) { // TODO not compatible with AIR_INGREDIENT!
+//			return IngredientInfo.Type.AIR;
+//		}
+//		// TODO Fabric recipe api interface injection isn't working now
 		return IngredientInfo.Type.NORMAL;
 	}
 
@@ -319,42 +322,64 @@ public class CommonProxy {
 	}
 
 	public static <T> String getTagTranslationKey(TagKey<T> key) {
-		return key.getTranslationKey();
+		return Tags.getTagTranslationKey(key);
 	}
 
-	@Override
-	public void onInitialize() {
-		Objects.requireNonNull(RecipeTypes.ALL);
-		Objects.requireNonNull(LycheeTags.FIRE_IMMUNE);
-		Objects.requireNonNull(LycheeRegistries.CONTEXTUAL);
-		Objects.requireNonNull(ContextualConditionType.AND);
-		Objects.requireNonNull(PostActionTypes.DROP_ITEM);
-		Objects.requireNonNull(RecipeSerializers.ITEM_BURNING);
-		Objects.requireNonNull(LycheeContextKey.ACTION);
-		Objects.requireNonNull(LycheeContextSerializer.ACTION);
-		CustomIngredientSerializer.register(AlwaysTrueIngredient.SERIALIZER);
-		CustomIngredientSerializer.register(VisualOnlyComponentsIngredient.SERIALIZER);
+	public CommonProxy(IEventBus modEventBus) {
+		modEventBus.addListener(LycheeRegistries::init);
+		modEventBus.addListener(CommonProxy::register);
 
 		// Interaction recipes
-		UseBlockCallback.EVENT.register(BlockInteractingRecipe::invoke);
-		AttackBlockCallback.EVENT.register(BlockClickingRecipe::invoke);
+		NeoForge.EVENT_BUS.addListener((PlayerInteractEvent.RightClickBlock event) -> {
+			InteractionResult result = BlockInteractingRecipe.invoke(
+					event.getEntity(),
+					event.getLevel(),
+					event.getHand(),
+					event.getHitVec());
+			event.setCanceled(result.consumesAction());
+			event.setCancellationResult(result);
+		});
+		NeoForge.EVENT_BUS.addListener((PlayerInteractEvent.LeftClickBlock event) -> {
+			InteractionResult result = BlockClickingRecipe.invoke(
+					event.getEntity(),
+					event.getLevel(),
+					event.getHand(),
+					event.getPos(),
+					event.getFace());
+			event.setCanceled(result.consumesAction());
+		});
+	}
 
-		// Dripstone recipes
-		Registry.register(
-				BuiltInRegistries.PARTICLE_TYPE,
-				Lychee.id("dripstone_dripping"),
-				DripstoneParticleService.DRIPSTONE_DRIPPING
-		);
-		Registry.register(
-				BuiltInRegistries.PARTICLE_TYPE,
-				Lychee.id("dripstone_falling"),
-				DripstoneParticleService.DRIPSTONE_FALLING
-		);
-		Registry.register(
-				BuiltInRegistries.PARTICLE_TYPE,
-				Lychee.id("dripstone_splash"),
-				DripstoneParticleService.DRIPSTONE_SPLASH
-		);
+	private static void register(RegisterEvent event) {
+		event.register(LycheeRegistries.CONTEXT.key(), helper -> Objects.requireNonNull(LycheeContextKey.ACTION));
+		event.register(LycheeRegistries.CONTEXT_SERIALIZER.key(), helper -> Objects.requireNonNull(LycheeContextSerializer.ACTION));
+		event.register(LycheeRegistries.CONTEXTUAL.key(), helper -> Objects.requireNonNull(ContextualConditionType.AND));
+		event.register(LycheeRegistries.POST_ACTION.key(), helper -> Objects.requireNonNull(PostActionTypes.DROP_ITEM));
+		event.register(BuiltInRegistries.RECIPE_SERIALIZER.key(), helper -> Objects.requireNonNull(RecipeSerializers.ITEM_BURNING));
+		event.register(
+				NeoForgeRegistries.INGREDIENT_TYPES.key(), helper -> {
+//					helper.register(AlwaysTrueIngredient.SERIALIZER);
+//					helper.register(VisualOnlyComponentsIngredient.SERIALIZER);
+				});
+		event.register(BuiltInRegistries.RECIPE_TYPE.key(), helper -> Objects.requireNonNull(RecipeTypes.ALL));
+		event.register(
+				BuiltInRegistries.PARTICLE_TYPE.key(), helper -> {
+					Registry.register(
+							BuiltInRegistries.PARTICLE_TYPE,
+							Lychee.id("dripstone_dripping"),
+							DripstoneParticleService.DRIPSTONE_DRIPPING
+					);
+					Registry.register(
+							BuiltInRegistries.PARTICLE_TYPE,
+							Lychee.id("dripstone_falling"),
+							DripstoneParticleService.DRIPSTONE_FALLING
+					);
+					Registry.register(
+							BuiltInRegistries.PARTICLE_TYPE,
+							Lychee.id("dripstone_splash"),
+							DripstoneParticleService.DRIPSTONE_SPLASH
+					);
+				});
 	}
 
 	public interface CustomActionListener {

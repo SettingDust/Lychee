@@ -1,9 +1,9 @@
 package snownee.lychee;
 
-import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
-import net.fabricmc.fabric.api.event.registry.RegistryAttribute;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.resources.ResourceKey;
+import net.neoforged.neoforge.registries.NewRegistryEvent;
+import net.neoforged.neoforge.registries.RegistryBuilder;
 import snownee.lychee.util.action.PostActionType;
 import snownee.lychee.util.context.LycheeContextKey;
 import snownee.lychee.util.context.LycheeContextSerializer;
@@ -15,9 +15,14 @@ public final class LycheeRegistries {
 	public static final MappedRegistry<LycheeContextKey<?>> CONTEXT = register("context");
 	public static final MappedRegistry<LycheeContextSerializer<?>> CONTEXT_SERIALIZER = register("context_serializer");
 
+	public static void init(NewRegistryEvent event) {
+		event.register(CONTEXTUAL);
+		event.register(POST_ACTION);
+		event.register(CONTEXT);
+		event.register(CONTEXT_SERIALIZER);
+	}
+
 	private static <T> MappedRegistry<T> register(String id) {
-		return FabricRegistryBuilder.createSimple(ResourceKey.<T>createRegistryKey(Lychee.id(id)))
-				.attribute(RegistryAttribute.SYNCED)
-				.buildAndRegister();
+		return (MappedRegistry<T>) new RegistryBuilder<>(ResourceKey.<T>createRegistryKey(Lychee.id(id))).sync(true).create();
 	}
 }

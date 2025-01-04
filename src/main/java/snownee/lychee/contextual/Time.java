@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 
+import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -15,7 +16,6 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.storage.loot.IntRange;
 import net.minecraft.world.level.storage.loot.predicates.TimeCheck;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
-import snownee.kiwi.util.TriState;
 import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.contextual.ContextualCondition;
 import snownee.lychee.util.contextual.ContextualConditionType;

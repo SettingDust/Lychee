@@ -1,4 +1,4 @@
-package snownee.kiwi.recipe;
+package snownee.kiwi.recipe2;
 
 import java.util.Map;
 import java.util.Objects;
