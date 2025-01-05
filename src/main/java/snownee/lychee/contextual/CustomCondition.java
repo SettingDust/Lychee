@@ -33,7 +33,7 @@ import snownee.lychee.util.recipe.ILycheeRecipe;
 public class CustomCondition implements ContextualCondition {
 	public final JsonObject data;
 	private final String id;
-	public ContextualPredicate testFunc = null;
+	public ContextualPredicate testFunc;
 	public BiFunction<Level, @Nullable Player, InteractionResult> testInTooltipsFunc =
 			(level, player) -> InteractionResult.PASS;
 

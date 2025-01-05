@@ -5,8 +5,6 @@ import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -24,21 +22,19 @@ import snownee.lychee.util.action.PostActionTypes;
 import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.recipe.ILycheeRecipe;
 
-public record CustomAction(
-		PostActionCommonProperties commonProperties,
-		String id,
-		JsonObject data,
-		boolean canRepeat,
-		Apply applyFunc
-) implements PostAction {
+public class CustomAction implements PostAction {
+	private final PostActionCommonProperties commonProperties;
+	public final String id;
+	public final JsonObject data;
+	public boolean repeatable;
+	@Nullable
+	public Apply applyFunc;
 
-	public CustomAction(
-			PostActionCommonProperties commonProperties,
-			String id,
-			JsonObject json,
-			boolean canRepeat
-	) {
-		this(commonProperties, id, json, canRepeat, null);
+	public CustomAction(PostActionCommonProperties commonProperties, String id, JsonObject json, boolean repeatable) {
+		this.commonProperties = commonProperties;
+		this.id = id;
+		this.data = json;
+		this.repeatable = repeatable;
 	}
 
 	@Override
@@ -60,7 +56,7 @@ public record CustomAction(
 
 	@Override
 	public boolean repeatable() {
-		return canRepeat;
+		return repeatable;
 	}
 
 	@Override
@@ -69,51 +65,16 @@ public record CustomAction(
 	}
 
 	@Override
-	public PostActionCommonProperties commonProperties() {return commonProperties;}
+	public PostActionCommonProperties commonProperties() {
+		return commonProperties;
+	}
 
-	public boolean canRepeat() {return canRepeat;}
-
-	public Apply applyFunc() {return applyFunc;}
-
-	@Override
 	public String id() {
 		return id;
 	}
 
 	public JsonObject data() {
 		return data;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		final CustomAction that = (CustomAction) o;
-		return canRepeat == that.canRepeat && Objects.equal(
-				commonProperties,
-				that.commonProperties
-		) && Objects.equal(id, that.id) && Objects.equal(data, that.data) &&
-				Objects.equal(applyFunc, that.applyFunc);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(commonProperties, id, data, canRepeat, applyFunc);
-	}
-
-	@Override
-	public String toString() {
-		return MoreObjects.toStringHelper(this)
-				.add("commonProperties", commonProperties)
-				.add("id", id)
-				.add("data", data)
-				.add("canRepeat", canRepeat)
-				.add("applyFunc", applyFunc)
-				.toString();
 	}
 
 	@FunctionalInterface
@@ -124,13 +85,14 @@ public record CustomAction(
 	public record Data(String id, JsonObject data) {
 		public static final MapCodec<Data> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				Codec.STRING.fieldOf("id").forGetter(Data::id),
-				ExtraCodecs.JSON.comapFlatMap(it -> {
-					try {
-						return DataResult.success(it.getAsJsonObject());
-					} catch (Exception e) {
-						return DataResult.error(e::getMessage);
-					}
-				}, Function.identity()).fieldOf("data").forGetter(Data::data)
+				ExtraCodecs.JSON.comapFlatMap(
+						it -> {
+							try {
+								return DataResult.success(it.getAsJsonObject());
+							} catch (Exception e) {
+								return DataResult.error(e::getMessage);
+							}
+						}, Function.identity()).fieldOf("data").forGetter(Data::data)
 		).apply(instance, Data::new));
 	}
 
@@ -138,13 +100,14 @@ public record CustomAction(
 		public static final MapCodec<CustomAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				PostActionCommonProperties.MAP_CODEC.forGetter(CustomAction::commonProperties),
 				Codec.STRING.fieldOf("id").forGetter(CustomAction::id),
-				ExtraCodecs.JSON.comapFlatMap(it -> {
-					try {
-						return DataResult.success(it.getAsJsonObject());
-					} catch (Exception e) {
-						return DataResult.error(e::getMessage);
-					}
-				}, Function.identity()).optionalFieldOf("data", new JsonObject()).forGetter(CustomAction::data),
+				ExtraCodecs.JSON.comapFlatMap(
+						it -> {
+							try {
+								return DataResult.success(it.getAsJsonObject());
+							} catch (Exception e) {
+								return DataResult.error(e::getMessage);
+							}
+						}, Function.identity()).optionalFieldOf("data", new JsonObject()).forGetter(CustomAction::data),
 				Codec.BOOL.optionalFieldOf("repeatable", true).forGetter(CustomAction::repeatable)
 		).apply(instance, CustomAction::new));
 

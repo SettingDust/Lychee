@@ -1,4 +1,4 @@
-package snownee.kiwi.recipe2;
+package snownee.kiwi.recipe_;
 
 import java.util.List;
 

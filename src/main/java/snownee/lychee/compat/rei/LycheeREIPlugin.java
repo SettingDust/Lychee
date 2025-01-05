@@ -91,7 +91,6 @@ public class LycheeREIPlugin implements REIClientPlugin {
 
 		CategoryExtensionProvider<Display> extensionProvider = (display, category, lastView) -> {
 			if (display instanceof LycheeDisplay<?> lycheeDisplay) {
-				var recipe = lycheeDisplay.recipe();
 				return new DisplayCategoryView<>() {
 					@Override
 					public DisplayRenderer getDisplayRenderer(Display display) {
@@ -113,7 +112,7 @@ public class LycheeREIPlugin implements REIClientPlugin {
 							}
 						}
 						if (rect != null) {
-							LycheeCategory.drawInfoBadgeIfNeeded(widgets, recipe, bounds.getLocation(), rect);
+							LycheeCategory.drawInfoBadgeIfNeeded(widgets, lycheeDisplay, bounds.getLocation(), rect);
 						}
 						return widgets;
 					}

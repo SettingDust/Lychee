@@ -3,6 +3,8 @@ package snownee.lychee.util;
 import java.text.MessageFormat;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -11,6 +13,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.IEventBus;
@@ -43,9 +46,9 @@ public class ClientProxy {
 
 	private static final KEvent<RecipeViewerWidgetClickListener> RECIPE_VIEWER_WIDGET_CLICK_EVENT =
 			KEvent.createArrayBacked(
-					RecipeViewerWidgetClickListener.class, listeners -> (recipe, button) -> {
+					RecipeViewerWidgetClickListener.class, listeners -> (recipe, id, button) -> {
 						for (var listener : listeners) {
-							if (listener.onClick(recipe, button)) {
+							if (listener.onClick(recipe, id, button)) {
 								return true;
 							}
 						}
@@ -64,8 +67,8 @@ public class ClientProxy {
 		RECIPE_VIEWER_WIDGET_CLICK_EVENT.register(listener);
 	}
 
-	public static boolean postInfoBadgeClickEvent(ILycheeRecipe recipe, int button) {
-		return RECIPE_VIEWER_WIDGET_CLICK_EVENT.invoker().onClick(recipe, button);
+	public static boolean postInfoBadgeClickEvent(ILycheeRecipe<?> recipe, @Nullable ResourceLocation id, int button) {
+		return RECIPE_VIEWER_WIDGET_CLICK_EVENT.invoker().onClick(recipe, id, button);
 	}
 
 	public static void drawCenteredStringNoShadow(GuiGraphics graphics, Font font, Component text, int x, int y, int color) {
@@ -155,6 +158,6 @@ public class ClientProxy {
 
 	@FunctionalInterface
 	public interface RecipeViewerWidgetClickListener {
-		boolean onClick(ILycheeRecipe recipe, int button);
+		boolean onClick(ILycheeRecipe<?> recipe, @Nullable ResourceLocation id, int button);
 	}
 }

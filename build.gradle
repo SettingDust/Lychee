@@ -25,6 +25,28 @@ repositories {
     maven { url "https://dvs1.progwml6.com/files/maven/" }
     maven { url "https://modmaven.dev" }
     maven { url "https://maven.su5ed.dev/releases" }
+    maven {
+        // Shedaniel's maven (Architectury API)
+        url = "https://maven.architectury.dev"
+        content {
+            includeGroup "dev.architectury"
+        }
+    }
+    maven {
+        // saps.dev Maven (KubeJS and Rhino)
+        url = "https://maven.saps.dev/minecraft"
+        content {
+            includeGroup "dev.latvian.mods"
+            includeGroup "dev.latvian.apps"
+        }
+    }
+    maven {
+        // For com.github.rtyley:animated-gif-lib-for-java, a KubeJS dependency
+        url 'https://jitpack.io'
+        content {
+            includeGroup "com.github.rtyley"
+        }
+    }
     flatDir { dir 'libs' }
 }
 
@@ -127,7 +149,7 @@ dependencies {
     implementation "maven.modrinth:cloth-config:${project.cloth_config_version}+neoforge"
 
     implementation "me.shedaniel:RoughlyEnoughItems-neoforge:${project.rei_version}"
-//    compileOnly "me.shedaniel:REIPluginCompatibilities-neoforge-annotations:16.+"
+    compileOnly "me.shedaniel:REIPluginCompatibilities-forge-annotations:12.+"
 
     implementation "mezz.jei:jei-${project.minecraft_version}-common-api:${project.jei_version}"
     implementation "mezz.jei:jei-${project.minecraft_version}-neoforge-api:${project.jei_version}"
@@ -136,6 +158,8 @@ dependencies {
 //    implementation "org.sinytra.forgified-fabric-api:forgified-fabric-api:0.107.0+2.0.22+1.21.1"
     implementation "org.sinytra.forgified-fabric-api:fabric-api-base:0.4.42+d1308ded19"
     implementation "org.sinytra.forgified-fabric-api:fabric-particles-v1:4.0.2+824f924c19"
+
+    implementation "dev.latvian.mods:kubejs-neoforge:${kubejs_version}"
 }
 
 unifiedPublishing {

@@ -4,6 +4,7 @@ block_in:
   blocks: "#minecraft:beds"
 item_in:
   fabric:type: lychee:always_true
+  type: lychee:always_true
 if:
   - type: location
     predicate:

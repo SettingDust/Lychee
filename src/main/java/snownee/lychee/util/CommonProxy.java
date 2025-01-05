@@ -23,7 +23,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.TagParser;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -51,6 +50,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import snownee.kiwi.loader.Platform;
+import snownee.kiwi.recipe_.CustomIngredientSerializer;
 import snownee.kiwi.util.KEvent;
 import snownee.kiwi.util.KUtil;
 import snownee.lychee.Lychee;
@@ -168,31 +168,6 @@ public class CommonProxy {
 		return list.get(Math.toIntExact(index));
 	}
 
-	public static ResourceLocation readNullableRL(FriendlyByteBuf buf) {
-		var string = buf.readUtf();
-		if (string.isEmpty()) {
-			return null;
-		} else {
-			return ResourceLocation.parse(string);
-		}
-	}
-
-	public static void writeNullableRL(ResourceLocation rl, FriendlyByteBuf buf) {
-		if (rl == null) {
-			buf.writeUtf("");
-		} else {
-			buf.writeUtf(rl.toString());
-		}
-	}
-
-	public static <T> T readRegistryId(Registry<T> registry, FriendlyByteBuf buf) {
-		return registry.byId(buf.readVarInt());
-	}
-
-	public static <T> void writeRegistryId(Registry<T> registry, T entry, FriendlyByteBuf buf) {
-		buf.writeVarInt(registry.getId(entry));
-	}
-
 	@Nullable
 	public static RecipeHolder<?> recipe(ResourceLocation id) {
 		var manager = KUtil.getRecipeManager();
@@ -298,14 +273,15 @@ public class CommonProxy {
 	}
 
 	public static IngredientInfo.Type getIngredientType(Ingredient ingredient) {
-//		var customIngredient = ingredient.getCustomIngredient();
-//		if (customIngredient != null && customIngredient.getSerializer() == AlwaysTrueIngredient.SERIALIZER) {
-//			return IngredientInfo.Type.ANY;
-//		}
-//		if (ingredient.isEmpty()) { // TODO not compatible with AIR_INGREDIENT!
-//			return IngredientInfo.Type.AIR;
-//		}
-//		// TODO Fabric recipe api interface injection isn't working now
+		var customIngredient = ingredient.getCustomIngredient();
+		if (customIngredient != null && Objects.equals(
+				NeoForgeRegistries.INGREDIENT_TYPES.getKey(customIngredient.getType()),
+				AlwaysTrueIngredient.ID)) {
+			return IngredientInfo.Type.ANY;
+		}
+		if (ingredient.isEmpty()) { // TODO not compatible with AIR_INGREDIENT!
+			return IngredientInfo.Type.AIR;
+		}
 		return IngredientInfo.Type.NORMAL;
 	}
 
@@ -326,6 +302,8 @@ public class CommonProxy {
 	}
 
 	public CommonProxy(IEventBus modEventBus) {
+		CustomIngredientSerializer.register(AlwaysTrueIngredient.SERIALIZER);
+		CustomIngredientSerializer.register(VisualOnlyComponentsIngredient.SERIALIZER);
 		modEventBus.addListener(LycheeRegistries::init);
 		modEventBus.addListener(CommonProxy::register);
 
@@ -356,11 +334,6 @@ public class CommonProxy {
 		event.register(LycheeRegistries.CONTEXTUAL.key(), helper -> Objects.requireNonNull(ContextualConditionType.AND));
 		event.register(LycheeRegistries.POST_ACTION.key(), helper -> Objects.requireNonNull(PostActionTypes.DROP_ITEM));
 		event.register(BuiltInRegistries.RECIPE_SERIALIZER.key(), helper -> Objects.requireNonNull(RecipeSerializers.ITEM_BURNING));
-		event.register(
-				NeoForgeRegistries.INGREDIENT_TYPES.key(), helper -> {
-//					helper.register(AlwaysTrueIngredient.SERIALIZER);
-//					helper.register(VisualOnlyComponentsIngredient.SERIALIZER);
-				});
 		event.register(BuiltInRegistries.RECIPE_TYPE.key(), helper -> Objects.requireNonNull(RecipeTypes.ALL));
 		event.register(
 				BuiltInRegistries.PARTICLE_TYPE.key(), helper -> {
