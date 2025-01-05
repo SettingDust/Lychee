@@ -16,10 +16,9 @@ import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import snownee.lychee.Lychee;
 import snownee.lychee.util.CommonProxy;
 import snownee.lychee.util.context.LycheeContext;
 import snownee.lychee.util.contextual.ContextualCondition;
@@ -32,15 +31,14 @@ import snownee.lychee.util.recipe.ILycheeRecipe;
  */
 public class CustomCondition implements ContextualCondition {
 	public final JsonObject data;
-	private final String id;
+	public final String id;
 	public ContextualPredicate testFunc;
-	public BiFunction<Level, @Nullable Player, InteractionResult> testInTooltipsFunc =
-			(level, player) -> InteractionResult.PASS;
+	public BiFunction<Level, @Nullable Player, TriState> testInTooltipsFunc = (level, player) -> TriState.DEFAULT;
 
 	public CustomCondition(String id, JsonObject data) {
 		this.id = id;
 		this.data = data;
-		CommonProxy.postCustomConditionEvent(GsonHelper.getAsString(data, "id"), this);
+		CommonProxy.postCustomConditionEvent(id, this);
 	}
 
 	@Override
@@ -58,16 +56,17 @@ public class CustomCondition implements ContextualCondition {
 
 	@Override
 	public TriState testForTooltips(Level level, @Nullable Player player) {
-		return switch (testInTooltipsFunc.apply(level, player)) {
-			case SUCCESS, SUCCESS_NO_ITEM_USED -> TriState.TRUE;
-			case FAIL -> TriState.FALSE;
-			case PASS, CONSUME_PARTIAL, CONSUME -> TriState.DEFAULT;
-		};
+		try {
+			return testInTooltipsFunc.apply(level, player);
+		} catch (Exception e) {
+			Lychee.LOGGER.error("Error occurred while testing custom condition: {}", id, e);
+			return TriState.DEFAULT;
+		}
 	}
 
 	@Override
 	public MutableComponent getDescription(boolean inverted) {
-		return Component.translatable(getDescriptionId(inverted), GsonHelper.getAsString(data, "id"));
+		return Component.translatable(getDescriptionId(inverted), id);
 	}
 
 	public JsonObject data() {
@@ -82,13 +81,14 @@ public class CustomCondition implements ContextualCondition {
 		// TODO 需要测试能不能用
 		public static final MapCodec<CustomCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				Codec.STRING.fieldOf("id").forGetter(CustomCondition::id),
-				ExtraCodecs.JSON.comapFlatMap(it -> {
-					try {
-						return DataResult.success(it.getAsJsonObject());
-					} catch (Exception e) {
-						return DataResult.error(e::getMessage);
-					}
-				}, Function.identity()).optionalFieldOf("data", new JsonObject()).forGetter(CustomCondition::data)
+				ExtraCodecs.JSON.comapFlatMap(
+						it -> {
+							try {
+								return DataResult.success(it.getAsJsonObject());
+							} catch (Exception e) {
+								return DataResult.error(e::getMessage);
+							}
+						}, Function.identity()).optionalFieldOf("data", new JsonObject()).forGetter(CustomCondition::data)
 		).apply(instance, CustomCondition::new));
 
 		@Override

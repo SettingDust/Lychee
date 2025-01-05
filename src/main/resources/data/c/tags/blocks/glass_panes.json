@@ -17,10 +17,6 @@
 		"brown_stained_glass_pane",
 		"green_stained_glass_pane",
 		"red_stained_glass_pane",
-		"black_stained_glass_pane",
-		{
-			"id": "#forge:glass_panes",
-			"required": false
-		}
+		"black_stained_glass_pane"
 	]
 }

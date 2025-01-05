@@ -1,0 +1,9 @@
+type: lychee:block_interacting
+block_in:
+  blocks: glass
+item_in:
+  fabric:type: lychee:always_true
+  type: lychee:always_true
+if:
+  - type: custom
+    id: always_true

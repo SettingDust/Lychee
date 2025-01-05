@@ -8,13 +8,13 @@ public interface LycheeKubeJSEvents {
 
 	EventGroup GROUP = EventGroup.of("LycheeEvents");
 
-	TargetedEventHandler<String> CLICKED_INFO_BADGE = GROUP.client("clickedInfoBadge", () -> ClickedInfoBadgeEventJS.class)
+	TargetedEventHandler<String> CLICKED_INFO_BADGE = GROUP.client("clickedInfoBadge", () -> ClickedInfoBadgeKubeEvent.class)
 			.supportsTarget(EventTargetType.STRING)
 			.hasResult();
-	TargetedEventHandler<String> CUSTOM_ACTION = GROUP.startup("customAction", () -> CustomActionEventJS.class)
+	TargetedEventHandler<String> CUSTOM_ACTION = GROUP.startup("customAction", () -> CustomActionKubeEvent.class)
 			.requiredTarget(EventTargetType.STRING)
 			.hasResult();
-	TargetedEventHandler<String> CUSTOM_CONDITION = GROUP.startup("customCondition", () -> CustomConditionEventJS.class)
+	TargetedEventHandler<String> CUSTOM_CONDITION = GROUP.startup("customCondition", () -> CustomConditionKubeEvent.class)
 			.requiredTarget(EventTargetType.STRING)
 			.hasResult();
 }

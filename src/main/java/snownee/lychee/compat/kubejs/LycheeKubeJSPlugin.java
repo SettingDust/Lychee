@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import snownee.kiwi.loader.Platform;
@@ -36,14 +35,14 @@ public class LycheeKubeJSPlugin implements KubeJSPlugin {
 
 	private boolean onCustomAction(String id, CustomAction action, ILycheeRecipe<?> recipe) {
 		if (LycheeKubeJSEvents.CUSTOM_ACTION.hasListeners()) {
-			return LycheeKubeJSEvents.CUSTOM_ACTION.post(ScriptType.STARTUP, id, new CustomActionEventJS(id, action, recipe)).override();
+			return LycheeKubeJSEvents.CUSTOM_ACTION.post(ScriptType.STARTUP, id, new CustomActionKubeEvent(id, action, recipe)).override();
 		}
 		return false;
 	}
 
 	private boolean onCustomCondition(String id, CustomCondition condition) {
 		if (LycheeKubeJSEvents.CUSTOM_CONDITION.hasListeners()) {
-			return LycheeKubeJSEvents.CUSTOM_CONDITION.post(ScriptType.STARTUP, id, new CustomConditionEventJS(id, condition)).override();
+			return LycheeKubeJSEvents.CUSTOM_CONDITION.post(ScriptType.STARTUP, id, new CustomConditionKubeEvent(id, condition)).override();
 		}
 		return false;
 	}
@@ -53,7 +52,7 @@ public class LycheeKubeJSPlugin implements KubeJSPlugin {
 			return LycheeKubeJSEvents.CLICKED_INFO_BADGE.post(
 					ScriptType.CLIENT,
 					id == null ? null : id.toString(),
-					new ClickedInfoBadgeEventJS(recipe, id, button)).override();
+					new ClickedInfoBadgeKubeEvent(recipe, id, button)).override();
 		}
 		return false;
 	}
@@ -65,7 +64,6 @@ public class LycheeKubeJSPlugin implements KubeJSPlugin {
 
 	@Override
 	public void registerBindings(BindingRegistry bindings) {
-		bindings.add("InteractionResult", InteractionResult.class);
 		bindings.add("LootContextParams", LootContextParams.class);
 		bindings.add("LycheeLootContextParams", LycheeLootContextParams.class);
 		bindings.add("LycheeReference", Reference.class);

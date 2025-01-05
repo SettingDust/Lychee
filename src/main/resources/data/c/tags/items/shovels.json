@@ -6,10 +6,6 @@
     "iron_shovel",
     "golden_shovel",
     "diamond_shovel",
-    "netherite_shovel",
-    {
-      "id": "#forge:tools/shovels",
-      "required": false
-    }
+    "netherite_shovel"
   ]
 }

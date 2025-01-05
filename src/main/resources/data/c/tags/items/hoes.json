@@ -6,10 +6,6 @@
     "iron_hoe",
     "golden_hoe",
     "diamond_hoe",
-    "netherite_hoe",
-    {
-      "id": "#forge:tools/hoes",
-      "required": false
-    }
+    "netherite_hoe"
   ]
 }
