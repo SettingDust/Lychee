@@ -16,6 +16,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.Items;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import snownee.kiwi.util.KEvent;
@@ -41,7 +42,7 @@ import snownee.lychee.util.particles.dripstone.client.ParticleFactories;
 import snownee.lychee.util.recipe.ILycheeRecipe;
 import snownee.lychee.util.recipe.LycheeRecipeType;
 
-@Mod(Lychee.ID)
+@Mod(value = Lychee.ID, dist = Dist.CLIENT)
 public class ClientProxy {
 
 	private static final KEvent<RecipeViewerWidgetClickListener> RECIPE_VIEWER_WIDGET_CLICK_EVENT =
