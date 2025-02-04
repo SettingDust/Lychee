@@ -64,6 +64,7 @@ public class LycheeKubeJSPlugin implements KubeJSPlugin {
 
 	@Override
 	public void registerBindings(BindingRegistry bindings) {
+		bindings.add("Lychee", LycheeKubeJSUtils.class);
 		bindings.add("LootContextParams", LootContextParams.class);
 		bindings.add("LycheeLootContextParams", LycheeLootContextParams.class);
 		bindings.add("LycheeReference", Reference.class);
