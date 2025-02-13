@@ -166,7 +166,6 @@ public class GuiGameElement {
 		public void render(GuiGraphics graphics) {
 			PoseStack matrixStack = graphics.pose();
 			prepareMatrix(matrixStack);
-			matrixStack.translate(0f, 0f, 300f);
 
 			Minecraft mc = Minecraft.getInstance();
 			BlockRenderDispatcher blockRenderer = mc.getBlockRenderer();
