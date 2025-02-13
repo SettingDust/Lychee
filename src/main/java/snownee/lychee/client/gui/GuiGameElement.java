@@ -2,6 +2,7 @@ package snownee.lychee.client.gui;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.jozufozu.flywheel.core.model.ModelUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.GlStateManager.DestFactor;
 import com.mojang.blaze3d.platform.GlStateManager.SourceFactor;
@@ -35,6 +36,8 @@ import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.model.data.ModelData;
+import snownee.lychee.compat.create.CreateCompat;
 import snownee.lychee.util.Color;
 import snownee.lychee.util.VecHelper;
 
@@ -163,6 +166,7 @@ public class GuiGameElement {
 		public void render(GuiGraphics graphics) {
 			PoseStack matrixStack = graphics.pose();
 			prepareMatrix(matrixStack);
+			matrixStack.translate(0f, 0f, 300f);
 
 			Minecraft mc = Minecraft.getInstance();
 			BlockRenderDispatcher blockRenderer = mc.getBlockRenderer();
@@ -182,7 +186,22 @@ public class GuiGameElement {
 			Minecraft mc = Minecraft.getInstance();
 			int color = mc.getBlockColors().getColor(blockState, mc.level, mc.cameraEntity != null ? mc.cameraEntity.blockPosition() : null, 0);
 			Color rgb = new Color(color == -1 ? this.color : color);
-			blockRenderer.getModelRenderer().renderModel(ms.last(), vb, blockState, blockModel, rgb.getRedAsFloat(), rgb.getGreenAsFloat(), rgb.getBlueAsFloat(), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+			var modelData = ModelData.builder();
+			if (CreateCompat.LOADED) {
+				modelData.with(ModelUtil.VIRTUAL_PROPERTY, true);
+			}
+			blockRenderer.getModelRenderer().renderModel(
+					ms.last(),
+					vb,
+					blockState,
+					blockModel,
+					rgb.getRedAsFloat(),
+					rgb.getGreenAsFloat(),
+					rgb.getBlueAsFloat(),
+					LightTexture.FULL_BRIGHT,
+					OverlayTexture.NO_OVERLAY,
+					modelData.build(),
+					null);
 			buffer.endBatch();
 		}
 

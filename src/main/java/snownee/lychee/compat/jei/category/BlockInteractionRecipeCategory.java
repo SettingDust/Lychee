@@ -28,7 +28,7 @@ public class BlockInteractionRecipeCategory extends ItemAndBlockBaseCategory<Lyc
 	@Override
 	public @Nullable Component getMethodDescription(BlockInteractingRecipe recipe) {
 		return Component.translatable(Util.makeDescriptionId("tip", recipe.getSerializer().getRegistryName()));
-	}
+	} 
 
 	@Override
 	public void drawExtra(BlockInteractingRecipe recipe, GuiGraphics graphics, double mouseX, double mouseY, int centerX) {
