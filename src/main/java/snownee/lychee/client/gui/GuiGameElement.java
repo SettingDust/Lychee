@@ -37,7 +37,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.model.data.ModelData;
-import snownee.lychee.compat.create.CreateCompat;
+import snownee.lychee.compat.flywheel.FlywheelCompat;
 import snownee.lychee.util.Color;
 import snownee.lychee.util.VecHelper;
 
@@ -156,10 +156,15 @@ public class GuiGameElement {
 
 		protected BakedModel blockModel;
 		protected BlockState blockState;
+		private ModelData modelData;
 
 		public GuiBlockModelRenderBuilder(BakedModel blockmodel, @Nullable BlockState blockState) {
 			this.blockState = blockState == null ? Blocks.AIR.defaultBlockState() : blockState;
 			this.blockModel = blockmodel;
+			this.modelData = ModelData.EMPTY;
+			if (FlywheelCompat.LOADED) {
+				this.modelData = ModelData.builder().with(ModelUtil.VIRTUAL_PROPERTY, true).build();
+			}
 		}
 
 		@Override
@@ -185,10 +190,6 @@ public class GuiGameElement {
 			Minecraft mc = Minecraft.getInstance();
 			int color = mc.getBlockColors().getColor(blockState, mc.level, mc.cameraEntity != null ? mc.cameraEntity.blockPosition() : null, 0);
 			Color rgb = new Color(color == -1 ? this.color : color);
-			var modelData = ModelData.builder();
-			if (CreateCompat.LOADED) {
-				modelData.with(ModelUtil.VIRTUAL_PROPERTY, true);
-			}
 			blockRenderer.getModelRenderer().renderModel(
 					ms.last(),
 					vb,
@@ -199,7 +200,7 @@ public class GuiGameElement {
 					rgb.getBlueAsFloat(),
 					LightTexture.FULL_BRIGHT,
 					OverlayTexture.NO_OVERLAY,
-					modelData.build(),
+					modelData,
 					null);
 			buffer.endBatch();
 		}

@@ -28,7 +28,7 @@ public class BlockInteractionRecipeCategory extends ItemAndBlockBaseCategory<Lyc
 	@Override
 	public @Nullable Component getMethodDescription(BlockInteractingRecipe recipe) {
 		return Component.translatable(Util.makeDescriptionId("tip", recipe.getSerializer().getRegistryName()));
-	} 
+	}
 
 	@Override
 	public void drawExtra(BlockInteractingRecipe recipe, GuiGraphics graphics, double mouseX, double mouseY, int centerX) {
@@ -52,7 +52,7 @@ public class BlockInteractionRecipeCategory extends ItemAndBlockBaseCategory<Lyc
 		boolean click = recipe.getType() == RecipeTypes.BLOCK_CLICKING;
 		return click ? Minecraft.getInstance().options.keyAttack : Minecraft.getInstance().options.keyUse;
 	}
-	
+
 	@Override
 	public int getWidth() {
 		return super.getWidth() + 20;
