@@ -21,7 +21,7 @@ public interface PostActionType<T extends PostAction> extends SerializableType<T
 			PostActionType::streamCodec);
 
 	StreamCodec<RegistryFriendlyByteBuf, List<PostAction>> STREAM_LIST_CODEC = STREAM_CODEC.apply(original ->
-			new StreamCodec<RegistryFriendlyByteBuf, List<PostAction>>() {
+			new StreamCodec<>() {
 				@Override
 				public void encode(RegistryFriendlyByteBuf byteBuf, List<PostAction> list) {
 					var filtered = list.stream().filter(it -> !it.preventSync()).toList();
