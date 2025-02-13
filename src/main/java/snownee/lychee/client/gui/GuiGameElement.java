@@ -37,7 +37,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.model.data.ModelData;
-import snownee.lychee.compat.flywheel.FlywheelCompat;
+import snownee.lychee.util.ClientProxy;
 import snownee.lychee.util.Color;
 import snownee.lychee.util.VecHelper;
 
@@ -162,7 +162,7 @@ public class GuiGameElement {
 			this.blockState = blockState == null ? Blocks.AIR.defaultBlockState() : blockState;
 			this.blockModel = blockmodel;
 			this.modelData = ModelData.EMPTY;
-			if (FlywheelCompat.LOADED) {
+			if (ClientProxy.HAS_FLYWHEEL) {
 				this.modelData = ModelData.builder().with(ModelUtil.VIRTUAL_PROPERTY, true).build();
 			}
 		}
